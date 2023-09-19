@@ -1,0 +1,162 @@
+import React, {useEffect, useState} from 'react';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {Login} from '../../Screens/Login';
+import {SignUp} from '../../Screens/SignUp';
+import {TermofServices} from '../../Screens/TermsOfServices';
+import {OtpScreen} from '../../Components/OtpScreen';
+import {ProfileCreate} from '../../Screens/ProfileCreate';
+import {ForgotPassword} from '../../Screens/ForgotPassword';
+import {useDispatch, useSelector} from 'react-redux';
+import {PasswordChange} from '../../Screens/PasswordChange';
+import {AddCard} from '../../Screens/AddCard.js';
+import {Home} from '../../Screens/Home';
+import {MyCards} from '../../Screens/MyCards';
+import {LostCards} from '../../Screens/LostCards';
+import {LostNewCard} from '../../Screens/LostNewCard';
+import {ChatScreen} from '../../Screens/ChatScreen';
+import {ReturnedCards} from '../../Screens/ReturnedCards';
+import {LostExistingCard} from '../../Screens/LostExistingCard';
+import {Notifications} from '../../Screens/Notifications';
+import {FoundCard} from '../../Screens/FoundCard';
+import {FoundCardsList} from '../../Screens/FoundCardsList';
+import {Chats} from '../../Screens/Chats';
+import {Profile} from '../../Screens/Profile';
+import {Feedback} from '../../Screens/Feedback';
+import {Settings} from '../../Screens/Settings';
+import DrawerNavigator from '../Drawer/drawer';
+import {AboutApp} from '../../Screens/AboutApp';
+import {PrivacyPolicy} from '../../Screens/PrivacyPolicy';
+import {TermsAndConditions} from '../../Screens/TermsAndConditions';
+import SimpleBottomScreen from '../SimpleBottomScreen';
+import {EditProfile} from '../../Screens/EditProfile';
+import {userDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export default function StackNavigator({route, navigation}) {
+  const Stack = createStackNavigator();
+  const dispatch = useDispatch();
+
+  const otpScreenBool = useSelector(state => state.ScreenReducer.userData);
+  const userAuth = useSelector(state => state.AuthReducer);
+  const [userData, setUserData] = useState({});
+
+  const getData = async () => {
+    try {
+      let value = await AsyncStorage.getItem('user').then(res => {
+        return res;
+      });
+      return value;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  React.useEffect(() => {
+    (async () => {
+      let value = getData().then(res => {
+        // console.log('this is res in APp');
+        console.log(res);
+        let v = JSON.parse(res);
+
+        console.log('v:', v);
+
+        if (v?.user.id) {
+          dispatch(userDataFromAsyncStorage(v));
+          //  SplashScreen.hide();
+        } else {
+          //  SplashScreen.hide();
+        }
+      });
+    })().catch(err => {
+      console.error(err);
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (userAuth.userData?.user?.id) {
+      setUserData(userAuth.userData);
+    } else {
+      setUserData(null);
+    }
+  }, [userAuth.userData]);
+
+  useEffect(() => {
+    console.log('userData:', userData);
+  }, [userData]);
+  useEffect(() => {
+    console.log('otpScreenBool:', otpScreenBool);
+  }, [otpScreenBool]);
+
+  return (
+    <NavigationContainer independent={true}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
+        {userData == null ? (
+          <>
+            <Stack.Screen name="login" component={Login} />
+            <Stack.Screen name="SignUp" component={SignUp} />
+            <Stack.Screen name="TermofServices" component={TermofServices} />
+            <Stack.Screen name="OtpScreen" component={OtpScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+            <Stack.Screen name="PasswordChange" component={PasswordChange} />
+          </>
+        ) : otpScreenBool ? (
+          <>
+            <Stack.Screen name="ProfileCreate" component={ProfileCreate} />
+            <Stack.Screen name="AddFirstCard" component={AddCard} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Home" component={DrawerNavigator} />
+            <Stack.Screen
+              name="SimpleBottomScreen"
+              component={SimpleBottomScreen}
+            />
+            <Stack.Screen name="AddCard" component={AddCard} />
+            <Stack.Screen name="MyCards" component={MyCards} />
+            {/* <Stack.Screen name="HomeScreen" component={Home} /> */}
+            {/* <Stack.Screen name="HomeScreen" component={SimpleBottomScreen} /> */}
+            <Stack.Screen name="MyCardscreen" component={DrawerNavigator} />
+            <Stack.Screen name="LostCards" component={LostCards} />
+            <Stack.Screen name="LostCardscreen" component={DrawerNavigator} />
+            <Stack.Screen name="LostNewCard" component={LostNewCard} />
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
+            <Stack.Screen name="ReturnedCards" component={ReturnedCards} />
+            <Stack.Screen
+              name="ReturnedCardscreen"
+              component={DrawerNavigator}
+            />
+            <Stack.Screen name="Notifications" component={Notifications} />
+            <Stack.Screen name="FoundCard" component={FoundCard} />
+            <Stack.Screen name="FoundCardsList" component={FoundCardsList} />
+            <Stack.Screen
+              name="FoundCardsListScreen"
+              component={DrawerNavigator}
+            />
+            <Stack.Screen name="Chats" component={Chats} />
+            <Stack.Screen name="ChatsScreen" component={DrawerNavigator} />
+            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="ProfileScreen" component={DrawerNavigator} />
+            <Stack.Screen name="Feedback" component={Feedback} />
+            <Stack.Screen name="FeedbackScreen" component={DrawerNavigator} />
+            <Stack.Screen name="Settings" component={DrawerNavigator} />
+            <Stack.Screen name="AboutApp" component={AboutApp} />
+            <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+            <Stack.Screen name="EditProfile" component={EditProfile} />
+            <Stack.Screen
+              name="TermsAndConditions"
+              component={TermsAndConditions}
+            />
+            <Stack.Screen
+              name="LostExistingCard"
+              component={LostExistingCard}
+            />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
