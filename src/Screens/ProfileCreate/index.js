@@ -40,11 +40,13 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {BASE_URL} from '../../App/api';
 import {removeDataToAsync} from '../../Utils/getAndSetAsyncStorage';
 import {removeUserDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
+import InputWithCalenderWithDropdownList from '../../Components/ReusableComponent/DropdownCalender';
+import app from '../../Firebase/firebaseConfig';
 
 export const ProfileCreate = ({route}) => {
   const Navigation = useNavigation();
   const dispatch = useDispatch();
-  const userAuth = useSelector(state => state.AuthReducer);
+  const AuthReducer = useSelector(state => state.AuthReducer);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -57,9 +59,9 @@ export const ProfileCreate = ({route}) => {
   const [profileImage, onChangeProfileImage] = useState('');
   const [error, onChangeError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const AuthReducer = useSelector(state => state.AuthReducer);
-  // console.log('AuthReducer.userData: ', AuthReducer.userData);
+  // console.log('profileImage', profileImage);
+  // console.log('AuthReducer on edit profile', AuthReducer);
+  // console.log('AuthReducer.userData: ', AuthReducer.userData.user.email);
 
   let loginValidationScheme = yup.object().shape({
     email: yup
@@ -73,12 +75,12 @@ export const ProfileCreate = ({route}) => {
   });
 
   React.useEffect(() => {
-    if (userAuth.userData?.user?.id) {
-      setUserData(userAuth.userData.user.email);
+    if (AuthReducer.userData?.user?.id) {
+      setUserData(AuthReducer.userData.user.email);
     } else {
       setUserData(null);
     }
-  }, [userAuth.userData]);
+  }, [AuthReducer.userData]);
 
   useEffect(() => {
     console.log('userData in profile create screen:', userData);
@@ -144,12 +146,12 @@ export const ProfileCreate = ({route}) => {
     }
 
     // Validation for Phone Number
-    const phoneNumberPattern = /^\(\d{3}\) \d{3}-\d{4}$/;
+    // const phoneNumberPattern = /^\(\d{3}\) \d{3}-\d{4}$/;
     if (!valuePhoneNumber.trim()) {
       onChangeError('Phone Number Should not be empty.');
       return false;
-    } else if (!phoneNumberPattern.test(valuePhoneNumber)) {
-      onChangeError('Invalid Phone Number format.');
+    } else if (valuePhoneNumber.length != 10) {
+      onChangeError('Invalid Phone Number.');
       return false;
     }
 
@@ -160,10 +162,10 @@ export const ProfileCreate = ({route}) => {
     }
 
     // Validation for Profile Image
-    // if (!profileImage) {
-    //   onChangeError('Profile Image Should be uploaded.');
-    //   return false;
-    // }
+    if (!profileImage) {
+      onChangeError('Please upload a profile picture.');
+      return false;
+    }
 
     // All fields are valid
     return true;
@@ -200,6 +202,13 @@ export const ProfileCreate = ({route}) => {
       )
         .then(result => {
           console.log('result of update profile', result);
+          app
+            .database()
+            .ref(`users/${AuthReducer.userData.token}`)
+            .update({display_name: valueFullName, profileImage})
+            .then(() =>
+              console.log('User data created successfully in database'),
+            );
           Navigation.navigate('AddFirstCard', {
             screenName: 'ProfileCreate',
           });
@@ -348,7 +357,7 @@ export const ProfileCreate = ({route}) => {
                 <View
                   style={{
                     marginHorizontal: '5%',
-                    marginTop: Platform.OS === 'ios' ? '15%' : 6,
+                    marginTop: Platform.OS === 'ios' ? '10%' : 6,
                   }}>
                   <View
                     style={{
@@ -358,10 +367,10 @@ export const ProfileCreate = ({route}) => {
                     }}>
                     <Pressable
                       onPress={() => {
+                        dispatch(removeOtpScreen());
                         removeDataToAsync('token');
                         removeDataToAsync('user');
                         dispatch(removeUserDataFromAsyncStorage());
-                        dispatch(removeOtpScreen());
                         // Navigation.navigate('SignUp');
                       }}>
                       <Image
@@ -375,6 +384,23 @@ export const ProfileCreate = ({route}) => {
                         }}
                       />
                     </Pressable>
+                    <View
+                      style={{
+                        width: '80%',
+                        // alignItemss: 'center',
+                        marginLeft: 20,
+                        textAlign: 'center',
+                      }}>
+                      {error && (
+                        <>
+                          <InteractParagraph
+                            p={error}
+                            color={'red'}
+                            txtAlign={'center'}
+                          />
+                        </>
+                      )}
+                    </View>
                   </View>
                   <View style={{alignItems: 'center', marginTop: 20}}>
                     <Heading
@@ -423,8 +449,9 @@ export const ProfileCreate = ({route}) => {
                         style={{
                           alignSelf: 'center',
                           justifyContent: 'center',
-                          width: !profileImage ? 136 : 120,
-                          height: !profileImage ? 136 : 122,
+                          width: !profileImage ? 136 : 110,
+                          height: !profileImage ? 136 : 112,
+                          marginTop: !profileImage ? 0 : 4,
                           borderRadius: 75,
                         }}
                         resizeMode={'cover'}
@@ -446,18 +473,6 @@ export const ProfileCreate = ({route}) => {
                           borderRadius: 75,
                           marginTop: 82,
                         }}>
-                        {/* <View
-                          style={{
-                            width: 45,
-                            height: 42,
-                            position: 'absolute',
-                            alignSelf: 'flex-end',
-                            backgroundColor: 'white',
-                            borderWidth: 2,
-                            borderColor: 'rgba(11, 16, 92, 0.3)',
-                            borderRadius: 75,
-                            marginTop: 82,
-                          }}> */}
                         <Image
                           source={require('../../Assets/Images/camera.png')}
                           style={{
@@ -474,13 +489,11 @@ export const ProfileCreate = ({route}) => {
                   </View>
 
                   <View style={{marginVertical: '2%', marginTop: '10%'}}>
-                    {/* <View style={{marginBottom: '5%', marginTop: '10%'}}> */}
                     <Input
                       title={'Full Name'}
                       urlImg={require('../../Assets/Images/frame.png')}
                       placeholder={'Enter your name'}
                       value={valueFullName}
-                      // value={dataFromOtpScreenOfSignUp.email}
                       onChangeText={onChangeFullName}
                       dob={false}
                     />
@@ -496,18 +509,18 @@ export const ProfileCreate = ({route}) => {
                         {errors.fullName}
                       </Text>
                     )}
-                    {/* </View> */}
                   </View>
 
                   <View style={{marginVertical: '2%'}}>
                     <Input
                       title={'Phone Number'}
                       urlImg={require('../../Assets/Images/phone.png')}
-                      placeholder={'(123) 456-7890'}
+                      placeholder={'123 456 7890'}
                       pass={false}
                       value={valuePhoneNumber}
                       onChangeText={onChangePhoneNumber}
                       dob={false}
+                      keyboardType={'numeric'}
                     />
                     {errors.phoneNumber && touched.phoneNumber && (
                       <Text
@@ -523,63 +536,15 @@ export const ProfileCreate = ({route}) => {
                     )}
                   </View>
                   <View style={{marginVertical: '2%'}}>
-                    <Pressable
-                      onPress={() => {
-                        console.log('working');
-                        setModalVisible(true);
-                      }}></Pressable>
-                    <Input
+                    <InputWithCalenderWithDropdownList
                       title={'Date of Birth'}
                       urlImg={require('../../Assets/Images/calender.png')}
                       placeholder={'MM/DD/YYYY'}
-                      pass={true}
-                      dob={true}
                       // value={valuePhoneNumber}
                       // onChangeText={onChangePhoneNumber}
                       // disabled={true}
                     />
-                    {errors.phoneNumber && touched.phoneNumber && (
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          color: 'red',
-                          marginTop: 5,
-                          marginBottom: 5,
-                          marginLeft: 15,
-                        }}>
-                        {errors.phoneNumber}
-                      </Text>
-                    )}
                   </View>
-                  {/* <Pressable
-                    onPress={() => {
-                      console.log('working');
-                      setModalVisible(true);
-                    }}>
-                    <View
-                      style={{
-                        width: '60%',
-                        backgroundColor: 'white',
-                        justifyContent: 'space-between',
-                        flexDirection: 'row',
-                        marginVertical: 10,
-                        padding: 17,
-                        shadowColor: '#000',
-                        shadowOffset: {width: 0, height: 2},
-                        shadowOpacity: 0.5,
-                        shadowRadius: 4,
-                        elevation: 5,
-                        borderRadius: 35,
-                        // marginLeft: -5
-                      }}>
-                      <View>
-                        <Text style={{color: '#667080'}}>{'MM/DD/YYYY'}</Text>
-                      </View>
-                      <View style={{alignSelf: 'center'}}>
-                        <AntDesign name="down" size={14} color={'#667080'} />
-                      </View>
-                    </View>
-                  </Pressable> */}
 
                   <View style={{marginVertical: '2%'}}>
                     <Input
@@ -588,9 +553,9 @@ export const ProfileCreate = ({route}) => {
                       // placeholder={dataFromOtpScreenOfSignUp.Email}
                       placeholder={'email@domain.com'}
                       pass={false}
-                      value={valueEmail}
+                      value={AuthReducer?.userData?.user?.email}
                       // value={userAuth.userData.user.email}
-                      // disabled={true}
+                      disabled={true}
                       onChangeText={onChangeEmail}
                       dob={false}
                     />
@@ -631,7 +596,6 @@ export const ProfileCreate = ({route}) => {
                       </Text>
                     )}
                   </View>
-
                   <View
                     style={{
                       justifyContent: 'center',
@@ -655,18 +619,6 @@ export const ProfileCreate = ({route}) => {
                         // setModalVisible(true);
                       }}
                     />
-                  </View>
-                  <View>
-                    {error && (
-                      <>
-                        <InteractParagraph
-                          txtAlign={'center'}
-                          p={error}
-                          mv={4}
-                          color={'red'}
-                        />
-                      </>
-                    )}
                   </View>
                 </View>
               </ScrollView>

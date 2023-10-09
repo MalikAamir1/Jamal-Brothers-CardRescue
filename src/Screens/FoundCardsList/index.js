@@ -94,7 +94,7 @@ export const FoundCardsList = ({route}) => {
                     lh={18}
                     Heading={item.type}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={-76}
+                    ml={Platform.OS === 'ios' ? -77 : -73}
                     mt={5}
                   />
                 </View>
@@ -118,7 +118,7 @@ export const FoundCardsList = ({route}) => {
                     lh={18}
                     Heading={item.cardNo}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={20}
+                    ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
                   />
                 </View>
@@ -196,47 +196,56 @@ export const FoundCardsList = ({route}) => {
             marginTop: '5%',
             // marginBottom: Platform.OS === 'ios' ? '18%' : '28%',
           }}>
-          <Header header={'Found Cards'} />
+          <Header header={'Found Cards'} screenName={true} />
         </View>
       </>
     );
   };
 
-  const ListFooterComponent = () => {
-    return (
-      <>
-        <View
-          style={{
-            marginTop: 60,
-            // marginBottom: -20,
-            margin: '5%',
-          }}>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignContent: 'center',
-              flexDirection: 'row',
-              marginVertical: '8%',
-            }}>
-            <ButtonComp
-              btnwidth={'97%'}
-              btnHeight={56}
-              btnText={'Report Found Card'}
-              justify={'center'}
-              align={'center'}
-              fontSize={16}
-              radius={15}
-              txtwidth={'100%'}
-              // bgcolor={'#BA7607'}
-              press={() => {
-                Navigation.navigate('FoundCard');
-              }}
-            />
-          </View>
-        </View>
-      </>
-    );
-  };
+  // const ListFooterComponent = () => {
+  //   return (
+  //     <>
+  //       {/* <View
+  //         style={{flexDirection: 'column', justifyContent: 'space-between'}}>
+  //         <View></View> */}
+
+  //       <View
+  //         style={{
+  //           // marginTop: 200,
+  //           // marginBottom: -20,
+  //           margin: '5%',
+  //           // position: 'absolute',
+  //           bottom: 0,
+  //           // left: 0,
+  //           // right: 0,
+  //         }}>
+  //         <View
+  //           style={{
+  //             justifyContent: 'center',
+  //             alignContent: 'center',
+  //             flexDirection: 'row',
+  //             marginVertical: '8%',
+  //           }}>
+  //           <ButtonComp
+  //             btnwidth={'97%'}
+  //             btnHeight={56}
+  //             btnText={'Report Found Card'}
+  //             justify={'center'}
+  //             align={'center'}
+  //             fontSize={16}
+  //             radius={15}
+  //             txtwidth={'100%'}
+  //             // bgcolor={'#BA7607'}
+  //             press={() => {
+  //               Navigation.navigate('FoundCard');
+  //             }}
+  //           />
+  //         </View>
+  //       </View>
+  //       {/* </View> */}
+  //     </>
+  //   );
+  // };
 
   return (
     <>
@@ -255,17 +264,60 @@ export const FoundCardsList = ({route}) => {
         <View
           style={{
             //   marginVertical: '5%',
-            marginBottom: Platform.OS === 'ios' ? '13.5%' : '12%',
+            marginBottom: Platform.OS === 'ios' ? 0 : '6%',
+            flex: 1,
+            justifyContent: 'space-between',
           }}>
-          <FlatList
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={item => item.metal_id}
-            contentContainerStyle={{flexDirection: 'column'}}
-            ListHeaderComponent={ListHeaderComponent}
-            ListFooterComponent={ListFooterComponent}
-            showsVerticalScrollIndicator={false}
-          />
+          <View>
+            <FlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={item => item.metal_id}
+              contentContainerStyle={{
+                flexDirection: 'column',
+              }}
+              ListHeaderComponent={ListHeaderComponent}
+              // ListFooterComponent={ListFooterComponent}
+              showsVerticalScrollIndicator={false}
+              // ListFooterComponentStyle={{
+              //   alignContent: 'flex-end',
+              // }}
+            />
+          </View>
+          <View
+            style={{
+              // marginTop: 200,
+              marginBottom: 50,
+              margin: '5%',
+              // position: 'absolute',
+              bottom: 0,
+              // left: 0,
+              // right: 0,
+            }}>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignContent: 'center',
+                flexDirection: 'row',
+                marginVertical: '8%',
+                height: 45,
+              }}>
+              <ButtonComp
+                btnwidth={'97%'}
+                btnHeight={56}
+                btnText={'Report Found Card'}
+                justify={'center'}
+                align={'center'}
+                fontSize={16}
+                radius={15}
+                txtwidth={'100%'}
+                // bgcolor={'#BA7607'}
+                press={() => {
+                  Navigation.navigate('FoundCard');
+                }}
+              />
+            </View>
+          </View>
         </View>
       </SafeArea>
     </>

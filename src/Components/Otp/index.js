@@ -10,6 +10,9 @@ import {
   setDataToAsync,
 } from '../../Utils/getAndSetAsyncStorage';
 import {userDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
+import firebase from '@react-native-firebase/app';
+import database from '@react-native-firebase/database';
+import app from '../../Firebase/firebaseConfig';
 
 export const OtpInput = props => {
   const inputRefs = useRef([]);
@@ -25,9 +28,6 @@ export const OtpInput = props => {
   console.log('Length is: ', props.otpValue.current.length);
   useEffect(() => {
     if (isAllFieldsFilled && props.otpValue.current.length === 6) {
-      // if (props.screenName == 'TermofServices') {
-      // navigation.navigate('ProfileCreate');
-      // dispatch(otpScreen(true));
       console.log('Length is: ', props.otpValue.current);
       console.log('Length is: ', props.otpValue.current.length);
 
@@ -38,11 +38,12 @@ export const OtpInput = props => {
       formdata.append('otp', props.otpValue.current);
 
       console.log('formdata:', formdata);
-
+      setLoading(true);
       postRequest(`${BASE_URL}/users/registration/verify-otp/`, formdata)
         .then(result => {
           console.log(result.success);
           console.log('otp result', result);
+          setLoading(false);
           if (result.success) {
             Alert.alert('Verified', result.message);
             if (props.screenName == 'TermofServices') {
@@ -53,21 +54,42 @@ export const OtpInput = props => {
               setLoading(true);
               postRequest(`${BASE_URL}/users/login/token/`, formdata)
                 .then(result => {
-                  console.log('result', result);
                   setLoading(false);
                   if (result?.non_field_errors) {
                     console.log('Not found');
                     Alert.alert('', result?.non_field_errors[0]);
                   } else {
+                    console.log('resultsh', result);
+                    const {
+                      token,
+                      user: {
+                        email,
+                        profile: {display_name},
+                      },
+                    } = result;
+
+                    // Create a new object with the extracted fields
+                    const extractedData = {
+                      token,
+                      email,
+                      display_name,
+                    };
+                    console.log('extractedData', extractedData);
+
                     dispatch(otpScreen(true));
                     setDataToAsync('token', JSON.stringify(result.token));
                     setDataToAsync('user', JSON.stringify(result));
+                    app
+                      .database()
+                      .ref(`users/${extractedData.token}`)
+                      .set(extractedData)
+                      .then(() => console.log('User Data saved.'))
+                      .catch(() => console.log('User Data not saved.'));
 
                     // Navigation.navigate('ProfileCreateStart');
                     getDataFromAsync('user')
                       .then(res => {
                         dispatch(userDataFromAsyncStorage(JSON.parse(res)));
-                        console.log('res: ', res);
                       })
                       .catch(err => {
                         console.log(
@@ -75,11 +97,7 @@ export const OtpInput = props => {
                           err,
                         );
                       });
-
-                    // Navigation.navigate('SimpleBottomTab', result);
                   }
-                  // onChangeTextEmail('');
-                  // onChangeTextPass('');
                 })
                 .catch(error => {
                   console.log('error', error);
@@ -100,9 +118,6 @@ export const OtpInput = props => {
           console.log('error', error);
         });
       //OTP End checking
-      // } else {
-      //   navigation.navigate('PasswordChange');
-      // } // Navigate to the next screen when all fields are filled
     }
   }, [isAllFieldsFilled, navigation]);
 
@@ -110,8 +125,15 @@ export const OtpInput = props => {
     const value = e.nativeEvent.key;
     const isDigit = /^\d+$/.test(value);
 
-    if (e.nativeEvent.key === 'Backspace' && index > 0) {
-      inputRefs.current[index - 1].focus();
+    if (e.nativeEvent.key === 'Backspace') {
+      if (index > 0) {
+        inputRefs.current[index - 1].focus();
+        // Update the OTP value length
+        props.otpValue.current = props.otpValue.current.slice(0, -1);
+      } else {
+        // OTP value is already empty or at the beginning; do nothing
+        console.log('aaaaaaa');
+      }
     } else if (index < inputRefs.current.length - 1) {
       inputRefs.current[index + 1].focus();
     }
@@ -136,12 +158,6 @@ export const OtpInput = props => {
     digits.forEach((digit, index) => {
       inputRefs.current[index].setNativeProps({text: digit});
     });
-
-    // Check if all OTP fields are filled
-    // if (digits.length === inputRefs.current.length) {
-    //   // Automatically navigate to the next screen
-    //   navigation.navigate('NextScreen');
-    // }
   };
 
   return (
@@ -172,19 +188,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   input: {
-    // width: 40,
-    // height: 60,
     width: 50,
     height: 54,
     borderBottomWidth: Platform.OS === 'ios' ? 0.4 : 1,
-    // padding: 10,
-    // borderRadius: 4,
     fontSize: 20,
-    // fontWeight: 'bold',
     textAlign: 'center',
     marginHorizontal: 4,
     borderBottomColor: 'rgba(77, 77, 77, 1)',
     color: 'rgba(28, 28, 28, 1)',
-    // lineHeight: 24,
   },
 });

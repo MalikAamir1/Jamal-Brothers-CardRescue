@@ -26,10 +26,12 @@ if linkage != nil
 end
 
 target 'CardRescue' do
-  config = use_native_modules!
-
+  config = use_native_modules!   
+  
   # Flags change depending on the env values.
   flags = get_default_flags()
+  
+
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -50,6 +52,8 @@ target 'CardRescue' do
     # Pods for testing
   end
 
+  # use_flipper!()
+
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
@@ -60,3 +64,4 @@ target 'CardRescue' do
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
+

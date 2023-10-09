@@ -5,6 +5,7 @@ import {useSelector} from 'react-redux';
 import {
   Image,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   TextInput,
@@ -130,13 +131,18 @@ export default function Input(props) {
               width: props.pass ? '55%' : '85%',
               color: '#1C1C1C',
               marginBottom: -3,
-              marginLeft: props.mleft ? props.mleft : 3,
+              marginLeft: props.mleft
+                ? props.mleft
+                : Platform.OS === 'ios'
+                ? 5
+                : -4,
               fontFamily: FONT.redhat,
               fontSize: 16,
             }}
             placeholder={props.placeholder}
             placeholderTextColor={'#A8A8A8'}
             secureTextEntry={props.pass && !props.dob ? notPressed : false}
+            keyboardType={props.keyboardType}
           />
           {props.dob ? (
             <View

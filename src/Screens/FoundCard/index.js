@@ -40,6 +40,7 @@ import DropdownComponent from '../../Components/ReusableComponent/DropDown';
 import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
 import Head from '../../Components/ReusableComponent/Head';
 import {ModalWithCalender} from '../../Components/ReusableComponent/ModalWithCalender';
+import InputWithCalender from '../../Components/ReusableComponent/InputWithCalender';
 
 export const FoundCard = ({route}) => {
   const Navigation = useNavigation();
@@ -57,6 +58,7 @@ export const FoundCard = ({route}) => {
   const [cardHolder, setCardHolder] = useState('');
   const [cardNo, setCardNo] = useState('');
   const [purchaseDate, setPurchaseDate] = useState('');
+  const [Address, onChangeAddress] = useState('');
 
   let data = [
     {
@@ -158,7 +160,7 @@ export const FoundCard = ({route}) => {
                 <View
                   style={{
                     marginHorizontal: '5%',
-                    marginTop: Platform.OS === 'ios' ? '15%' : 6,
+                    marginTop: Platform.OS === 'ios' ? '10%' : 6,
                   }}>
                   <View
                     style={{
@@ -166,7 +168,7 @@ export const FoundCard = ({route}) => {
                       // marginVertical: '5%',
                       marginBottom: 40,
                     }}>
-                    <Head head={'Found Card'} screenName={false} />
+                    <Head head={'Found Card'} foundCard={true} />
                   </View>
 
                   <View>
@@ -245,29 +247,16 @@ export const FoundCard = ({route}) => {
                       flexDirection: 'row',
                     }}>
                     <View style={{marginVertical: '4%', width: '47%'}}>
-                      <Input
+                      <InputWithCalender
                         title={'Expiry Date'}
                         urlImg={require('../../Assets/Images/calender.png')}
                         placeholder={'MM/DD'}
-                        pass={false}
                         value={purchaseDate}
                         onChangeText={setPurchaseDate}
-                        dob={false}
                         ml={'24%'}
-                        mleft={'12%'}
+                        disabled={true}
+                        // mleft={0}as
                       />
-                      {errors.confirmPassword && touched.confirmPassword && (
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            color: 'red',
-                            marginTop: 5,
-                            marginBottom: 5,
-                            marginLeft: 15,
-                          }}>
-                          {errors.confirmPassword}
-                        </Text>
-                      )}
                     </View>
                     <View style={{marginVertical: '4%', width: '47%'}}>
                       <Input
@@ -276,23 +265,12 @@ export const FoundCard = ({route}) => {
                         placeholder={'9879700'}
                         pass={false}
                         //   value={valueAddress}
-                        //   onChangeText={onChangeAddress}
+                        onChangeText={onChangeAddress}
                         dob={false}
                         ml={'24%'}
-                        mleft={'12%'}
+                        mleft={'10%'}
+                        keyboardType="numeric"
                       />
-                      {errors.confirmPassword && touched.confirmPassword && (
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            color: 'red',
-                            marginTop: 5,
-                            marginBottom: 5,
-                            marginLeft: 15,
-                          }}>
-                          {errors.confirmPassword}
-                        </Text>
-                      )}
                     </View>
                   </View>
 
@@ -317,18 +295,6 @@ export const FoundCard = ({route}) => {
                         submitbtn();
                       }}
                     />
-                  </View>
-                  <View>
-                    {error && (
-                      <>
-                        <InteractParagraph
-                          txtAlign={'center'}
-                          p={error}
-                          mv={4}
-                          color={'red'}
-                        />
-                      </>
-                    )}
                   </View>
                 </View>
               </ScrollView>

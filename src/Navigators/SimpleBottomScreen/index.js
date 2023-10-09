@@ -122,7 +122,7 @@ const TabButton = props => {
                   ['rgba(252, 221, 142, 1)', 'rgba(249, 180, 1, 1)']
                 : ['transparent', 'transparent'] // Set transparent colors when not focused
             }
-            start={{x: 0, y: 0}}
+            start={{x: 0.5, y: 0}}
             end={{x: 1, y: 1}}
             style={styles.gradient}>
             {/* Your button content goes here */}
@@ -207,6 +207,7 @@ const styles = StyleSheet.create({
     marginBottom: Platform.OS === 'ios' ? 10 : 20,
     marginTop: 38,
     // color: Colors.primary,
+    color: 'rgba(11, 16, 92, 1)',
   },
   gradient: {
     ...StyleSheet.absoluteFillObject,

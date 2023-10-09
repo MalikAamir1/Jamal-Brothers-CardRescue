@@ -93,7 +93,7 @@ export const LostExistingCard = () => {
                     lh={18}
                     Heading={item.type}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={-76}
+                    ml={Platform.OS === 'ios' ? -77 : -73}
                     mt={5}
                   />
                 </View>
@@ -117,7 +117,7 @@ export const LostExistingCard = () => {
                     lh={18}
                     Heading={item.cardNo}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={20}
+                    ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
                   />
                 </View>

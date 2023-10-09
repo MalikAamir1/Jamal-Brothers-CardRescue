@@ -18,6 +18,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
+import {useSelector} from 'react-redux';
 
 export const Home = () => {
   const data = [
@@ -41,6 +42,7 @@ export const Home = () => {
   const [lostCard, setLostCard] = useState(false);
   const Navigation = useNavigation();
   const [secondModal, setSecondModal] = useState(false);
+  const AuthReducer = useSelector(state => state.AuthReducer);
 
   const FoundCards = () => {
     setLostCard(false);
@@ -49,7 +51,7 @@ export const Home = () => {
     setLostCard(true);
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({item, index}) => {
     return (
       <>
         <View
@@ -96,7 +98,7 @@ export const Home = () => {
                     lh={18}
                     Heading={item.type}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={-76}
+                    ml={Platform.OS === 'ios' ? -77 : -73}
                     mt={5}
                   />
                 </View>
@@ -120,7 +122,7 @@ export const Home = () => {
                     lh={18}
                     Heading={item.cardNo}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={20}
+                    ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
                   />
                 </View>
@@ -229,7 +231,7 @@ export const Home = () => {
                 txtAlign={'center'}
                 p={10}
                 lh={31}
-                Heading={'Amelia'}
+                Heading={AuthReducer?.userData?.user?.profile?.display_name}
                 color={'rgba(249, 180, 1, 1)'}
                 ml={-17}
               />
@@ -330,8 +332,8 @@ export const Home = () => {
                 }}>
                 <LinearGradient
                   colors={['#FCDD8E', '#F9B401']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 0, y: 0.1}}
+                  start={{x: 0.5, y: -5}}
+                  end={{x: 0.4, y: 4}}
                   style={{
                     // flex: 1,
                     height: 30,
@@ -408,8 +410,8 @@ export const Home = () => {
                 }}>
                 <LinearGradient
                   colors={['#FCDD8E', '#F9B401']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 0, y: 0.1}}
+                  start={{x: 0.5, y: -5}}
+                  end={{x: 0.4, y: 4}}
                   style={{
                     // flex: 1,
                     height: 30,
@@ -596,7 +598,7 @@ export const Home = () => {
           <FlatList
             data={data}
             renderItem={renderItem}
-            keyExtractor={item => item.metal_id}
+            keyExtractor={item => item.id}
             contentContainerStyle={{flexDirection: 'column'}}
             ListHeaderComponent={ListHeaderComponent}
             showsVerticalScrollIndicator={false}

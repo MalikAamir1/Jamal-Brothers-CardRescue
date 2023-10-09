@@ -16,10 +16,10 @@ export const Splash = () => {
           flex: 1,
         }}>
         <Image
-          style={{width: 300, height: 300}}
+          style={{width: 300, height: 73}}
           resizeMode={'contain'}
           // source={require('../../Assets/Images/SplashIcon.png')}
-          source={require('../../Assets/Images/splashicon2.png')}
+          source={require('../../Assets/Images/splashlogo.png')}
         />
       </View>
     </ImageBackground>

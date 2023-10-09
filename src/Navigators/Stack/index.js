@@ -32,6 +32,8 @@ import SimpleBottomScreen from '../SimpleBottomScreen';
 import {EditProfile} from '../../Screens/EditProfile';
 import {userDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Splash} from '../../Screens/Splash';
+import {Button, Image} from 'react-native';
 
 export default function StackNavigator({route, navigation}) {
   const Stack = createStackNavigator();
@@ -40,6 +42,13 @@ export default function StackNavigator({route, navigation}) {
   const otpScreenBool = useSelector(state => state.ScreenReducer.userData);
   const userAuth = useSelector(state => state.AuthReducer);
   const [userData, setUserData] = useState({});
+  const [loader, setLoader] = useState(true);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setLoader(false);
+    }, 2000);
+  }, []);
 
   const getData = async () => {
     try {
@@ -83,10 +92,25 @@ export default function StackNavigator({route, navigation}) {
 
   useEffect(() => {
     console.log('userData:', userData);
+    console.log('userAuth:', userAuth.userData.user);
   }, [userData]);
   useEffect(() => {
     console.log('otpScreenBool:', otpScreenBool);
   }, [otpScreenBool]);
+
+  if (loader) return <SplashScreenPage />;
+
+  function SplashScreenPage() {
+    return (
+      <NavigationContainer independent={true}>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Group>
+            <Stack.Screen name="splash" component={Splash} />
+          </Stack.Group>
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
 
   return (
     <NavigationContainer independent={true}>
@@ -110,39 +134,19 @@ export default function StackNavigator({route, navigation}) {
           </>
         ) : (
           <>
-            <Stack.Screen name="Home" component={DrawerNavigator} />
             <Stack.Screen
               name="SimpleBottomScreen"
               component={SimpleBottomScreen}
             />
             <Stack.Screen name="AddCard" component={AddCard} />
             <Stack.Screen name="MyCards" component={MyCards} />
-            {/* <Stack.Screen name="HomeScreen" component={Home} /> */}
-            {/* <Stack.Screen name="HomeScreen" component={SimpleBottomScreen} /> */}
-            <Stack.Screen name="MyCardscreen" component={DrawerNavigator} />
-            <Stack.Screen name="LostCards" component={LostCards} />
-            <Stack.Screen name="LostCardscreen" component={DrawerNavigator} />
             <Stack.Screen name="LostNewCard" component={LostNewCard} />
             <Stack.Screen name="ChatScreen" component={ChatScreen} />
             <Stack.Screen name="ReturnedCards" component={ReturnedCards} />
-            <Stack.Screen
-              name="ReturnedCardscreen"
-              component={DrawerNavigator}
-            />
             <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen name="FoundCard" component={FoundCard} />
-            <Stack.Screen name="FoundCardsList" component={FoundCardsList} />
-            <Stack.Screen
-              name="FoundCardsListScreen"
-              component={DrawerNavigator}
-            />
-            <Stack.Screen name="Chats" component={Chats} />
-            <Stack.Screen name="ChatsScreen" component={DrawerNavigator} />
             <Stack.Screen name="Profile" component={Profile} />
-            <Stack.Screen name="ProfileScreen" component={DrawerNavigator} />
-            <Stack.Screen name="Feedback" component={Feedback} />
-            <Stack.Screen name="FeedbackScreen" component={DrawerNavigator} />
-            <Stack.Screen name="Settings" component={DrawerNavigator} />
+            <Stack.Screen name="Settings" component={Settings} />
             <Stack.Screen name="AboutApp" component={AboutApp} />
             <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
             <Stack.Screen name="EditProfile" component={EditProfile} />

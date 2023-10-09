@@ -39,6 +39,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import DropdownComponent from '../../Components/ReusableComponent/DropDown';
 import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
 import Head from '../../Components/ReusableComponent/Head';
+import InputWithCalender from '../../Components/ReusableComponent/InputWithCalender';
 
 export const LostNewCard = ({route}) => {
   const Navigation = useNavigation();
@@ -56,6 +57,7 @@ export const LostNewCard = ({route}) => {
   const [cardHolder, setCardHolder] = useState('');
   const [cardNo, setCardNo] = useState('');
   const [purchaseDate, setPurchaseDate] = useState('');
+  const [Address, onChangeAddress] = useState('');
 
   let data = [
     {
@@ -80,7 +82,7 @@ export const LostNewCard = ({route}) => {
 
   const submitbtn = () => {
     setModalVisible(true);
-  }
+  };
 
   const AuthReducer = useSelector(state => state.AuthReducer);
 
@@ -139,7 +141,7 @@ export const LostNewCard = ({route}) => {
                 <View
                   style={{
                     marginHorizontal: '5%',
-                    marginTop: Platform.OS === 'ios' ? '15%' : 6,
+                    marginTop: Platform.OS === 'ios' ? '10%' : 6,
                   }}>
                   <View
                     style={{
@@ -147,7 +149,7 @@ export const LostNewCard = ({route}) => {
                       // marginVertical: '5%',
                       marginBottom: 40,
                     }}>
-                    <Head head={'Lost New Card'} />
+                    <Head head={'Lost New Card'} lostCard={true} />
                   </View>
 
                   <View>
@@ -181,18 +183,7 @@ export const LostNewCard = ({route}) => {
                       onChangeText={setCardHolder}
                       dob={false}
                     />
-                    {errors.fullName && touched.fullName && (
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          color: 'red',
-                          marginTop: 5,
-                          marginBottom: 5,
-                          marginLeft: 15,
-                        }}>
-                        {errors.fullName}
-                      </Text>
-                    )}
+
                     {/* </View> */}
                   </View>
                   <View style={{marginVertical: '1%', marginTop: '5%'}}>
@@ -205,18 +196,7 @@ export const LostNewCard = ({route}) => {
                       onChangeText={setCardNo}
                       dob={false}
                     />
-                    {errors.fullName && touched.fullName && (
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          color: 'red',
-                          marginTop: 5,
-                          marginBottom: 5,
-                          marginLeft: 15,
-                        }}>
-                        {errors.fullName}
-                      </Text>
-                    )}
+
                     {/* </View> */}
                   </View>
 
@@ -226,29 +206,16 @@ export const LostNewCard = ({route}) => {
                       flexDirection: 'row',
                     }}>
                     <View style={{marginVertical: '4%', width: '47%'}}>
-                      <Input
+                      <InputWithCalender
                         title={'Expiry Date'}
                         urlImg={require('../../Assets/Images/calender.png')}
                         placeholder={'MM/DD'}
-                        pass={false}
                         value={purchaseDate}
                         onChangeText={setPurchaseDate}
-                        dob={false}
                         ml={'24%'}
-                        mleft={'12%'}
+                        disabled={true}
+                        // mleft={0}as
                       />
-                      {errors.confirmPassword && touched.confirmPassword && (
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            color: 'red',
-                            marginTop: 5,
-                            marginBottom: 5,
-                            marginLeft: 15,
-                          }}>
-                          {errors.confirmPassword}
-                        </Text>
-                      )}
                     </View>
                     <View style={{marginVertical: '4%', width: '47%'}}>
                       <Input
@@ -256,24 +223,12 @@ export const LostNewCard = ({route}) => {
                         urlImg={require('../../Assets/Images/calender.png')}
                         placeholder={'9879700'}
                         pass={false}
-                        //   value={valueAddress}
-                        //   onChangeText={onChangeAddress}
+                        onChangeText={onChangeAddress}
                         dob={false}
                         ml={'24%'}
-                        mleft={'12%'}
+                        mleft={Platform.OS === 'ios' ? '12%' : '9%'}
+                        keyboardType="numeric"
                       />
-                      {errors.confirmPassword && touched.confirmPassword && (
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            color: 'red',
-                            marginTop: 5,
-                            marginBottom: 5,
-                            marginLeft: 15,
-                          }}>
-                          {errors.confirmPassword}
-                        </Text>
-                      )}
                     </View>
                   </View>
 

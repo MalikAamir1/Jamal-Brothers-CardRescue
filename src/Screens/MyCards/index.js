@@ -32,6 +32,7 @@ export const MyCards = ({route}) => {
     route.params.screenName ? route.params.screenName : false,
   );
   const [selectedCard, setSelectedCard] = useState();
+  console.log('screenName', screenName);
   // console.log(route.params);
   useEffect(() => {
     // Access prevName from route.params and check its value
@@ -41,6 +42,7 @@ export const MyCards = ({route}) => {
     if (prevName === 'Profile') {
       console.log('yes');
       setModalVisible(true); // Set modalVisible to true
+      setScreenName(true);
     } else {
       console.log('No');
     }
@@ -110,7 +112,7 @@ export const MyCards = ({route}) => {
                       lh={18}
                       Heading={item.type}
                       color={'rgba(102, 112, 128, 1)'}
-                      ml={-76}
+                      ml={Platform.OS === 'ios' ? -77 : -73}
                       mt={5}
                     />
                   </View>
@@ -134,7 +136,7 @@ export const MyCards = ({route}) => {
                       lh={18}
                       Heading={item.cardNo}
                       color={'rgba(102, 112, 128, 1)'}
-                      ml={20}
+                      ml={Platform.OS === 'ios' ? 21 : 21}
                       mt={5}
                     />
                   </View>
@@ -242,7 +244,7 @@ export const MyCards = ({route}) => {
                       lh={18}
                       Heading={item.type}
                       color={'rgba(102, 112, 128, 1)'}
-                      ml={-76}
+                      ml={Platform.OS === 'ios' ? -77 : -73}
                       mt={5}
                     />
                   </View>
@@ -266,7 +268,7 @@ export const MyCards = ({route}) => {
                       lh={18}
                       Heading={item.cardNo}
                       color={'rgba(102, 112, 128, 1)'}
-                      ml={20}
+                      ml={Platform.OS === 'ios' ? 21 : 21}
                       mt={5}
                     />
                   </View>
@@ -343,7 +345,7 @@ export const MyCards = ({route}) => {
           style={{
             marginHorizontal: '1%',
             // marginVertical: '5%',
-            marginBottom: 30,
+            marginBottom: 10,
           }}>
           {/* <Head head={'My Cards'} screenName={true} /> */}
           <View
@@ -407,51 +409,51 @@ export const MyCards = ({route}) => {
     );
   };
 
-  const ListFooterComponent = () => {
-    return (
-      <>
-        <View
-          style={{
-            flexGrow: 1,
-            marginHorizontal: '3%',
-            padding: 15,
-            borderRadius: 15,
-            marginTop: 100,
-          }}>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignContent: 'center',
-              flexDirection: 'row',
-              //   marginVertical: '5%',
-              marginLeft: '-2%',
-              // marginTop: '5%',
-            }}>
-            {cardSelect ? (
-              <ButtonComp
-                btnText={'Submit'}
-                press={() => {
-                  setSecondModal(true);
-                  console.log('ssss');
-                  //   Login();
-                }}
-              />
-            ) : (
-              <ButtonComp
-                btnText={'Add Card'}
-                press={() => {
-                  Navigation.navigate('AddCard', {
-                    screenName: 'MyCards',
-                  });
-                  //   Login();
-                }}
-              />
-            )}
-          </View>
-        </View>
-      </>
-    );
-  };
+  // const ListFooterComponent = () => {
+  //   return (
+  //     <>
+  //       <View
+  //         style={{
+  //           flexGrow: 1,
+  //           marginHorizontal: '3%',
+  //           padding: 15,
+  //           borderRadius: 15,
+  //           marginTop: 100,
+  //         }}>
+  //         <View
+  //           style={{
+  //             justifyContent: 'center',
+  //             alignContent: 'center',
+  //             flexDirection: 'row',
+  //             //   marginVertical: '5%',
+  //             marginLeft: '-2%',
+  //             // marginTop: '5%',
+  //           }}>
+  //           {cardSelect ? (
+  //             <ButtonComp
+  //               btnText={'Submit'}
+  //               press={() => {
+  //                 setSecondModal(true);
+  //                 console.log('ssss');
+  //                 //   Login();
+  //               }}
+  //             />
+  //           ) : (
+  //             <ButtonComp
+  //               btnText={'Add Card'}
+  //               press={() => {
+  //                 Navigation.navigate('AddCard', {
+  //                   screenName: 'MyCards',
+  //                 });
+  //                 //   Login();
+  //               }}
+  //             />
+  //           )}
+  //         </View>
+  //       </View>
+  //     </>
+  //   );
+  // };
 
   return (
     <>
@@ -487,21 +489,72 @@ export const MyCards = ({route}) => {
 
       <SafeArea>
         <View
-          style={
-            {
-              //   marginVertical: '5%',
-              // marginBottom: Platform.OS === 'ios' ? '18%' : '28%',
-            }
-          }>
-          <FlatList
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={item => item.metal_id}
-            contentContainerStyle={{flexDirection: 'column'}}
-            ListHeaderComponent={ListHeaderComponent}
-            ListFooterComponent={ListFooterComponent}
-            showsVerticalScrollIndicator={false}
-          />
+          style={{
+            //   marginVertical: '5%',
+            // marginBottom: Platform.OS === 'ios' ? '18%' : '28%',
+            marginBottom: Platform.OS === 'ios' ? 0 : '6%',
+            flex: 1,
+            justifyContent: 'space-between',
+          }}>
+          <View>
+            <FlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={item => item.metal_id}
+              contentContainerStyle={{flexDirection: 'column'}}
+              ListHeaderComponent={ListHeaderComponent}
+              // ListFooterComponent={ListFooterComponent}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        </View>
+        <View
+          style={{
+            // flexGrow: 1,
+            // marginHorizontal: '3%',
+            // padding: 15,
+            // borderRadius: 15,
+            // marginTop: 100,
+            marginBottom: 50,
+            margin: '5%',
+            // position: 'absolute',
+            bottom: 0,
+          }}>
+          <View
+            style={{
+              // justifyContent: 'center',
+              // alignContent: 'center',
+              // flexDirection: 'row',
+              // //   marginVertical: '5%',
+              // marginLeft: '-2%',
+              // marginTop: '5%',
+              justifyContent: 'center',
+              alignContent: 'center',
+              flexDirection: 'row',
+              marginVertical: '8%',
+              height: 45,
+            }}>
+            {cardSelect ? (
+              <ButtonComp
+                btnText={'Submit'}
+                press={() => {
+                  setSecondModal(true);
+                  console.log('ssss');
+                  //   Login();
+                }}
+              />
+            ) : (
+              <ButtonComp
+                btnText={'Add Card'}
+                press={() => {
+                  Navigation.navigate('AddCard', {
+                    screenName: 'MyCards',
+                  });
+                  //   Login();
+                }}
+              />
+            )}
+          </View>
         </View>
       </SafeArea>
     </>

@@ -38,9 +38,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import DropdownComponent from '../../Components/ReusableComponent/DropDown';
 import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
-import { BASE_URL } from '../../App/api';
-import { getDataFromAsync, setDataToAsync } from '../../Utils/getAndSetAsyncStorage';
-import { userDataFromAsyncStorage } from '../../Store/Reducers/AuthReducer';
+import {BASE_URL} from '../../App/api';
+import {
+  getDataFromAsync,
+  setDataToAsync,
+} from '../../Utils/getAndSetAsyncStorage';
+import {userDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
+import InputWithCalender from '../../Components/ReusableComponent/InputWithCalender';
 
 export const AddCard = ({route}) => {
   const Navigation = useNavigation();
@@ -60,6 +64,7 @@ export const AddCard = ({route}) => {
   const [cardHolder, setCardHolder] = useState('');
   const [cardNo, setCardNo] = useState('');
   const [purchaseDate, setPurchaseDate] = useState('');
+  const [Address, onChangeAddress] = useState('');
   const [addCardPress, setAddCardPress] = useState(false);
   const [arrayOfCard, setArrayOfCard] = useState([DefaultObject]);
 
@@ -127,6 +132,7 @@ export const AddCard = ({route}) => {
             flexDirection: 'row',
             margin: '8%',
             marginBottom: 0,
+            marginLeft: 8,
           }}>
           <Pressable
             onPress={() => {
@@ -281,25 +287,12 @@ export const AddCard = ({route}) => {
           <Input
             title={'Card Holder'}
             urlImg={require('../../Assets/Images/frame.png')}
-            placeholder={'Enter name'}
+            placeholder={'Claire James'}
             value={cardHolder}
             // value={dataFromOtpScreenOfSignUp.email}
             onChangeText={setCardHolder}
             dob={false}
           />
-          {/* {errors.fullName && touched.fullName && (
-            <Text
-              style={{
-                fontSize: 12,
-                color: 'red',
-                marginTop: 5,
-                marginBottom: 5,
-                marginLeft: 15,
-              }}>
-              {errors.fullName}
-            </Text>
-          )} */}
-          {/* </View> */}
         </View>
         <View style={{marginVertical: '1%', marginTop: '5%'}}>
           <Input
@@ -311,19 +304,6 @@ export const AddCard = ({route}) => {
             onChangeText={setCardNo}
             dob={false}
           />
-          {/* {errors.fullName && touched.fullName && (
-            <Text
-              style={{
-                fontSize: 12,
-                color: 'red',
-                marginTop: 5,
-                marginBottom: 5,
-                marginLeft: 15,
-              }}>
-              {errors.fullName}
-            </Text>
-          )} */}
-          {/* </View> */}
         </View>
 
         <View
@@ -332,29 +312,16 @@ export const AddCard = ({route}) => {
             flexDirection: 'row',
           }}>
           <View style={{marginVertical: '4%', width: '47%'}}>
-            <Input
+            <InputWithCalender
               title={'Expiry Date'}
               urlImg={require('../../Assets/Images/calender.png')}
               placeholder={'MM/DD'}
-              pass={false}
               value={purchaseDate}
               onChangeText={setPurchaseDate}
-              dob={false}
               ml={'24%'}
-              mleft={'12%'}
+              disabled={true}
+              // mleft={0}as
             />
-            {/* {errors.confirmPassword && touched.confirmPassword && (
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: 'red',
-                  marginTop: 5,
-                  marginBottom: 5,
-                  marginLeft: 15,
-                }}>
-                {errors.confirmPassword}
-              </Text>
-            )} */}
           </View>
           <View style={{marginVertical: '4%', width: '47%'}}>
             <Input
@@ -363,23 +330,12 @@ export const AddCard = ({route}) => {
               placeholder={'9879700'}
               pass={false}
               //   value={valueAddress}
-              //   onChangeText={onChangeAddress}
+              onChangeText={onChangeAddress}
               dob={false}
               ml={'24%'}
-              mleft={'12%'}
+              mleft={'10%'}
+              keyboardType="numeric"
             />
-            {/* {errors.confirmPassword && touched.confirmPassword && (
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: 'red',
-                  marginTop: 5,
-                  marginBottom: 5,
-                  marginLeft: 15,
-                }}>
-                {errors.confirmPassword}
-              </Text>
-            )} */}
           </View>
         </View>
       </>
@@ -454,7 +410,7 @@ export const AddCard = ({route}) => {
                 });
             }}>
             <View style={styles.modalView}>
-              <View style={{marginTop: 25, marginHorizontal: 20}}>
+              <View style={{marginTop: 15, marginHorizontal: 20}}>
                 <Heading
                   Heading={'Note'}
                   Fontsize={20}
@@ -505,7 +461,7 @@ export const AddCard = ({route}) => {
               <View
                 style={{
                   marginHorizontal: '5%',
-                  marginTop: Platform.OS === 'ios' ? '15%' : 6,
+                  marginTop: Platform.OS === 'ios' ? '10%' : 6,
                 }}>
                 <FlatList
                   data={arrayOfCard}

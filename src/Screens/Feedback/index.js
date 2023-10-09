@@ -34,7 +34,7 @@ export const Feedback = ({route}) => {
               marginVertical: '5%',
               marginBottom: Platform.OS === 'ios' ? '13.5%' : '22%',
             }}>
-            <Header header={'Feedback'} />
+            <Header header={'Feedback'} screenName={true} />
             <View style={{marginHorizontal: '0', marginTop: '10%'}}>
               <Heading
                 Stylefont={'normal'}
@@ -68,6 +68,7 @@ export const Feedback = ({route}) => {
                   borderWidth: 0.4,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
+                  marginTop: 6,
                   // opacity: props.disabled ? 0.5 : 1,
                 }}>
                 <TextInput
@@ -112,6 +113,7 @@ export const Feedback = ({route}) => {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   // opacity: props.disabled ? 0.5 : 1,
+                  marginTop: 6,
                 }}>
                 <TextInput
                   editable={false}
@@ -155,9 +157,10 @@ export const Feedback = ({route}) => {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   // opacity: props.disabled ? 0.5 : 1,
+                  marginTop: 6,
                 }}>
                 <TextInput
-                  // editable={false}s
+                  editable={false}
                   multiline={true}
                   style={{
                     width: '85%',

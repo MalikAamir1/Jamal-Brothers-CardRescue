@@ -52,9 +52,9 @@ export const ForgotPassword = () => {
 
   function ForgetPassword() {
     if (valueEmail.trim() === '') {
-      onChangeError('Email Id should not be Empty');
+      onChangeError('Email cannot be empty.');
     } else if (!isValidEmail(valueEmail)) {
-      onChangeError('Invalid email format');
+      onChangeError('Enter valid email');
     } else {
       // onChangeError('');
       // Navigation.navigate('OtpScreen', {
@@ -162,6 +162,23 @@ export const ForgotPassword = () => {
                       }}
                     />
                   </Pressable>
+                  <View
+                    style={{
+                      width: '80%',
+                      // alignItemss: 'center',
+                      marginLeft: 20,
+                      textAlign: 'center',
+                    }}>
+                    {error && (
+                      <>
+                        <InteractParagraph
+                          p={error}
+                          color={'red'}
+                          txtAlign={'center'}
+                        />
+                      </>
+                    )}
+                  </View>
                 </View>
                 <View
                   style={{
@@ -241,14 +258,6 @@ export const ForgotPassword = () => {
                         </Text>
                       )}
                     </View>
-                  </View>
-
-                  <View>
-                    {error && (
-                      <>
-                        <InteractParagraph p={error} mv={4} color={'red'} />
-                      </>
-                    )}
                   </View>
 
                   <View

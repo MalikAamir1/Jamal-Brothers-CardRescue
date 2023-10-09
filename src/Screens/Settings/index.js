@@ -14,11 +14,15 @@ import ButtonComp from '../../Components/ReusableComponent/Button';
 import ButtonWithIcon from '../../Components/ReusableComponent/ButtonWithIcon';
 import {useNavigation} from '@react-navigation/native';
 import {ModalView} from '../../Components/ReusableComponent/Modal';
+import {removeDataToAsync} from '../../Utils/getAndSetAsyncStorage';
+import {useDispatch} from 'react-redux';
+import {removeUserDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
 
 export const Settings = ({route}) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const Navigation = useNavigation();
+  const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -32,13 +36,15 @@ export const Settings = ({route}) => {
         }}
         yes={() => {
           setModalVisible(false);
-          Navigation.navigate('login');
+          removeDataToAsync('token');
+          removeDataToAsync('user');
+          dispatch(removeUserDataFromAsyncStorage());
         }}
       />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          marginTop: Platform.OS === 'ios' ? '4%' : '-5%',
+          marginTop: Platform.OS === 'ios' ? 0 : '-5%',
         }}>
         <View
           style={{
@@ -48,7 +54,7 @@ export const Settings = ({route}) => {
             marginVertical: '8%',
           }}>
           <View style={{marginBottom: 20}}>
-            <Head head={'Settings'} />
+            <Head head={'Settings'} screenName={true} />
           </View>
           <View
             style={{

@@ -42,7 +42,7 @@ export const SuccessModal = props => {
               Fontweight={'bold'}
               txtAlign={'center'}
               mv={8}
-              mb={Platform.OS === 'ios' ? 4 : -5}
+              mb={Platform.OS === 'ios' ? 4 : 4}
               // mb={-}
             />
             {props.paratxt ? (
@@ -70,8 +70,8 @@ export const SuccessModal = props => {
             }}>
             <LinearGradient
               colors={['#FCDD8E', '#F9B401']}
-              start={{x: 0, y: 0}}
-              end={{x: 0, y: 0.1}}
+              start={{x: 0.5, y: -5}}
+              end={{x: 0.4, y: 4}}
               style={{
                 flex: 1,
                 //   marginLeft: 5,

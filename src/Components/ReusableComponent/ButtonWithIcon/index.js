@@ -15,8 +15,8 @@ function ButtonWithIcon(props) {
   return (
     <LinearGradient
       colors={['#FCDD8E', '#F9B401']}
-      start={{x: 0, y: 0}}
-      end={{x: 0, y: 0.1}}
+      start={{x: 0.5, y: -5}}
+      end={{x: 0.4, y: 4}}
       style={{
         flex: 1,
         // padding: 13,

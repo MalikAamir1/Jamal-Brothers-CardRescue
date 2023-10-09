@@ -88,7 +88,7 @@ export const TermofServices = ({route}) => {
           <View
             style={{
               flexDirection: 'column',
-              justifyContent: 'space-between',
+              // justifyContent: 'space-between',
               flex: 1,
               marginVertical: '8%',
             }}>
@@ -134,6 +134,7 @@ export const TermofServices = ({route}) => {
             <View
               style={{
                 margin: '5%',
+                marginTop: 70,
               }}>
               <View style={{flexDirection: 'row'}}>
                 <TouchableOpacity
@@ -165,8 +166,8 @@ export const TermofServices = ({route}) => {
                 </TouchableOpacity>
                 <LinearGradient
                   colors={['#FCDD8E', '#F9B401']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 0, y: 0.1}}
+                  start={{x: 0.5, y: -5}}
+                  end={{x: 0.4, y: 4}}
                   style={{
                     flex: 1,
                     marginLeft: 5,

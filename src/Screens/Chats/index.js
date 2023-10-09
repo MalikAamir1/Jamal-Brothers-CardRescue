@@ -15,168 +15,215 @@ import {Header} from '../../Components/ReusableComponent/Header';
 import LinearGradient from 'react-native-linear-gradient';
 import {Text} from 'react-native-paper';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Head from '../../Components/ReusableComponent/Head';
 import ButtonComp from '../../Components/ReusableComponent/Button';
 import {useNavigation} from '@react-navigation/native';
 import {ModalView} from '../../Components/ReusableComponent/Modal';
 import CheckBox from '../../Components/ReusableComponent/Checkbox';
 import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
+import app from '../../Firebase/firebaseConfig';
+import database from '@react-native-firebase/database';
+import {useSelector} from 'react-redux';
 
-export const Chats = () => {
+export const Chats = ({navigation}) => {
   const Navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [secondModal, setSecondModal] = useState(false);
   const [cardSelect, setCardSelect] = useState(false);
   const [selectedCard, setSelectedCard] = useState();
+  const [userData, setUserData] = useState([]);
+  const AuthReducer = useSelector(state => state.AuthReducer);
+  const loggedInUserEmail = AuthReducer?.userData?.user?.email;
+  // console.log('eg', loggedInUserEmail);
 
-  const data = [
-    {
-      id: 1,
-      head: 'Mia William',
-      description: 'great idea',
-      time: '12:30',
-      image: require('../../Assets/Images/chatuser1.png'),
-    },
-    {
-      id: 2,
-      head: 'Marvin',
-      description: 'great idea',
-      time: '12:30',
-      image: require('../../Assets/Images/chatuser2.png'),
-    },
-    {
-      id: 3,
-      head: 'Esther Wade',
-      description: 'great idea',
-      time: '12:30',
-      image: require('../../Assets/Images/chatuser3.png'),
-    },
-    {
-      id: 4,
-      head: 'Kristin',
-      description: 'great idea',
-      time: '12:30',
-      image: require('../../Assets/Images/chatuser4.png'),
-    },
-    {
-      id: 5,
-      head: 'Annette',
-      description: 'great idea',
-      time: '12:30',
-      image: require('../../Assets/Images/chatuser5.png'),
-    },
-    {
-      id: 6,
-      head: 'Brooklyn',
-      description: 'great idea',
-      time: '12:30',
-      image: require('../../Assets/Images/chatuser6.png'),
-    },
-    {
-      id: 7,
-      head: 'Wade',
-      description: 'great idea',
-      time: '12:30',
-      image: require('../../Assets/Images/chatuser7.png'),
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const snapshot = await database().ref('users').once('value');
+
+        const chatData = snapshot.val();
+        if (chatData) {
+          const chatArray = Object.values(chatData);
+          const filteredUserData = chatArray.filter(
+            user => user.email !== loggedInUserEmail,
+          );
+          // console.log('eghjyb', filteredUserData);
+
+          setUserData(filteredUserData);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  // console.log('storedUsevrDataa:', userData.display_name);
+
+  // useEffect(() => {
+  // const storedUserRef = app.database().ref('users');
+  // storedUserRef.once('value', async snapshot => {
+  //   const userData = snapshot.val();
+  // console.log('storedUserData:', storedUserRef);
+  // setStoreUsers(userData);
+  // });
+  // }, []);
+
+  // const data = [
+  //   {
+  //     id: 1,
+  //     head: 'Mia William',
+  //     description: 'great idea',
+  //     time: '12:30',
+  //     image: require('../../Assets/Images/chatuser1.png'),
+  //   },
+  //   {
+  //     id: 2,
+  //     head: 'Marvin',
+  //     description: 'great idea',
+  //     time: '12:30',
+  //     image: require('../../Assets/Images/chatuser2.png'),
+  //   },
+  //   {
+  //     id: 3,
+  //     head: 'Esther Wade',
+  //     description: 'great idea',
+  //     time: '12:30',
+  //     image: require('../../Assets/Images/chatuser3.png'),
+  //   },
+  //   {
+  //     id: 4,
+  //     head: 'Kristin',
+  //     description: 'great idea',
+  //     time: '12:30',
+  //     image: require('../../Assets/Images/chatuser4.png'),
+  //   },
+  //   {
+  //     id: 5,
+  //     head: 'Annette',
+  //     description: 'great idea',
+  //     time: '12:30',
+  //     image: require('../../Assets/Images/chatuser5.png'),
+  //   },
+  //   {
+  //     id: 6,
+  //     head: 'Brooklyn',
+  //     description: 'great idea',
+  //     time: '12:30',
+  //     image: require('../../Assets/Images/chatuser6.png'),
+  //   },
+  //   {
+  //     id: 7,
+  //     head: 'Wade',
+  //     description: 'great idea',
+  //     time: '12:30',
+  //     image: require('../../Assets/Images/chatuser7.png'),
+  //   },
+  // ];
 
   const renderItem = ({item}) => {
     return (
       <>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginLeft: 10,
-            // marginHorizontal: '%',
-            width: '100%',
-            // marginBottom: 10,
-          }}>
+        <TouchableOpacity
+          onPress={() =>
+            Navigation.navigate('ChatScreen', {userToken: item.token})
+          }>
           <View
             style={{
-              flex: 1,
-              borderBottomColor: 'rgba(156, 156, 156, 0.7)',
-              borderRadius: 7,
-              borderBottomWidth: 0.5,
-              height: 69,
-              //   width: 332,
-              marginTop: 10,
-              marginHorizontal: '2%',
+              flexDirection: 'row',
+              marginLeft: 10,
+              // marginHorizontal: '%',
+              width: '100%',
+              // marginBottom: 10,
             }}>
             <View
               style={{
-                // justifyContent: 'space-between',
-                flexDirection: 'row',
-                // marginTop: 40,
+                flex: 1,
+                borderBottomColor: 'rgba(156, 156, 156, 0.7)',
+                borderRadius: 7,
+                borderBottomWidth: 0.5,
+                height: 69,
+                //   width: 332,
+                marginTop: 10,
+                marginHorizontal: '2%',
               }}>
-              <View>
-                <Image
-                  source={item.image}
-                  style={{
-                    width: 57,
-                    height: 57,
-                    alignContent: 'center',
-                    alignItems: 'center',
-                    alignSelf: 'center',
-                  }}
-                />
-              </View>
               <View
                 style={{
+                  // justifyContent: 'space-between',
                   flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  flex: 1,
+                  // marginTop: 40,
                 }}>
-                <View style={{marginLeft: 2}}>
-                  <View
+                <View>
+                  <Image
+                    source={{uri: item.profileImage ? item.profileImage : null}}
                     style={{
-                      // flexDirection: 'row',
-                      marginTop: 3,
-                    }}>
-                    <Heading
-                      Heading={item.head}
-                      Fontsize={18}
-                      //   color={COLORS.dark}
-                      color={'rgba(16, 35, 78, 1)'}
-                      // Fontweight={'bold'}
-                      // txtAlign={'center'}
-                    />
-                  </View>
-                  <Heading
-                    Heading={item.description}
-                    Fontsize={14}
-                    color={'rgba(156, 156, 156, 1)'}
-                    // txtAlign={'center'}
-                    mt={5}
+                      width: 57,
+                      height: 57,
+                      borderRadius: 28.5,
+                      marginRight: 10,
+                      alignContent: 'center',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                    }}
                   />
                 </View>
                 <View
                   style={{
-                    marginLeft: 20,
-                    flexDirection: 'column',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    flex: 1,
                   }}>
-                  <View>
-                    <Image
-                      source={require('../../Assets/Images/notificationquantity.png')}
+                  <View style={{marginLeft: 2}}>
+                    <View
+                      style={{
+                        // flexDirection: 'row',
+                        marginTop: 3,
+                      }}>
+                      <Heading
+                        Heading={item.display_name}
+                        Fontsize={18}
+                        //   color={COLORS.dark}
+                        color={'rgba(16, 35, 78, 1)'}
+                        // Fontweight={'bold'}
+                        // txtAlign={'center'}
+                      />
+                    </View>
+                    <Heading
+                      Heading={item.latestMessage}
+                      Fontsize={14}
+                      color={'rgba(156, 156, 156, 1)'}
+                      // txtAlign={'center'}
+                      mt={5}
                     />
                   </View>
-                  <View>
-                    <Heading
-                      Heading={'12:30'}
-                      Fontsize={11}
-                      //   color={COLORS.dark}
-                      txtAlign={'center'}
-                      color={'rgba(156, 156, 156, 1)'}
-                      mt={40}
-                      // ml={10}
-                    />
+                  <View
+                    style={{
+                      marginLeft: 20,
+                      flexDirection: 'column',
+                    }}>
+                    <View>
+                      <Image
+                        source={require('../../Assets/Images/notificationquantity.png')}
+                      />
+                    </View>
+                    <View>
+                      <Heading
+                        Heading={'12:30'}
+                        Fontsize={11}
+                        //   color={COLORS.dark}
+                        txtAlign={'center'}
+                        color={'rgba(156, 156, 156, 1)'}
+                        mt={40}
+                        // ml={10}
+                      />
+                    </View>
                   </View>
                 </View>
               </View>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </>
     );
   };
@@ -190,7 +237,7 @@ export const Chats = () => {
             // marginVertical: '5%',
             marginBottom: '7%',
           }}>
-          <Header header={'Chats'} />
+          <Header header={'Chats'} screenName={true} />
         </View>
       </>
     );
@@ -219,14 +266,15 @@ export const Chats = () => {
             //   marginVertical: '5%',
 
             marginVertical: '5%',
-            marginBottom: Platform.OS === 'ios' ? '13.5%' : '12%',
+            marginBottom: Platform.OS === 'ios' ? '13.5%' : '18%',
             // borderBottomColor: 'rgba(0, 0, 0, 0.1)',
             // borderBottomWidth: 1,
           }}>
           <FlatList
-            data={data}
+            data={userData}
+            keyExtractor={item => item.token}
             renderItem={renderItem}
-            keyExtractor={item => item.metal_id}
+            // keyExtractor={item => item.metal_id}
             contentContainerStyle={{flexDirection: 'column'}}
             ListHeaderComponent={ListHeaderComponent}
             showsVerticalScrollIndicator={false}

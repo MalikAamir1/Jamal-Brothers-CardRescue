@@ -27,8 +27,8 @@ import {
 import {userDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
 import {useDispatch, useSelector} from 'react-redux';
 import {Loader} from '../../Components/ReusableComponent/Loader';
-import { BASE_URL } from '../../App/api';
-import { postRequest } from '../../App/fetch';
+import {BASE_URL} from '../../App/api';
+import {postRequest} from '../../App/fetch';
 
 export const Login = () => {
   const [passHide, setPassHide] = useState(false);
@@ -88,11 +88,11 @@ export const Login = () => {
 
   function Login() {
     if (valueEmail.trim() === '') {
-      onChangeError('Email Id should not be Empty');
+      onChangeError('Email cannot be empty.');
     } else if (!isValidEmail(valueEmail)) {
-      onChangeError('Invalid email format');
+      onChangeError('Enter valid email');
     } else if (valuePass.trim() === '') {
-      onChangeError('Password should not be Empty');
+      onChangeError('Password cannot be empty');
     } else if (!hasValidPassword(valuePass)) {
       onChangeError(
         'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.',
@@ -101,41 +101,66 @@ export const Login = () => {
       console.log('valueEmail: ', valueEmail);
       console.log('valuePass: ', valuePass);
       console.log('Match');
-      var formdata = new FormData();
-      formdata.append('username', valueEmail);
-      formdata.append('password', valuePass);
+      var formdataEmail = new FormData();
+      formdataEmail.append('email', valueEmail);
 
       setLoading(true);
-      postRequest(`${BASE_URL}/users/login/token/`, formdata)
+
+      postRequest(`${BASE_URL}/users/verify-email-exists/`, formdataEmail)
         .then(result => {
-          console.log(result);
-          setLoading(false);
-          if (result?.non_field_errors) {
-            console.log('Not found');
-            Alert.alert('', result?.non_field_errors[0]);
-          } else {
-            setDataToAsync('token', JSON.stringify(result.token));
-            setDataToAsync('user', JSON.stringify(result));
+          // setLoading(false);
+          console.log('Result: ', result.success);
+          if (result.success) {
+            setLoading(false);
+            var formdata = new FormData();
+            formdata.append('username', valueEmail);
+            formdata.append('password', valuePass);
 
-            getDataFromAsync('user')
-              .then(res => {
-                dispatch(userDataFromAsyncStorage(JSON.parse(res)));
-                // console.log('res: ', res);
+            setLoading(true);
+            postRequest(`${BASE_URL}/users/login/token/`, formdata)
+              .then(result => {
+                console.log(result);
+                setLoading(false);
+                if (result?.non_field_errors) {
+                  console.log('Not found');
+                  Alert.alert('', 'Invalid Password');
+                } else {
+                  setDataToAsync('token', JSON.stringify(result.token));
+                  setDataToAsync('user', JSON.stringify(result));
+
+                  getDataFromAsync('user')
+                    .then(res => {
+                      dispatch(userDataFromAsyncStorage(JSON.parse(res)));
+                      // console.log('res: ', res);
+                    })
+                    .catch(err => {
+                      console.log(
+                        'Error From getting from local storage: ',
+                        err,
+                      );
+                    });
+
+                  // Navigation.navigate('SimpleBottomTab', result);
+                }
+                // onChangeTextEmail('');
+                // onChangeTextPass('');
               })
-              .catch(err => {
-                console.log('Error From getting from local storage: ', err);
+              .catch(error => {
+                console.log('error', error);
+                setLoading(false);
               });
-
-            // Navigation.navigate('SimpleBottomTab', result);
+          } else {
+            setLoading(false);
+            onChangeError('');
+            Alert.alert('', 'Invalid Email');
           }
-          onChangeTextEmail('');
-          onChangeTextPass('');
         })
         .catch(error => {
-          console.log('error', error);
           setLoading(false);
+          console.log('error', error);
+          // onChangeTextEmail('');
         });
-      onChangeError('');
+      // onChangeError('');
     }
   }
 
@@ -294,7 +319,7 @@ export const Login = () => {
                     }}>
                     <Pressable
                       onPress={() => {
-                        Navigation.navigate('SimpleBottomScreen');
+                        // Navigation.navigate('SimpleBottomScreen');
                       }}>
                       <Image
                         source={require('../../Assets/Images/googleicon.png')}
@@ -303,7 +328,7 @@ export const Login = () => {
                     </Pressable>
                     <Pressable
                       onPress={() => {
-                        Navigation.navigate('SimpleBottomScreen');
+                        // Navigation.navigate('SimpleBottomScreen');
                       }}>
                       <Image
                         source={require('../../Assets/Images/facebookicon.png')}
@@ -312,7 +337,7 @@ export const Login = () => {
                     </Pressable>
                     <Pressable
                       onPress={() => {
-                        Navigation.navigate('SimpleBottomScreen');
+                        // Navigation.navigate('SimpleBottomScreen');
                       }}>
                       <Image
                         source={require('../../Assets/Images/appleicon.png')}
@@ -323,7 +348,7 @@ export const Login = () => {
                   <View
                     style={{
                       flexDirection: 'row',
-                      marginTop: 100,
+                      marginTop: Platform.OS === 'ios' ? 150 : 110,
                       alignSelf: 'center',
                     }}>
                     <Heading
@@ -332,20 +357,17 @@ export const Login = () => {
                       Heading={"Don't have an account?"}
                       color={'#1C1C1C'}
                     />
-                    <Button
-                      textColor={'#514C4A'}
-                      style={{marginLeft: -8}}
-                      onPress={() => Navigation.navigate('SignUp')}>
-                      <Text
-                        style={{
-                          textDecorationLine: 'none',
-                          color: '#407BFF',
-                          fontWeight: 'bold',
-                          fontSize: 16,
-                        }}>
-                        Sign Up
-                      </Text>
-                    </Button>
+                    <Pressable
+                      onPress={() => Navigation.navigate('SignUp')}
+                      style={{marginLeft: 3}}>
+                      <Heading
+                        Fontsize={16}
+                        // as={'center'}
+                        Heading={'Sign Up'}
+                        color={'#407BFF'}
+                        Fontweight={'bold'}
+                      />
+                    </Pressable>
                   </View>
                 </View>
               </ScrollView>
@@ -353,7 +375,6 @@ export const Login = () => {
           </>
         )}
       </Formik>
-      {/* </SafeArea> */}
     </>
   );
 };
@@ -370,6 +391,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: '8%',
+    marginTop: 20,
   },
   line2: {
     // flex: 1,

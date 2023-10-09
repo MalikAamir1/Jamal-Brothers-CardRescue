@@ -85,7 +85,7 @@ export const SignUp = () => {
   function onPressSignUp() {
     if (valueEmail !== '') {
       if (!isValidEmail(valueEmail)) {
-        onChangeError('Invalid email format');
+        onChangeError('Enter valid email');
       } else if (valuePass !== '') {
         if (valueConfirmPass !== '') {
           if (valuePass === valueConfirmPass) {
@@ -156,10 +156,10 @@ export const SignUp = () => {
           onChangeError('Confirm Password should not be Empty');
         }
       } else {
-        onChangeError('Password should not be Empty');
+        onChangeError('Password cannot be empty');
       }
     } else {
-      onChangeError('Email Id should not be Empty');
+      onChangeError('Email cannot be empty.');
     }
   }
 
@@ -203,6 +203,23 @@ export const SignUp = () => {
                       }}
                     />
                   </Pressable>
+                  <View
+                    style={{
+                      width: '80%',
+                      // alignItemss: 'center',
+                      marginLeft: 20,
+                      textAlign: 'center',
+                    }}>
+                    {error && (
+                      <>
+                        <InteractParagraph
+                          p={error}
+                          color={'red'}
+                          txtAlign={'center'}
+                        />
+                      </>
+                    )}
+                  </View>
                 </View>
                 <View
                   style={{
@@ -228,7 +245,7 @@ export const SignUp = () => {
                       <Input
                         title={'Email / Phone'}
                         urlImg={require('../../Assets/Images/emailIcon.png')}
-                        placeholder={'email@domain.com'}
+                        placeholder={'Email@domain.com'}
                         pass={false}
                         value={valueEmail}
                         onChangeText={onChangeTextEmail}
@@ -294,14 +311,6 @@ export const SignUp = () => {
                     </View>
                   </View>
 
-                  <View>
-                    {error && (
-                      <>
-                        <InteractParagraph p={error} mv={4} color={'red'} />
-                      </>
-                    )}
-                  </View>
-
                   <View
                     style={{
                       justifyContent: 'center',
@@ -323,7 +332,7 @@ export const SignUp = () => {
                   <View
                     style={{
                       flexDirection: 'row',
-                      marginTop: 100,
+                      marginTop: Platform.OS === 'ios' ? 180 : 130,
                       alignSelf: 'center',
                     }}>
                     <Heading
@@ -332,20 +341,17 @@ export const SignUp = () => {
                       Heading={'Already have an account?'}
                       color={'#1C1C1C'}
                     />
-                    <Button
-                      textColor={'#514C4A'}
-                      style={{marginLeft: -8}}
+                    <Pressable
+                      style={{marginLeft: 3}}
                       onPress={() => Navigation.navigate('login')}>
-                      <Text
-                        style={{
-                          textDecorationLine: 'none',
-                          color: '#407BFF',
-                          // fontWeight: 'bold',
-                          fontSize: 16,
-                        }}>
-                        Login
-                      </Text>
-                    </Button>
+                      <Heading
+                        Fontsize={16}
+                        // as={'center'}
+                        Heading={'Login'}
+                        color={'#407BFF'}
+                        Fontweight={'bold'}
+                      />
+                    </Pressable>
                   </View>
                 </View>
               </ScrollView>

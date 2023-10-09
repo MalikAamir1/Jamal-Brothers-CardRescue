@@ -15,7 +15,7 @@ export const AboutApp = ({route}) => {
         <View
           style={{
             marginBottom: 20,
-            marginTop: Platform.OS === 'ios' ? '4%' : '-5%',
+            marginTop: Platform.OS === 'ios' ? 0 : '-5%',
           }}>
           <Head head={'About App'} />
         </View>

@@ -38,7 +38,7 @@ function HeadWithIcon(props) {
         alignItems: 'center',
         marginHorizontal: '1%',
         justifyContent: 'space-between',
-        marginTop: Platform.OS === 'ios' ? -10 : 0,
+        // marginTop: Platform.OS === 'ios' ? -10 : 0,
         //   margin: '8%',
         //   marginBottom: 0,
       }}>

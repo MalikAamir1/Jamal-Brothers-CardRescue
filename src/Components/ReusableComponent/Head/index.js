@@ -11,6 +11,12 @@ function Head(props) {
   const [backName, setBackName] = useState(
     props.backName ? props.backName : false,
   );
+  const [lostCard, setLostCard] = useState(
+    props.lostCard ? props.lostCard : false,
+  );
+  const [foundCard, setFoundCard] = useState(
+    props.foundCard ? props.foundCard : false,
+  );
   // console.log(screenName)
 
   return (
@@ -36,6 +42,10 @@ function Head(props) {
               ? Navigation.navigate('Home')
               : backName == 'Profile'
               ? Navigation.navigate('ReturnedCards')
+              : lostCard
+              ? Navigation.navigate('LostCards')
+              : foundCard
+              ? Navigation.navigate('FoundCardsList')
               : Navigation.goBack();
             // setScreenName(false);
           }}>

@@ -18,11 +18,13 @@ import LinearGradient from 'react-native-linear-gradient';
 import SafeArea from '../../Components/ReusableComponent/Safearea';
 import {useNavigation} from '@react-navigation/native';
 import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
+import {useSelector} from 'react-redux';
 
 export const Profile = ({route}) => {
   const [lostCard, setLostCard] = useState(1);
   const Navigation = useNavigation();
   const [secondModal, setSecondModal] = useState(false);
+  const AuthReducer = useSelector(state => state.AuthReducer);
 
   const FoundCards = () => {
     setLostCard(1);
@@ -101,7 +103,7 @@ export const Profile = ({route}) => {
                     lh={18}
                     Heading={item.type}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={-76}
+                    ml={Platform.OS === 'ios' ? -77 : -73}
                     mt={5}
                   />
                 </View>
@@ -125,7 +127,7 @@ export const Profile = ({route}) => {
                     lh={18}
                     Heading={item.cardNo}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={20}
+                    ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
                   />
                 </View>
@@ -242,7 +244,7 @@ export const Profile = ({route}) => {
                     lh={18}
                     Heading={item.type}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={-76}
+                    ml={Platform.OS === 'ios' ? -77 : -73}
                     mt={5}
                   />
                 </View>
@@ -266,7 +268,7 @@ export const Profile = ({route}) => {
                     lh={18}
                     Heading={item.cardNo}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={20}
+                    ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
                   />
                 </View>
@@ -380,7 +382,7 @@ export const Profile = ({route}) => {
                     lh={18}
                     Heading={item.type}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={-76}
+                    ml={Platform.OS === 'ios' ? -77 : -73}
                     mt={5}
                   />
                 </View>
@@ -404,7 +406,7 @@ export const Profile = ({route}) => {
                     lh={18}
                     Heading={item.cardNo}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={20}
+                    ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
                   />
                 </View>
@@ -478,7 +480,7 @@ export const Profile = ({route}) => {
       <>
         <View>
           <View>
-            <HeadWithIcon head={'Profile'} />
+            <HeadWithIcon head={'Profile'} screenName={true} />
           </View>
 
           <View style={{flexDirection: 'row'}}>
@@ -501,12 +503,17 @@ export const Profile = ({route}) => {
                   borderRadius: 75,
                 }}>
                 <Image
-                  source={require('../../Assets/Images/profileImage.png')}
+                  // source={require('../../Assets/Images/profileImage.png')}
+                  source={{
+                    uri: `https://jbpl.pythonanywhere.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
+                  }}
                   style={{
                     alignSelf: 'center',
                     justifyContent: 'center',
-                    width: 106,
-                    height: 106,
+                    width: 87,
+                    height: 89,
+                    marginTop: 2,
+                    borderRadius: 75,
                   }}
                   resizeMode={'cover'}
                 />
@@ -520,7 +527,7 @@ export const Profile = ({route}) => {
                 // txtAlign={'center'}
                 // p={10}
                 lh={26}
-                Heading={'Claire james'}
+                Heading={AuthReducer?.userData?.user?.profile?.display_name}
                 color={'rgba(16, 35, 78, 1)'}
                 // ml={-10}
                 //   mb={20}
@@ -542,7 +549,7 @@ export const Profile = ({route}) => {
                   txtAlign={'center'}
                   // p={10}
                   // lh={26}
-                  Heading={'clairejames@gmail.com'}
+                  Heading={AuthReducer?.userData?.user?.email}
                   color={'rgba(0, 36, 97, 1)'}
                   ml={10}
                   //   mb={20}
@@ -564,7 +571,7 @@ export const Profile = ({route}) => {
                   txtAlign={'center'}
                   // p={10}
                   // lh={26}
-                  Heading={'123 456 7890'}
+                  Heading={AuthReducer?.userData?.user?.profile?.telephone}
                   color={'rgba(0, 36, 97, 1)'}
                   ml={10}
                   //   mb={20}
@@ -586,7 +593,7 @@ export const Profile = ({route}) => {
                   // txtAlign={'center'}
                   // p={10}
                   // lh={26}
-                  Heading={'2972 Westheimer Rd. Santa Ana, Illinois 85486 '}
+                  Heading={AuthReducer?.userData?.user?.profile?.street}
                   color={'rgba(0, 36, 97, 1)'}
                   ml={7}
                   //   mb={20}

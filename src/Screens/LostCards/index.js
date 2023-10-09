@@ -94,7 +94,7 @@ export const LostCards = ({route}) => {
                     lh={18}
                     Heading={item.type}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={-76}
+                    ml={Platform.OS === 'ios' ? -77 : -73}
                     mt={5}
                   />
                 </View>
@@ -118,7 +118,7 @@ export const LostCards = ({route}) => {
                     lh={18}
                     Heading={item.cardNo}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={20}
+                    ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
                   />
                 </View>
@@ -214,8 +214,8 @@ export const LostCards = ({route}) => {
           <View style={{flexDirection: 'row'}}>
             <LinearGradient
               colors={['#FCDD8E', '#F9B401']}
-              start={{x: 0, y: 0}}
-              end={{x: 0, y: 0.1}}
+              start={{x: 0.5, y: -5}}
+              end={{x: 0.4, y: 4}}
               style={{
                 flex: 1,
                 marginLeft: 5,
@@ -247,8 +247,8 @@ export const LostCards = ({route}) => {
             </LinearGradient>
             <LinearGradient
               colors={['#FCDD8E', '#F9B401']}
-              start={{x: 0, y: 0}}
-              end={{x: 0, y: 0.1}}
+              start={{x: 0.5, y: -5}}
+              end={{x: 0.4, y: 4}}
               style={{
                 flex: 1,
                 marginLeft: 5,
@@ -299,17 +299,97 @@ export const LostCards = ({route}) => {
         <View
           style={{
             //   marginVertical: '5%',
-            marginBottom: Platform.OS === 'ios' ? '13.5%' : '12%',
+            marginBottom: Platform.OS === 'ios' ? 60 : '6%',
+            flex: 1,
+            justifyContent: 'space-between',
           }}>
-          <FlatList
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={item => item.metal_id}
-            contentContainerStyle={{flexDirection: 'column'}}
-            ListHeaderComponent={ListHeaderComponent}
-            ListFooterComponent={ListFooterComponent}
-            showsVerticalScrollIndicator={false}
-          />
+          <View>
+            <FlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={item => item.metal_id}
+              contentContainerStyle={{flexDirection: 'column'}}
+              ListHeaderComponent={ListHeaderComponent}
+              // ListFooterComponent={ListFooterComponent}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+          <View
+            style={{
+              // marginTop: 80,
+              // marginBottom: -20,
+              // marginBottom: 50,
+              margin: '5%',
+              // position: 'absolute',
+              bottom: Platform.OS === 'ios' ? 0 : 55,
+            }}>
+            <View style={{flexDirection: 'row'}}>
+              <LinearGradient
+                colors={['#FCDD8E', '#F9B401']}
+                start={{x: 0.5, y: -5}}
+                end={{x: 0.4, y: 4}}
+                style={{
+                  flex: 1,
+                  marginLeft: 5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: 5,
+                  // width: 181,
+                  width: 160,
+                  height: 56,
+                  borderRadius: 7,
+                }}>
+                <TouchableOpacity
+                  style={{
+                    width: 190,
+                    alignItems: 'center',
+                  }}
+                  onPress={() => {
+                    Navigation.navigate('LostExistingCard');
+                  }}>
+                  <Text
+                    style={{
+                      color: '#0B105C',
+                      fontSize: 16,
+                      // fontWeight: 'bold',
+                    }}>
+                    Lost existing card?
+                  </Text>
+                </TouchableOpacity>
+              </LinearGradient>
+              <LinearGradient
+                colors={['#FCDD8E', '#F9B401']}
+                start={{x: 0.5, y: -5}}
+                end={{x: 0.4, y: 4}}
+                style={{
+                  flex: 1,
+                  marginLeft: 5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  // width: 181,
+                  width: 160,
+                  borderRadius: 7,
+                }}>
+                <TouchableOpacity
+                  style={{
+                    width: 190,
+                    alignItems: 'center',
+                  }}
+                  onPress={() => {
+                    Navigation.navigate('LostNewCard');
+                  }}>
+                  <Text
+                    style={{
+                      color: '#0B105C',
+                      fontSize: 16,
+                      // fontWeight: 'bold',
+                    }}>
+                    Lost New Card
+                  </Text>
+                </TouchableOpacity>
+              </LinearGradient>
+            </View>
+          </View>
         </View>
       </SafeArea>
     </>

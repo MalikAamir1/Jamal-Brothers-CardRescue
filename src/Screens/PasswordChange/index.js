@@ -112,7 +112,7 @@ export const PasswordChange = ({route}) => {
         onChangeError('Confirm Password should not be Empty');
       }
     } else {
-      onChangeError('Password should not be Empty');
+      onChangeError('Password cannot be empty');
     }
   }
   return (
@@ -164,6 +164,23 @@ export const PasswordChange = ({route}) => {
                       }}
                     />
                   </Pressable>
+                  <View
+                    style={{
+                      width: '80%',
+                      // alignItemss: 'center',
+                      marginLeft: 20,
+                      textAlign: 'center',
+                    }}>
+                    {error && (
+                      <>
+                        <InteractParagraph
+                          p={error}
+                          color={'red'}
+                          txtAlign={'center'}
+                        />
+                      </>
+                    )}
+                  </View>
                 </View>
                 <View
                   style={{
@@ -252,14 +269,6 @@ export const PasswordChange = ({route}) => {
                         </Text>
                       )}
                     </View>
-                  </View>
-
-                  <View>
-                    {error && (
-                      <>
-                        <InteractParagraph p={error} mv={4} color={'red'} />
-                      </>
-                    )}
                   </View>
 
                   <View

@@ -178,31 +178,24 @@ export const OtpScreen = ({route}) => {
               <View
                 style={{
                   flexDirection: 'row',
-                  alignContent: 'center',
+                  marginTop: Platform.OS === 'ios' ? 280 : 270,
                   alignSelf: 'center',
-                  alignItems: 'center',
-                  marginTop: 220,
                 }}>
                 <Heading
-                  Fontsize={15}
+                  Fontsize={16}
                   as={'center'}
                   Heading={"Code didn't receive?"}
                   color={'rgba(28, 28, 28, 1)'}
                 />
-
-                <Button
-                  textColor={'black'}
-                  style={{marginLeft: -8}}
-                  onPress={() => ResendOtp()}>
-                  <Text
-                    style={{
-                      textDecorationLine: 'none',
-                      fontWeight: 'bold',
-                      color: 'rgba(64, 123, 255, 1)',
-                    }}>
-                    Resend
-                  </Text>
-                </Button>
+                <Pressable onPress={() => ResendOtp()} style={{marginLeft: 3}}>
+                  <Heading
+                    Fontsize={16}
+                    // as={'center'}
+                    Heading={'Resend'}
+                    color={'#407BFF'}
+                    Fontweight={'bold'}
+                  />
+                </Pressable>
               </View>
             </SafeAreaView>
           </ScrollView>
