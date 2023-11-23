@@ -101,7 +101,7 @@ export default function Input(props) {
             Fontsize={14}
             Heading={props.title}
             color="#7B869E"
-            mb={-8}
+            mb={-6}
             // fontFamily={FONT.pop}
           />
         </View>
@@ -130,19 +130,22 @@ export default function Input(props) {
             style={{
               width: props.pass ? '55%' : '85%',
               color: '#1C1C1C',
-              marginBottom: -3,
+              marginBottom: 0,
               marginLeft: props.mleft
                 ? props.mleft
                 : Platform.OS === 'ios'
-                ? 5
+                ? 4.3
                 : -4,
-              fontFamily: FONT.redhat,
+              fontFamily: 'FONT.redhat',
               fontSize: 16,
+              lineHeight: 21.17,
+              fontWeight: 400,
             }}
             placeholder={props.placeholder}
             placeholderTextColor={'#A8A8A8'}
             secureTextEntry={props.pass && !props.dob ? notPressed : false}
             keyboardType={props.keyboardType}
+            autoCapitalize={props.autoCapitalize}
           />
           {props.dob ? (
             <View

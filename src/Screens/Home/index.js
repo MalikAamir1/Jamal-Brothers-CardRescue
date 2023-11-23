@@ -61,12 +61,13 @@ export const Home = () => {
             borderWidth: 1,
             height: 138,
             // width: 342,
-            marginTop: 20,
+            // marginTop: 20,
+            marginBottom: 22,
           }}>
           <Pressable
             onPress={() => {
               item.match
-                ? Navigation.navigate('ChatScreen', {
+                ? Navigation.navigate('ChatScreenDemo', {
                     backName: 'Home',
                   })
                 : setSecondModal(true);
@@ -198,7 +199,7 @@ export const Home = () => {
           style={{
             marginHorizontal: '1%',
             // marginVertical: '5%',
-            marginBottom: '0%',
+            marginBottom: 20,
           }}>
           <Header header={'Home'} />
 

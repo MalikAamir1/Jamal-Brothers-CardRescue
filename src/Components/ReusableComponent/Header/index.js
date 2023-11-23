@@ -23,6 +23,7 @@ import {removeDataToAsync} from '../../../Utils/getAndSetAsyncStorage';
 import {useDispatch, useSelector} from 'react-redux';
 import {removeUserDataFromAsyncStorage} from '../../../Store/Reducers/AuthReducer';
 import {ScrollView} from 'react-native-gesture-handler';
+import {ModalWithButton} from '../Modalwithbutton';
 
 const {width} = Dimensions.get('window');
 
@@ -37,8 +38,10 @@ export const Header = props => {
   const [notificationCount, setNotificationCount] = useState(2);
   const [isSideMenuVisible, setIsSideMenuVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalButton, setModalButton] = useState(false);
 
   console.log('modalVisible:', modalVisible);
+  console.log('modalButton:', modalButton);
 
   const callLogoutFunctionPopUP = () => {
     // setIsSideMenuVisible(false);
@@ -76,8 +79,13 @@ export const Header = props => {
             // Navigation.navigate('login');
           }}
         />
+        {/* <ModalWithButton
+          set={setModalButton}
+          get={modalButton}
+          onBackdropPress={() => setIsSideMenuVisible(false)}
+        /> */}
         {/* start */}
-        <View style={{flex: 1}}>
+        <View style={{flex: 1, zIndex: 2}}>
           {Platform.OS === 'ios' ? (
             <StatusBar hidden={true} />
           ) : (
@@ -113,6 +121,9 @@ export const Header = props => {
                   />
                 </View>
               </Pressable>
+              {/* <Pressable onPress={yourButtonPressHandler}> */}
+              {/* <Text style={styles.buttonInsideModal}>Button</Text> */}
+              {/* </Pressable> */}
               <View
                 style={{
                   alignItems: 'center',
@@ -146,7 +157,7 @@ export const Header = props => {
                   <Image
                     // source={require('../../../Assets/Images/profileImage.png')}
                     source={{
-                      uri: `https://jbpl.pythonanywhere.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
+                      uri: `https://nextgenbulliontool.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
                     }}
                     style={{
                       alignSelf: 'center',
@@ -417,6 +428,7 @@ export const Header = props => {
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
+                      setModalButton(true);
                       Navigation.navigate('Feedback');
                       // console.log('dsfdsfaf')
                     }}>
@@ -448,6 +460,7 @@ export const Header = props => {
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
+                      setModalButton(false);
                       Navigation.navigate('Settings');
                       // console.log('dsfdsfaf')
                     }}>
@@ -481,7 +494,7 @@ export const Header = props => {
                   style={{
                     flexDirection: 'row',
                     backgroundColor: 'white',
-                    marginTop: 30,
+                    marginTop: 45,
                     height: 56,
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -530,6 +543,7 @@ export const Header = props => {
             onPress={() => {
               // Navigation.dispatch(DrawerActions.openDrawer());
               setIsSideMenuVisible(true);
+              // setModalButton(true);
               // setModalVisible(true);
             }}>
             <Image
@@ -632,5 +646,16 @@ const styles = StyleSheet.create({
   sideMenuStyle: {
     margin: 0,
     width: width * 0.8, // SideMenu width,
+  },
+  buttonInsideModal: {
+    backgroundColor: 'blue',
+    overflow: 'visible',
+    color: 'white',
+    padding: 10,
+    borderRadius: 5,
+    position: 'absolute',
+    right: -20, // Adjust this value to position the button outside the modal
+    top: 20, // Adjust this value to position the button vertically inside the modal
+    zIndex: 1, // Ensure the button is above the modal content
   },
 });

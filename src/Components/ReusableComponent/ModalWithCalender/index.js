@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {Image, ImageBackground, Pressable, View, Modal} from 'react-native';
 import Heading from '../Heading';
@@ -11,6 +11,8 @@ export const ModalWithCalender = props => {
   const handleButtonPress = () => {
     console.log('Button pressed');
   };
+
+  const [inputText, setInputText] = useState('')
 
   // const [modalVisible, setModalVisible] = useState(true);
 
@@ -48,9 +50,9 @@ export const ModalWithCalender = props => {
               title={'Number Of Days'}
               urlImg={require('../../../Assets/Images/calender.png')}
               placeholder={'30 Days'}
-              //   value={cardHolder}
+                value={inputText}
               // value={dataFromOtpScreenOfSignUp.email}
-              //   onChangeText={setCardHolder}
+              onChangeText={setInputText}
               dob={false}
             />
           </View>

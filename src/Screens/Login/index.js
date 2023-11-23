@@ -34,7 +34,9 @@ export const Login = () => {
   const [passHide, setPassHide] = useState(false);
   const [loading, setLoading] = useState(false);
   const [valueEmail, onChangeTextEmail] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
   const [valuePass, onChangeTextPass] = useState('');
+  const [errorPass, setErrorPass] = useState('');
   const [error, onChangeError] = useState('');
   const dispatch = useDispatch();
 
@@ -87,17 +89,31 @@ export const Login = () => {
   }
 
   function Login() {
-    if (valueEmail.trim() === '') {
-      onChangeError('Email cannot be empty.');
+    let isValid = true;
+
+    if (!valueEmail) {
+      setErrorEmail('Email cannot be empty.');
+      isValid = false;
     } else if (!isValidEmail(valueEmail)) {
-      onChangeError('Enter valid email');
-    } else if (valuePass.trim() === '') {
-      onChangeError('Password cannot be empty');
+      setErrorEmail('Enter valid email');
+      isValid = false;
+    } else {
+      setErrorEmail('');
+    }
+
+    if (!valuePass) {
+      setErrorPass('Password cannot be empty');
+      isValid = false;
     } else if (!hasValidPassword(valuePass)) {
-      onChangeError(
+      setErrorPass(
         'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.',
       );
+      isValid = false;
     } else {
+      setErrorPass('');
+    }
+
+    if (isValid) {
       console.log('valueEmail: ', valueEmail);
       console.log('valuePass: ', valuePass);
       console.log('Match');
@@ -217,18 +233,20 @@ export const Login = () => {
                         placeholder={'email@domain.com'}
                         pass={false}
                         value={valueEmail}
+                        keyboardType={'email-address'}
+                        autoCapitalize={'none'}
                         onChangeText={onChangeTextEmail}
                       />
-                      {errors.email && touched.email && (
+                      {!!errorEmail && (
                         <Text
                           style={{
                             fontSize: 12,
                             color: 'red',
                             marginTop: 5,
-                            marginBottom: 5,
-                            marginLeft: 15,
+                            // marginBottom: 15,
+                            marginLeft: 37,
                           }}>
-                          {errors.email}
+                          {'*' + errorEmail}
                         </Text>
                       )}
                     </View>
@@ -241,16 +259,16 @@ export const Login = () => {
                         value={valuePass}
                         onChangeText={onChangeTextPass}
                       />
-                      {errors.password && touched.password && (
+                      {!!errorPass && (
                         <Text
                           style={{
                             fontSize: 12,
                             color: 'red',
                             marginTop: 5,
-                            marginBottom: 5,
-                            marginLeft: 15,
+                            marginBottom: 15,
+                            marginLeft: 37,
                           }}>
-                          {errors.password}
+                          {'*' + errorPass}
                         </Text>
                       )}
                     </View>
@@ -294,7 +312,7 @@ export const Login = () => {
                       }}
                     />
                   </View>
-                  <View style={{marginTop: -5}}>
+                  {/* <View style={{marginTop: -5}}>
                     {error && (
                       <>
                         <InteractParagraph
@@ -305,7 +323,7 @@ export const Login = () => {
                         />
                       </>
                     )}
-                  </View>
+                  </View> */}
                   <View style={styles.container}>
                     <View style={styles.line2} />
                     <Text style={styles.text}>or</Text>

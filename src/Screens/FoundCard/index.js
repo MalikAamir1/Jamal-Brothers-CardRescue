@@ -196,7 +196,7 @@ export const FoundCard = ({route}) => {
                     <Input
                       title={'Card Holder'}
                       urlImg={require('../../Assets/Images/frame.png')}
-                      placeholder={'Enter name'}
+                      placeholder={'Claire James'}
                       value={cardHolder}
                       // value={dataFromOtpScreenOfSignUp.email}
                       onChangeText={setCardHolder}
@@ -245,12 +245,13 @@ export const FoundCard = ({route}) => {
                     style={{
                       justifyContent: 'space-between',
                       flexDirection: 'row',
+                      marginTop: 1,
                     }}>
                     <View style={{marginVertical: '4%', width: '47%'}}>
                       <InputWithCalender
                         title={'Expiry Date'}
                         urlImg={require('../../Assets/Images/calender.png')}
-                        placeholder={'MM/DD'}
+                        placeholder={'10 / 25'}
                         value={purchaseDate}
                         onChangeText={setPurchaseDate}
                         ml={'24%'}
@@ -267,8 +268,8 @@ export const FoundCard = ({route}) => {
                         //   value={valueAddress}
                         onChangeText={onChangeAddress}
                         dob={false}
-                        ml={'24%'}
-                        mleft={'10%'}
+                        ml={'23%'}
+                        mleft={'11%'}
                         keyboardType="numeric"
                       />
                     </View>

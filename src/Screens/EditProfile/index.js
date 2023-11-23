@@ -206,7 +206,7 @@ export const EditProfile = ({route}) => {
             .ref(`users/${AuthReducer.userData.token}`)
             .update({
               display_name: valueFullName,
-              profileImage: `https://jbpl.pythonanywhere.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
+              profileImage: `https://nextgenbulliontool.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
             })
             .then(() =>
               console.log('User data edited successfully in database'),
@@ -363,7 +363,7 @@ export const EditProfile = ({route}) => {
                           <Image
                             // source={require('../../Assets/Images/profileImage.png')}
                             source={{
-                              uri: `https://jbpl.pythonanywhere.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
+                              uri: `https://nextgenbulliontool.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
                             }}
                             style={{
                               alignSelf: 'center',

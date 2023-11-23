@@ -159,7 +159,7 @@ export const LostNewCard = ({route}) => {
                       urlImg={require('../../Assets/Images/cardType.png')}
                       value={cardType}
                       setValue={setCardtype}
-                      title={'Card type'}
+                      title={'Card Type'}
                     />
                   </View>
                   <View style={{marginVertical: '2%', marginTop: '8%'}}>
@@ -177,7 +177,7 @@ export const LostNewCard = ({route}) => {
                     <Input
                       title={'Card Holder'}
                       urlImg={require('../../Assets/Images/frame.png')}
-                      placeholder={'Enter name'}
+                      placeholder={'Claire James'}
                       value={cardHolder}
                       // value={dataFromOtpScreenOfSignUp.email}
                       onChangeText={setCardHolder}
@@ -204,12 +204,13 @@ export const LostNewCard = ({route}) => {
                     style={{
                       justifyContent: 'space-between',
                       flexDirection: 'row',
+                      marginTop: 1,
                     }}>
-                    <View style={{marginVertical: '4%', width: '47%'}}>
+                    <View style={{marginVertical: '5%', width: '47%'}}>
                       <InputWithCalender
                         title={'Expiry Date'}
                         urlImg={require('../../Assets/Images/calender.png')}
-                        placeholder={'MM/DD'}
+                        placeholder={'10 / 25'}
                         value={purchaseDate}
                         onChangeText={setPurchaseDate}
                         ml={'24%'}
@@ -217,7 +218,7 @@ export const LostNewCard = ({route}) => {
                         // mleft={0}as
                       />
                     </View>
-                    <View style={{marginVertical: '4%', width: '47%'}}>
+                    <View style={{marginVertical: '5%', width: '47%'}}>
                       <Input
                         title={'CVV'}
                         urlImg={require('../../Assets/Images/calender.png')}

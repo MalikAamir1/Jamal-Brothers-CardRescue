@@ -43,8 +43,11 @@ export const SignUp = () => {
   const Navigation = useNavigation();
 
   const [valueEmail, onChangeTextEmail] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
   const [valuePass, onChangeTextPass] = useState('');
+  const [errorPass, setErrorPass] = useState('');
   const [valueConfirmPass, onChangeTextConfirmPass] = useState('');
+  const [errorConfirmPass, setErrorConfirmPass] = useState('');
   const [error, onChangeError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -83,83 +86,115 @@ export const SignUp = () => {
   }
 
   function onPressSignUp() {
-    if (valueEmail !== '') {
-      if (!isValidEmail(valueEmail)) {
-        onChangeError('Enter valid email');
-      } else if (valuePass !== '') {
-        if (valueConfirmPass !== '') {
-          if (valuePass === valueConfirmPass) {
-            if (hasValidPassword(valuePass)) {
-              console.log('valueEmail: ', valueEmail);
-              console.log('valuePass: ', valuePass);
-              console.log('valueConfirmPass: ', valueConfirmPass);
-              console.log('Match');
-              // Navigation.navigate('TermofServices');
-              // onChangeError('');
-              var formdataEmail = new FormData();
-              formdataEmail.append('email', valueEmail);
+    let isValid = true;
 
-              setLoading(true);
-
-              //Email Check Start
-              postRequest(
-                `${BASE_URL}/users/verify-email-exists/`,
-                formdataEmail,
-              )
-                .then(result => {
-                  // setLoading(false);
-                  console.log('Result: ', result.success);
-
-                  if (result.success) {
-                    Alert.alert('Account Exists', result.message);
-                    setLoading(false);
-                    onChangeTextEmail('');
-                    onChangeTextPass('');
-                    onChangeTextConfirmPass('');
-                  } else {
-                    setLoading(false);
-                    const data = {
-                      valueEmail: valueEmail,
-                      valuePass: valuePass,
-                      screenName: 'ProfileCreated',
-                    };
-                    onChangeTextEmail('');
-                    onChangeTextPass('');
-                    onChangeTextConfirmPass('');
-                    console.log('Done');
-                    Navigation.navigate('TermofServices', data);
-                  }
-                })
-                .catch(error => {
-                  setLoading(false);
-                  console.log('error', error);
-                  onChangeTextEmail('');
-                  onChangeTextPass('');
-                  onChangeTextConfirmPass('');
-                });
-              //Email Check End
-
-              // Signup Backend End
-
-              onChangeError('');
-            } else {
-              console.log('Not Match');
-              onChangeError(
-                'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.',
-              );
-            }
-          } else {
-            console.log('Not Match');
-            onChangeError('Password and confirm Password do not match');
-          }
-        } else {
-          onChangeError('Confirm Password should not be Empty');
-        }
-      } else {
-        onChangeError('Password cannot be empty');
-      }
+    if (!valueEmail) {
+      setErrorEmail('Email cannot be empty.');
+      isValid = false;
+    } else if (!isValidEmail(valueEmail)) {
+      setErrorEmail('Enter valid email');
+      isValid = false;
     } else {
-      onChangeError('Email cannot be empty.');
+      setErrorEmail('');
+    }
+
+    if (!valuePass) {
+      setErrorPass('Password cannot be empty');
+      isValid = false;
+    } else if (!hasValidPassword(valuePass)) {
+      setErrorPass(
+        'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.',
+      );
+      isValid = false;
+    } else {
+      setErrorPass('');
+    }
+
+    if (!valueConfirmPass) {
+      setErrorConfirmPass('Confirm Password should not be Empty');
+      isValid = false;
+    } else if (valuePass !== valueConfirmPass) {
+      setErrorConfirmPass('Password and Confirm Password do not match');
+      isValid = false;
+    } else {
+      setErrorConfirmPass('');
+    }
+
+    if (isValid) {
+      console.log('valueEmail: ', valueEmail);
+      console.log('valuePass: ', valuePass);
+      console.log('valueConfirmPass: ', valueConfirmPass);
+      console.log('Match');
+      // Navigation.navigate('TermofServices');
+      // onChangeError('');
+      var formdataEmail = new FormData();
+      formdataEmail.append('email', valueEmail);
+
+      setLoading(true);
+
+      //Email Check Start
+      postRequest(`${BASE_URL}/users/verify-email-exists/`, formdataEmail)
+        .then(result => {
+          // setLoading(false);
+          console.log('Result: ', result.success);
+
+          if (result.success) {
+            Alert.alert('Account Exists', result.message);
+            setLoading(false);
+            onChangeTextEmail('');
+            onChangeTextPass('');
+            onChangeTextConfirmPass('');
+          } else {
+            setLoading(false);
+            const data = {
+              valueEmail: valueEmail,
+              valuePass: valuePass,
+              screenName: 'ProfileCreated',
+            };
+            onChangeTextEmail('');
+            onChangeTextPass('');
+            onChangeTextConfirmPass('');
+            console.log('Done');
+            Navigation.navigate('TermofServices', data);
+          }
+        })
+        .catch(error => {
+          setLoading(false);
+          console.log('error', error);
+          onChangeTextEmail('');
+          onChangeTextPass('');
+          onChangeTextConfirmPass('');
+        });
+      //Email Check End
+
+      // Signup Backend End
+
+      onChangeError('');
+      //         } else {
+      //           console.log('Not Match');
+      //           // onChangeError(
+      //           //   'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.',
+      //           // );
+      //           setErrorPass(
+      //             'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.',
+      //           );
+      //         }
+      //       } else {
+      //         console.log('Not Match');
+      //         setErrorConfirmPass('Password and confirm Password do not match');
+      //       }
+      //     } else {
+      //       // onChangeError('Confirm Password should not be Empty');
+      //       setErrorConfirmPass('Confirm Password should not be Empty');
+      //     }
+      //   } else {
+      //     // onChangeError('Password cannot be empty');
+      //     setErrorPass('Password cannot be empty');
+      //   }
+      // } else {
+      //   // onChangeError('Email cannot be empty.');
+      //   setErrorEmail('Email cannot be empty.');
+      // }
     }
   }
 
@@ -249,8 +284,22 @@ export const SignUp = () => {
                         pass={false}
                         value={valueEmail}
                         onChangeText={onChangeTextEmail}
+                        keyboardType={'email-address'}
+                        autoCapitalize={'none'}
                       />
-                      {errors.email && touched.email && (
+                      {!!errorEmail && (
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: 'red',
+                            marginTop: 5,
+                            // marginBottom: 15,
+                            marginLeft: 37,
+                          }}>
+                          {'*' + errorEmail}
+                        </Text>
+                      )}
+                      {/* {errors.email && touched.email && (
                         <Text
                           style={{
                             fontSize: 12,
@@ -261,7 +310,7 @@ export const SignUp = () => {
                           }}>
                           {errors.email}
                         </Text>
-                      )}
+                      )} */}
                     </View>
 
                     <View style={{marginVertical: '3%'}}>
@@ -273,20 +322,19 @@ export const SignUp = () => {
                         value={valuePass}
                         onChangeText={onChangeTextPass}
                       />
-                      {errors.password && touched.password && (
+                      {!!errorPass && (
                         <Text
                           style={{
                             fontSize: 12,
                             color: 'red',
                             marginTop: 5,
-                            marginBottom: 5,
-                            marginLeft: 15,
+                            marginBottom: 15,
+                            marginLeft: 37,
                           }}>
-                          {errors.password}
+                          {'*' + errorPass}
                         </Text>
                       )}
                     </View>
-
                     <View style={{marginVertical: '3%'}}>
                       <Input
                         title={'Confirm Password'}
@@ -296,66 +344,66 @@ export const SignUp = () => {
                         value={valueConfirmPass}
                         onChangeText={onChangeTextConfirmPass}
                       />
-                      {errors.confirmPassword && touched.confirmPassword && (
+                      {!!errorConfirmPass && (
                         <Text
                           style={{
                             fontSize: 12,
                             color: 'red',
                             marginTop: 5,
-                            marginBottom: 5,
-                            marginLeft: 15,
+                            marginBottom: 15,
+                            marginLeft: 37,
                           }}>
-                          {errors.confirmPassword}
+                          {'*' + errorConfirmPass}
                         </Text>
                       )}
                     </View>
-                  </View>
 
-                  <View
-                    style={{
-                      justifyContent: 'center',
-                      alignContent: 'center',
-                      flexDirection: 'row',
-                      marginVertical: '7%',
-                      marginLeft: '-2%',
-                      // marginTop: '5%',
-                    }}>
-                    <ButtonComp
-                      btnText={'Sign Up'}
-                      press={() => {
-                        // Navigation.navigate('SimpleBottomTab');
-                        onPressSignUp();
-                      }}
-                    />
-                  </View>
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        flexDirection: 'row',
+                        marginVertical: '7%',
+                        marginLeft: '-2%',
+                        // marginTop: '5%',
+                      }}>
+                      <ButtonComp
+                        btnText={'Sign Up'}
+                        press={() => {
+                          // Navigation.navigate('SimpleBottomTab');
+                          onPressSignUp();
+                        }}
+                      />
+                    </View>
 
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginTop: Platform.OS === 'ios' ? 180 : 130,
-                      alignSelf: 'center',
-                    }}>
-                    <Heading
-                      Fontsize={16}
-                      as={'center'}
-                      Heading={'Already have an account?'}
-                      color={'#1C1C1C'}
-                    />
-                    <Pressable
-                      style={{marginLeft: 3}}
-                      onPress={() => Navigation.navigate('login')}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: Platform.OS === 'ios' ? 170 : 130,
+                        alignSelf: 'center',
+                        marginBottom: 10,
+                      }}>
                       <Heading
                         Fontsize={16}
-                        // as={'center'}
-                        Heading={'Login'}
-                        color={'#407BFF'}
-                        Fontweight={'bold'}
+                        as={'center'}
+                        Heading={'Already have an account?'}
+                        color={'#1C1C1C'}
                       />
-                    </Pressable>
+                      <Pressable
+                        style={{marginLeft: 3}}
+                        onPress={() => Navigation.navigate('login')}>
+                        <Heading
+                          Fontsize={16}
+                          // as={'center'}
+                          Heading={'Login'}
+                          color={'#407BFF'}
+                          Fontweight={'bold'}
+                        />
+                      </Pressable>
+                    </View>
                   </View>
                 </View>
               </ScrollView>
-              // </ImageBackground>
             )}
           </>
         )}

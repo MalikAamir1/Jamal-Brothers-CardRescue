@@ -207,7 +207,7 @@ export const LostExistingCard = () => {
         <View
           style={{
             flexGrow: 1,
-            marginHorizontal: '3%',
+            // marginHorizontal: '3%',
             padding: 15,
             borderRadius: 15,
             marginTop: 100,
@@ -218,7 +218,7 @@ export const LostExistingCard = () => {
               alignContent: 'center',
               flexDirection: 'row',
               //   marginVertical: '5%',
-              marginLeft: '-2%',
+              // marginLeft: '-2%',
               // marginTop: '5%',
             }}>
             <ButtonComp

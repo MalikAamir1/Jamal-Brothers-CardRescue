@@ -71,9 +71,10 @@ export const Profile = ({route}) => {
           <Pressable
             onPress={() => {
               item.match
-                ? Navigation.navigate('ChatScreen', {
-                    backName: 'Profile',
-                  })
+                ? // Navigation.navigate('ChatScreen', {
+                  //     backName: 'Profile',
+                  //   })
+                  console.log('aaa')
                 : setSecondModal(true);
             }}>
             <View
@@ -212,9 +213,10 @@ export const Profile = ({route}) => {
           <Pressable
             onPress={() => {
               item.match
-                ? Navigation.navigate('ChatScreen', {
-                    backName: 'Profile',
-                  })
+                ? // Navigation.navigate('ChatScreen', {
+                  //     backName: 'Profile',
+                  //   })
+                  console.log('aaa')
                 : setSecondModal(true);
             }}>
             <View
@@ -505,7 +507,8 @@ export const Profile = ({route}) => {
                 <Image
                   // source={require('../../Assets/Images/profileImage.png')}
                   source={{
-                    uri: `https://jbpl.pythonanywhere.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
+                    // uri: `https://jbpl.pythonanywhere.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
+                    uri: `https://nextgenbulliontool.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
                   }}
                   style={{
                     alignSelf: 'center',

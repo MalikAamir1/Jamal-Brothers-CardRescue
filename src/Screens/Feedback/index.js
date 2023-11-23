@@ -188,6 +188,7 @@ export const Feedback = ({route}) => {
                 flexDirection: 'row',
                 marginVertical: '5%',
                 marginLeft: '-2%',
+                marginBottom: 30,
                 // marginTop: '5%',
               }}>
               <ButtonComp

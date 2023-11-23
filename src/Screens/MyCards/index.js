@@ -105,11 +105,11 @@ export const MyCards = ({route}) => {
                     />
                     <Heading
                       Stylefont={'normal'}
-                      // Fontweight={'bold'}
+                      Fontweight={300}
                       Fontsize={14}
                       txtAlign={'center'}
                       // p={10}
-                      lh={18}
+                      lh={18.52}
                       Heading={item.type}
                       color={'rgba(102, 112, 128, 1)'}
                       ml={Platform.OS === 'ios' ? -77 : -73}
@@ -237,11 +237,11 @@ export const MyCards = ({route}) => {
                     />
                     <Heading
                       Stylefont={'normal'}
-                      // Fontweight={'bold'}
+                      Fontweight={300}
                       Fontsize={14}
                       txtAlign={'center'}
                       // p={10}
-                      lh={18}
+                      lh={18.52}
                       Heading={item.type}
                       color={'rgba(102, 112, 128, 1)'}
                       ml={Platform.OS === 'ios' ? -77 : -73}

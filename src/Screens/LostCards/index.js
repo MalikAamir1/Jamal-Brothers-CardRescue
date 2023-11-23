@@ -62,8 +62,8 @@ export const LostCards = ({route}) => {
           <Pressable
             onPress={() => {
               item.match
-                ? Navigation.navigate('ChatScreen', {
-                    backName: false,
+                ? Navigation.navigate('ChatScreenDemo', {
+                    //     backName: false,
                   })
                 : setSecondModal(true);
             }}>
@@ -317,7 +317,7 @@ export const LostCards = ({route}) => {
           <View
             style={{
               // marginTop: 80,
-              // marginBottom: -20,
+              marginBottom: 35,
               // marginBottom: 50,
               margin: '5%',
               // position: 'absolute',
@@ -353,7 +353,7 @@ export const LostCards = ({route}) => {
                       fontSize: 16,
                       // fontWeight: 'bold',
                     }}>
-                    Lost existing card?
+                    Lost Existing Card?
                   </Text>
                 </TouchableOpacity>
               </LinearGradient>

@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 11,
     textAlign: 'center',
-    marginBottom: Platform.OS === 'ios' ? 10 : 20,
+    marginBottom: Platform.OS === 'ios' ? 20 : 20,
     marginTop: 38,
     // color: Colors.primary,
     color: 'rgba(11, 16, 92, 1)',

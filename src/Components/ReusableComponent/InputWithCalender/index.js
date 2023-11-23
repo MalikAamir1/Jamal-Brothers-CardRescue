@@ -73,7 +73,7 @@ export default function InputWithCalender(props) {
             Fontsize={14}
             Heading={props.title}
             color="#7B869E"
-            mb={-8}
+            mb={-6}
             // fontFamily={FONT.pop}
           />
         </View>

@@ -15,7 +15,9 @@ export default DropdownComponent = props => {
         Fontsize={14}
         Heading={props.title}
         color="#7B869E"
-        mb={-8}
+        mb={-7}
+        Fontweight={400}
+        lh={18.52}
       />
       <View style={styles.row}>
         <View style={styles.header}>
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     flex: 1, // This ensures the dropdown takes the remaining space
-    marginLeft: 10, // Adjust this margin as needed
+    marginLeft: 8, // Adjust this margin as needed
   },
   dropdown: {
     height: 50,
@@ -91,12 +93,17 @@ const styles = StyleSheet.create({
     top: 8,
     zIndex: 999,
     paddingHorizontal: 8,
-    fontSize: 14,
+    fontSize: 16,
     color: 'rgba(28, 28, 28, 1)',
+    lineHeight: '21.17px',
+    fontWeight: 400,
   },
   placeholderStyle: {
     fontSize: 16,
     color: 'rgba(28, 28, 28, 1)',
+    // lineHeight: '21.17px',
+    marginLeft: 3.5,
+    marginBottom: 1,
   },
   selectedTextStyle: {
     fontSize: 16,

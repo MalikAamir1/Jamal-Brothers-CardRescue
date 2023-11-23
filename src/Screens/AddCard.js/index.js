@@ -269,7 +269,7 @@ export const AddCard = ({route}) => {
             urlImg={require('../../Assets/Images/cardType.png')}
             value={cardType}
             setValue={setCardtype}
-            title={'Card type'}
+            title={'Card Type'}
           />
         </View>
         <View style={{marginVertical: '2%', marginTop: '8%'}}>
@@ -311,11 +311,11 @@ export const AddCard = ({route}) => {
             justifyContent: 'space-between',
             flexDirection: 'row',
           }}>
-          <View style={{marginVertical: '4%', width: '47%'}}>
+          <View style={{marginVertical: '5%', width: '47%'}}>
             <InputWithCalender
               title={'Expiry Date'}
               urlImg={require('../../Assets/Images/calender.png')}
-              placeholder={'MM/DD'}
+              placeholder={'10 / 25'}
               value={purchaseDate}
               onChangeText={setPurchaseDate}
               ml={'24%'}
@@ -323,7 +323,7 @@ export const AddCard = ({route}) => {
               // mleft={0}as
             />
           </View>
-          <View style={{marginVertical: '4%', width: '47%'}}>
+          <View style={{marginVertical: '5%', width: '47%'}}>
             <Input
               title={'CVV'}
               urlImg={require('../../Assets/Images/calender.png')}
@@ -332,8 +332,8 @@ export const AddCard = ({route}) => {
               //   value={valueAddress}
               onChangeText={onChangeAddress}
               dob={false}
-              ml={'24%'}
-              mleft={'10%'}
+              ml={'23%'}
+              mleft={'11%'}
               keyboardType="numeric"
             />
           </View>

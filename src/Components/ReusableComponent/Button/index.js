@@ -19,20 +19,26 @@ function ButtonComp(props) {
       style={{
         flex: 1,
         // padding: 13,
-        marginLeft: 5,
+        // marginLeft: 5,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 7,
+        width: 392,
+        height: 56,
         // boxShadow: '0px 18px 40px -12px rgba(249, 180, 1, 0.35)',
       }}>
       <TouchableOpacity
         onPress={press}
         style={{
           flex: 1,
-          width: '100%',
+          // width: '100%',
+          // width: 382,
           padding: 12,
-          alignItems: 'center',
+          // alignItems: 'center',
           height: '50%',
+          // height: '56',
+          // marginTop: 'auto',
+          justifyContent: 'center',
         }}>
         <Text style={{color: '#0B105C', fontSize: 16, fontWeight: 'bold'}}>
           {btnText}

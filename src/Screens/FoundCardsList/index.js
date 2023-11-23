@@ -62,10 +62,11 @@ export const FoundCardsList = ({route}) => {
           <Pressable
             onPress={() => {
               item.match
-                ? Navigation.navigate('ChatScreen', {
-                    backName: 'Found Cards',
+                ? Navigation.navigate('ChatScreenDemo', {
+                    //     backName: 'Found Cards',
                   })
-                : setSecondModal(true);
+                : // console.log('aaa')
+                  setSecondModal(true);
             }}>
             <View
               style={{
@@ -272,7 +273,7 @@ export const FoundCardsList = ({route}) => {
             <FlatList
               data={data}
               renderItem={renderItem}
-              keyExtractor={item => item.metal_id}
+              keyExtractor={item => item.id}
               contentContainerStyle={{
                 flexDirection: 'column',
               }}
@@ -287,7 +288,7 @@ export const FoundCardsList = ({route}) => {
           <View
             style={{
               // marginTop: 200,
-              marginBottom: 50,
+              marginBottom: 70,
               margin: '5%',
               // position: 'absolute',
               bottom: 0,
@@ -299,8 +300,8 @@ export const FoundCardsList = ({route}) => {
                 justifyContent: 'center',
                 alignContent: 'center',
                 flexDirection: 'row',
-                marginVertical: '8%',
-                height: 45,
+                marginVertical: '9%',
+                // height: 45,
               }}>
               <ButtonComp
                 btnwidth={'97%'}

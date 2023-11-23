@@ -118,7 +118,7 @@ const sendMessage = async (chatId, senderId, messageText) => {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
     };
     const messageRef = database()
-      .ref(`messages/${chatId}`)
+      .ref(`messages/${chatId}/${senderId}`)
       .push(messageData)
       .then(res => console.log('userMsgSaved'))
       .catch(err => console.log('userMsgNotSaved'));

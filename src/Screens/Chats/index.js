@@ -15,16 +15,18 @@ import {Header} from '../../Components/ReusableComponent/Header';
 import LinearGradient from 'react-native-linear-gradient';
 import {Text} from 'react-native-paper';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import Head from '../../Components/ReusableComponent/Head';
 import ButtonComp from '../../Components/ReusableComponent/Button';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {ModalView} from '../../Components/ReusableComponent/Modal';
 import CheckBox from '../../Components/ReusableComponent/Checkbox';
 import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
 import app from '../../Firebase/firebaseConfig';
 import database from '@react-native-firebase/database';
 import {useSelector} from 'react-redux';
+import {Loader} from '../../Components/ReusableComponent/Loader';
+import {RefreshControl} from 'react-native-gesture-handler';
 
 export const Chats = ({navigation}) => {
   const Navigation = useNavigation();
@@ -35,9 +37,12 @@ export const Chats = ({navigation}) => {
   const [userData, setUserData] = useState([]);
   const AuthReducer = useSelector(state => state.AuthReducer);
   const loggedInUserEmail = AuthReducer?.userData?.user?.email;
-  // console.log('eg', loggedInUserEmail);
+  const display_name = AuthReducer?.userData?.user?.profile?.display_name;
+  const [loader, setloader] = useState(false);
+  console.log('eg', display_name);
 
   useEffect(() => {
+    setloader(true);
     const fetchData = async () => {
       try {
         const snapshot = await database().ref('users').once('value');
@@ -51,9 +56,11 @@ export const Chats = ({navigation}) => {
           // console.log('eghjyb', filteredUserData);
 
           setUserData(filteredUserData);
+          setloader(false);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+        setloader(false);
       }
     };
 
@@ -121,6 +128,44 @@ export const Chats = ({navigation}) => {
   //     image: require('../../Assets/Images/chatuser7.png'),
   //   },
   // ];
+
+  const getData = () => {
+    setloader(true);
+    const fetchData = async () => {
+      try {
+        const snapshot = await database().ref('users').once('value');
+
+        const chatData = snapshot.val();
+        if (chatData) {
+          const chatArray = Object.values(chatData);
+          const filteredUserData = chatArray.filter(
+            user => user.email !== loggedInUserEmail,
+          );
+          // console.log('eghjyb', filteredUserData);
+
+          setUserData(filteredUserData);
+          setloader(false);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setloader(false);
+      }
+    };
+
+    fetchData();
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      setloader(true);
+      getData();
+    }, []),
+  );
+
+  const filteredData = userData.filter(item => {
+    // Check if item's display_name is not equal to the one in the reducer
+    return item.display_name !== display_name;
+  });
 
   const renderItem = ({item}) => {
     return (
@@ -207,17 +252,6 @@ export const Chats = ({navigation}) => {
                         source={require('../../Assets/Images/notificationquantity.png')}
                       />
                     </View>
-                    <View>
-                      <Heading
-                        Heading={'12:30'}
-                        Fontsize={11}
-                        //   color={COLORS.dark}
-                        txtAlign={'center'}
-                        color={'rgba(156, 156, 156, 1)'}
-                        mt={40}
-                        // ml={10}
-                      />
-                    </View>
                   </View>
                 </View>
               </View>
@@ -242,7 +276,7 @@ export const Chats = ({navigation}) => {
       </>
     );
   };
-
+  console.log('userData on chats ', userData.display_name);
   return (
     <>
       <SuccessModal
@@ -260,26 +294,42 @@ export const Chats = ({navigation}) => {
         }
       />
 
-      <SafeArea>
-        <View
-          style={{
-            //   marginVertical: '5%',
+      <SafeArea style={{flex: 1}}>
+        {loader ? (
+          <Loader />
+        ) : (
+          <View
+            style={{
+              //   marginVertical: '5%',
 
-            marginVertical: '5%',
-            marginBottom: Platform.OS === 'ios' ? '13.5%' : '18%',
-            // borderBottomColor: 'rgba(0, 0, 0, 0.1)',
-            // borderBottomWidth: 1,
-          }}>
-          <FlatList
-            data={userData}
-            keyExtractor={item => item.token}
-            renderItem={renderItem}
-            // keyExtractor={item => item.metal_id}
-            contentContainerStyle={{flexDirection: 'column'}}
-            ListHeaderComponent={ListHeaderComponent}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
+              marginVertical: '5%',
+              marginBottom: Platform.OS === 'ios' ? '13.5%' : '18%',
+              // borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+              // borderBottomWidth: 1,
+            }}>
+            <FlatList
+              data={filteredData}
+              keyExtractor={item => item.token}
+              renderItem={renderItem}
+              // keyExtractor={item => item.metal_id}
+              contentContainerStyle={{
+                flexDirection: 'column',
+                paddingBottom: 70,
+              }}
+              ListHeaderComponent={ListHeaderComponent}
+              showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={loader}
+                  onRefresh={() => {
+                    // setRefreshing(true); // Start the refresh animation
+                    getData(); // Fetch new data
+                  }}
+                />
+              }
+            />
+          </View>
+        )}
       </SafeArea>
     </>
   );
