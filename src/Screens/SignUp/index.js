@@ -23,6 +23,12 @@ import InteractParagraph from '../../Components/ReusableComponent/Paragraph';
 import {Loader} from '../../Components/ReusableComponent/Loader';
 import {postRequest} from '../../App/fetch';
 import {BASE_URL} from '../../App/api';
+import {useDispatch, useSelector} from 'react-redux';
+import {removeSignupScreen} from '../../Store/Reducers/SignupReducer';
+import {
+  removetermservicesScreen,
+  termservicesScreen,
+} from '../../Store/Reducers/TermServicesReducer';
 
 export const SignUp = () => {
   let loginValidationScheme = yup.object().shape({
@@ -41,6 +47,13 @@ export const SignUp = () => {
   };
 
   const Navigation = useNavigation();
+  const dispatch = useDispatch();
+  const signupBool = useSelector(state => state.SignupReducer.userData);
+  const termServicesBool = useSelector(
+    state => state.TermServicesReducer.userData,
+  );
+  console.log('signupBool', signupBool);
+  console.log('termServicesBool', termServicesBool);
 
   const [valueEmail, onChangeTextEmail] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
@@ -111,10 +124,10 @@ export const SignUp = () => {
     }
 
     if (!valueConfirmPass) {
-      setErrorConfirmPass('Confirm Password should not be Empty');
+      setErrorConfirmPass('Confirm password should not be empty');
       isValid = false;
     } else if (valuePass !== valueConfirmPass) {
-      setErrorConfirmPass('Password and Confirm Password do not match');
+      setErrorConfirmPass('Password and confirm password do not match');
       isValid = false;
     } else {
       setErrorConfirmPass('');
@@ -155,7 +168,12 @@ export const SignUp = () => {
             onChangeTextPass('');
             onChangeTextConfirmPass('');
             console.log('Done');
+            // if (signupBool) {
+            //   dispatch(termservicesScreen(true));
+            //   dispatch(removeSignupScreen());
+            // } else {
             Navigation.navigate('TermofServices', data);
+            // }
           }
         })
         .catch(error => {
@@ -225,7 +243,12 @@ export const SignUp = () => {
                   }}>
                   <Pressable
                     onPress={() => {
+                      // if (signupBool || termServicesBool) {
+                      //   dispatch(removetermservicesScreen());
+                      //   dispatch(removeSignupScreen());
+                      // } else {
                       Navigation.navigate('login');
+                      // }
                     }}>
                     <Image
                       source={require('../../Assets/Images/back.png')}
@@ -296,7 +319,7 @@ export const SignUp = () => {
                             // marginBottom: 15,
                             marginLeft: 37,
                           }}>
-                          {'*' + errorEmail}
+                          {errorEmail}
                         </Text>
                       )}
                       {/* {errors.email && touched.email && (
@@ -331,7 +354,7 @@ export const SignUp = () => {
                             marginBottom: 15,
                             marginLeft: 37,
                           }}>
-                          {'*' + errorPass}
+                          {errorPass}
                         </Text>
                       )}
                     </View>
@@ -353,7 +376,7 @@ export const SignUp = () => {
                             marginBottom: 15,
                             marginLeft: 37,
                           }}>
-                          {'*' + errorConfirmPass}
+                          {errorConfirmPass}
                         </Text>
                       )}
                     </View>
@@ -391,7 +414,14 @@ export const SignUp = () => {
                       />
                       <Pressable
                         style={{marginLeft: 3}}
-                        onPress={() => Navigation.navigate('login')}>
+                        onPress={() => {
+                          // if (signupBool || termServicesBool) {
+                          //   dispatch(removetermservicesScreen());
+                          //   dispatch(removeSignupScreen());
+                          // } else {
+                          Navigation.navigate('login');
+                          // }
+                        }}>
                         <Heading
                           Fontsize={16}
                           // as={'center'}

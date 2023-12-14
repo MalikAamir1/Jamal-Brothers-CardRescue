@@ -34,16 +34,21 @@ import {userDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Splash} from '../../Screens/Splash';
 import {Button, Image} from 'react-native';
-import { ChatScreenDemo } from '../../Screens/ChatScreenDemo';
+import {ChatScreenDemo} from '../../Screens/ChatScreenDemo';
 
 export default function StackNavigator({route, navigation}) {
   const Stack = createStackNavigator();
   const dispatch = useDispatch();
 
+  const termServicesBool = useSelector(
+    state => state.TermServicesReducer.userData,
+  );
+  const signupBool = useSelector(state => state.SignupReducer.userData);
   const otpScreenBool = useSelector(state => state.ScreenReducer.userData);
   const userAuth = useSelector(state => state.AuthReducer);
   const [userData, setUserData] = useState({});
   const [loader, setLoader] = useState(true);
+  console.log('signupBool', signupBool);
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -121,12 +126,43 @@ export default function StackNavigator({route, navigation}) {
         }}>
         {userData == null ? (
           <>
-            <Stack.Screen name="login" component={Login} />
-            <Stack.Screen name="SignUp" component={SignUp} />
-            <Stack.Screen name="TermofServices" component={TermofServices} />
-            <Stack.Screen name="OtpScreen" component={OtpScreen} />
-            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-            <Stack.Screen name="PasswordChange" component={PasswordChange} />
+            {signupBool ? (
+              <>
+                <Stack.Screen name="SignUp" component={SignUp} />
+                <Stack.Screen name="login" component={Login} />
+                <Stack.Screen
+                  name="TermofServices"
+                  component={TermofServices}
+                />
+                <Stack.Screen name="OtpScreen" component={OtpScreen} />
+                <Stack.Screen
+                  name="ForgotPassword"
+                  component={ForgotPassword}
+                />
+                <Stack.Screen
+                  name="PasswordChange"
+                  component={PasswordChange}
+                />
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="login" component={Login} />
+                <Stack.Screen name="SignUp" component={SignUp} />
+                <Stack.Screen
+                  name="TermofServices"
+                  component={TermofServices}
+                />
+                <Stack.Screen name="OtpScreen" component={OtpScreen} />
+                <Stack.Screen
+                  name="ForgotPassword"
+                  component={ForgotPassword}
+                />
+                <Stack.Screen
+                  name="PasswordChange"
+                  component={PasswordChange}
+                />
+              </>
+            )}
           </>
         ) : otpScreenBool ? (
           <>

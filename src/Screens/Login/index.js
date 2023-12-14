@@ -29,6 +29,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Loader} from '../../Components/ReusableComponent/Loader';
 import {BASE_URL} from '../../App/api';
 import {postRequest} from '../../App/fetch';
+import { removeSignupScreen } from '../../Store/Reducers/SignupReducer';
 
 export const Login = () => {
   const [passHide, setPassHide] = useState(false);
@@ -141,6 +142,7 @@ export const Login = () => {
                   console.log('Not found');
                   Alert.alert('', 'Invalid Password');
                 } else {
+                  dispatch(removeSignupScreen());
                   setDataToAsync('token', JSON.stringify(result.token));
                   setDataToAsync('user', JSON.stringify(result));
 
@@ -246,7 +248,7 @@ export const Login = () => {
                             // marginBottom: 15,
                             marginLeft: 37,
                           }}>
-                          {'*' + errorEmail}
+                          {errorEmail}
                         </Text>
                       )}
                     </View>
@@ -268,7 +270,7 @@ export const Login = () => {
                             marginBottom: 15,
                             marginLeft: 37,
                           }}>
-                          {'*' + errorPass}
+                          {errorPass}
                         </Text>
                       )}
                     </View>

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
+  KeyboardAvoidingView,
 } from 'react-native';
 import Heading from '../../Components/ReusableComponent/Heading';
 import SafeArea from '../../Components/ReusableComponent/Safearea';
@@ -55,10 +56,12 @@ export const EditProfile = ({route}) => {
 
   const [userData, setUserData] = useState({});
   const [valueFullName, onChangeFullName] = useState('');
+  const [errorFullName, setErrorFullName] = useState('');
   const [valueEmail, onChangeEmail] = useState('');
   const [valuePhoneNumber, onChangePhoneNumber] = useState('');
-  // const [valuePhoneNumber, onChangePhoneNumber] = useState('');
+  const [errorPhoneNumber, setErrorPhoneNumber] = useState('');
   const [valueAddress, onChangeAddress] = useState('');
+  const [errorAddress, setErrorAddress] = useState('');
   const [profileImage, onChangeProfileImage] = useState('');
   const [error, onChangeError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -74,6 +77,9 @@ export const EditProfile = ({route}) => {
       onChangeFullName(AuthReducer?.userData?.user?.profile?.display_name);
       onChangePhoneNumber(AuthReducer?.userData?.user?.profile?.telephone);
       onChangeAddress(AuthReducer?.userData?.user?.profile?.street);
+      onChangeProfileImage(
+        '`https://nextgenbulliontool.com${AuthReducer?.userData?.user?.profile?.profile_pic`',
+      );
       setLoading(false);
     }
   }, [dataFromDb]);
@@ -123,11 +129,11 @@ export const EditProfile = ({route}) => {
       console.log(res);
       if (res.assets) {
         // setBanner(res.assets[0].uri);
-        // console.log('lCamera Img');
-        // console.log(res.assets[0].uri);
+        console.log('lCamera Img');
+        console.log(res.assets[0].uri);
         onChangeProfileImage(res.assets[0].uri);
         UpploadProfileImage(res.assets[0].uri);
-        // rbSheetRef.current.close();
+        rbSheetRef.current.close();
         // setIsImageUpload(true);
       } else if (res.didCancel) {
         console.log('cancel');
@@ -144,30 +150,55 @@ export const EditProfile = ({route}) => {
     valueAddress,
     // profileImage,
   ) => {
+    let isValid = true;
+
     // Validation for Full Name
-    if (!localFullName.trim()) {
-      onChangeError('Full Name is empty.');
-      return false;
+    if (!valueFullName.trim()) {
+      // onChangeError('Full Name Should not be empty.');
+      setErrorFullName('Full name should not be empty.');
+      isValid = false;
+      // return false;
+    } else {
+      setErrorFullName(''); // Clear error if the field is not empty
     }
 
     // Validation for Phone Number
-    const phoneNumberPattern = /^\(\d{3}\) \d{3}-\d{4}$/;
+    // const phoneNumberPattern = /^\(\d{3}\) \d{3}-\d{4}$/;
     if (!valuePhoneNumber.trim()) {
-      onChangeError('Phone Number Should not be empty.');
-      return false;
+      // onChangeError('Phone Number Should not be empty.');
+      setErrorPhoneNumber('Phone number should not be empty.');
+      isValid = false;
+      // setErrorFullName('')
+      // return false;
     } else if (valuePhoneNumber.length != 10) {
-      onChangeError('Invalid Phone Number.');
-      return false;
+      // onChangeError('Invalid Phone Number.');
+      setErrorPhoneNumber('Invalid phone number.');
+      isValid = false;
+      // return false;
+    } else {
+      setErrorPhoneNumber(''); // Clear error if the field is not empty
     }
 
     // Validation for Address
     if (!valueAddress.trim()) {
-      onChangeError('Address is empty.');
-      return false;
+      // onChangeError('Address Should not be empty.');
+      setErrorAddress('Address should not be empty.');
+      isValid = false;
+      // return false;
+    } else {
+      setErrorAddress(''); // Clear error if the field is not empty
+    }
+
+    // Validation for Profile Image
+    if (!profileImage) {
+      // onChangeError('Please upload a profile picture.');
+      onChangeError('Profile image should be uploaded.');
+      // return false;
+      isValid = false;
     }
 
     // All fields are valid
-    return true;
+    return isValid;
   };
 
   function EditProfile() {
@@ -331,226 +362,233 @@ export const EditProfile = ({route}) => {
                 {loading ? (
                   <Loader />
                 ) : (
-                  <ScrollView>
-                    <View
-                      style={{
-                        marginHorizontal: '5%',
-                        marginTop: Platform.OS === 'ios' ? '10%' : 6,
-                      }}>
+                  <KeyboardAvoidingView
+                    style={{flex: 1}}
+                    behavior={Platform.OS === 'ios' ? 'padding' : null}
+                    // keyboardVerticalOffset={65}
+                  >
+                    <ScrollView>
                       <View
                         style={{
-                          marginHorizontal: -10,
-                        }}>
-                        <Head head={'Edit Profile'} />
-                      </View>
-
-                      <View
-                        style={{
-                          alignItems: 'center',
+                          marginHorizontal: '5%',
+                          marginTop: Platform.OS === 'ios' ? '10%' : 6,
                         }}>
                         <View
                           style={{
-                            width: 125,
-                            height: 125,
-                            alignSelf: 'center',
-                            marginTop: '10%',
-                            // marginBottom: '8%',
-                            backgroundColor: 'white',
-                            borderWidth: 2,
-                            borderColor: 'rgba(11, 16, 92, 0.3)',
-                            borderRadius: 75,
+                            marginHorizontal: -10,
                           }}>
-                          <Image
-                            // source={require('../../Assets/Images/profileImage.png')}
-                            source={{
-                              uri: `https://nextgenbulliontool.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
-                            }}
+                          <Head head={'Edit Profile'} />
+                        </View>
+
+                        <View
+                          style={{
+                            alignItems: 'center',
+                          }}>
+                          <View
                             style={{
+                              width: 125,
+                              height: 125,
                               alignSelf: 'center',
-                              justifyContent: 'center',
-                              width: 110,
-                              height: 112,
-                              marginTop: 4,
+                              marginTop: '10%',
+                              // marginBottom: '8%',
+                              backgroundColor: 'white',
+                              borderWidth: 2,
+                              borderColor: 'rgba(11, 16, 92, 0.3)',
                               borderRadius: 75,
-                            }}
-                            resizeMode={'cover'}
-                          />
-                          <Pressable
-                            onPress={() => {
-                              console.log('log');
-                              // rbSheetRef.open();
-                              rbSheetRef.current.open();
-                            }}
-                            style={{
-                              position: 'absolute',
-                              alignSelf: 'flex-end',
                             }}>
-                            <View
+                            <Image
+                              // source={require('../../Assets/Images/profileImage.png')}
+                              source={{
+                                uri: `https://nextgenbulliontool.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
+                              }}
                               style={{
-                                width: 45,
-                                height: 42,
+                                alignSelf: 'center',
+                                justifyContent: 'center',
+                                width: 110,
+                                height: 112,
+                                marginTop: 4,
+                                borderRadius: 75,
+                              }}
+                              resizeMode={'cover'}
+                            />
+                            <Pressable
+                              onPress={() => {
+                                console.log('log');
+                                // rbSheetRef.open();
+                                rbSheetRef.current.open();
+                              }}
+                              style={{
                                 position: 'absolute',
                                 alignSelf: 'flex-end',
-                                backgroundColor: 'white',
-                                borderWidth: 2,
-                                borderColor: 'rgba(11, 16, 92, 0.3)',
-                                borderRadius: 75,
-                                marginTop: 82,
                               }}>
-                              <Image
-                                source={require('../../Assets/Images/camera.png')}
+                              <View
                                 style={{
-                                  alignSelf: 'center',
-                                  justifyContent: 'center',
-                                  width: 24,
-                                  height: 24,
-                                  marginTop: 7,
-                                }}
+                                  width: 45,
+                                  height: 42,
+                                  position: 'absolute',
+                                  alignSelf: 'flex-end',
+                                  backgroundColor: 'white',
+                                  borderWidth: 2,
+                                  borderColor: 'rgba(11, 16, 92, 0.3)',
+                                  borderRadius: 75,
+                                  marginTop: 82,
+                                }}>
+                                <Image
+                                  source={require('../../Assets/Images/camera.png')}
+                                  style={{
+                                    alignSelf: 'center',
+                                    justifyContent: 'center',
+                                    width: 24,
+                                    height: 24,
+                                    marginTop: 7,
+                                  }}
+                                />
+                              </View>
+                            </Pressable>
+                          </View>
+                        </View>
+
+                        <View style={{marginVertical: '2%', marginTop: '10%'}}>
+                          {/* <View style={{marginBottom: '5%', marginTop: '10%'}}> */}
+                          <Input
+                            title={'Full Name'}
+                            urlImg={require('../../Assets/Images/frame.png')}
+                            placeholder={'Enter your name'}
+                            value={valueFullName}
+                            // value={dataFromOtpScreenOfSignUp.email}
+                            onChangeText={onChangeFullName}
+                            dob={false}
+                          />
+                          {!!errorFullName && (
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                color: 'red',
+                                marginTop: 5,
+                                // marginBottom: 15,
+                                marginLeft: 41,
+                              }}>
+                              {errorFullName}
+                            </Text>
+                          )}
+                          {/* </View> */}
+                        </View>
+
+                        <View style={{marginVertical: '2%'}}>
+                          <Input
+                            title={'Phone Number'}
+                            urlImg={require('../../Assets/Images/phone.png')}
+                            placeholder={'(123) 456-7890'}
+                            pass={false}
+                            value={valuePhoneNumber}
+                            onChangeText={onChangePhoneNumber}
+                            dob={false}
+                            keyboardType={'numeric'}
+                          />
+                          {!!errorPhoneNumber && (
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                color: 'red',
+                                marginTop: 5,
+                                // marginBottom: 15,
+                                marginLeft: 41,
+                              }}>
+                              {errorPhoneNumber}
+                            </Text>
+                          )}
+                        </View>
+                        <View style={{marginVertical: '2%'}}>
+                          <InputWithCalenderWithDropdownList
+                            title={'Date of Birth'}
+                            urlImg={require('../../Assets/Images/calender.png')}
+                            placeholder={'MM/DD/YYYY'}
+                            // value={valuePhoneNumber}
+                            // onChangeText={onChangePhoneNumber}
+                            // disabled={true}
+                          />
+                        </View>
+
+                        <View style={{marginVertical: '2%'}}>
+                          <Input
+                            title={'Email ID'}
+                            urlImg={require('../../Assets/Images/emailIcon.png')}
+                            // placeholder={dataFromOtpScreenOfSignUp.Email}
+                            placeholder={'email@domain.com'}
+                            pass={false}
+                            value={AuthReducer?.userData?.user?.email}
+                            onChangeText={onChangeEmail}
+                            // value={userAuth.userData.user.email}
+                            disabled={true}
+                            dob={false}
+                          />
+                        </View>
+
+                        <View style={{marginVertical: '2%'}}>
+                          <Input
+                            title={'Address'}
+                            urlImg={require('../../Assets/Images/location.png')}
+                            placeholder={
+                              '1901 Thornridge Cir. Shiloh, Hawaii 81063'
+                            }
+                            pass={false}
+                            value={valueAddress}
+                            onChangeText={onChangeAddress}
+                            dob={false}
+                          />
+                          {!!errorAddress && (
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                color: 'red',
+                                marginTop: 5,
+                                // marginBottom: 15,
+                                marginLeft: 41,
+                              }}>
+                              {errorAddress}
+                            </Text>
+                          )}
+                        </View>
+
+                        <View
+                          style={{
+                            justifyContent: 'center',
+                            alignContent: 'center',
+                            flexDirection: 'row',
+                            marginVertical: '4%',
+                          }}>
+                          <ButtonComp
+                            btnwidth={'97%'}
+                            btnHeight={56}
+                            btnText={'Save'}
+                            justify={'center'}
+                            align={'center'}
+                            fontSize={16}
+                            radius={15}
+                            txtwidth={'100%'}
+                            // bgcolor={'#BA7607'}
+                            press={() => {
+                              EditProfile();
+                              // Navigation.navigate('SimpleBottomTab');
+                              // setModalVisible(true);
+                            }}
+                          />
+                        </View>
+                        <View>
+                          {error && (
+                            <>
+                              <InteractParagraph
+                                txtAlign={'center'}
+                                p={error}
+                                mv={4}
+                                color={'red'}
                               />
-                            </View>
-                          </Pressable>
+                            </>
+                          )}
                         </View>
                       </View>
-
-                      <View style={{marginVertical: '2%', marginTop: '10%'}}>
-                        {/* <View style={{marginBottom: '5%', marginTop: '10%'}}> */}
-                        <Input
-                          title={'Full Name'}
-                          urlImg={require('../../Assets/Images/frame.png')}
-                          placeholder={'Enter your name'}
-                          value={valueFullName}
-                          // value={dataFromOtpScreenOfSignUp.email}
-                          onChangeText={onChangeFullName}
-                          dob={false}
-                        />
-                        {errors.fullName && touched.fullName && (
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              color: 'red',
-                              marginTop: 5,
-                              marginBottom: 5,
-                              marginLeft: 15,
-                            }}>
-                            {errors.fullName}
-                          </Text>
-                        )}
-                        {/* </View> */}
-                      </View>
-
-                      <View style={{marginVertical: '2%'}}>
-                        <Input
-                          title={'Phone Number'}
-                          urlImg={require('../../Assets/Images/phone.png')}
-                          placeholder={'(123) 456-7890'}
-                          pass={false}
-                          value={valuePhoneNumber}
-                          onChangeText={onChangePhoneNumber}
-                          dob={false}
-                        />
-                        {errors.phoneNumber && touched.phoneNumber && (
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              color: 'red',
-                              marginTop: 5,
-                              marginBottom: 5,
-                              marginLeft: 15,
-                            }}>
-                            {errors.phoneNumber}
-                          </Text>
-                        )}
-                      </View>
-                      <View style={{marginVertical: '2%'}}>
-                        <InputWithCalenderWithDropdownList
-                          title={'Date of Birth'}
-                          urlImg={require('../../Assets/Images/calender.png')}
-                          placeholder={'MM/DD/YYYY'}
-                          // value={valuePhoneNumber}
-                          // onChangeText={onChangePhoneNumber}
-                          // disabled={true}
-                        />
-                      </View>
-
-                      <View style={{marginVertical: '2%'}}>
-                        <Input
-                          title={'Email ID'}
-                          urlImg={require('../../Assets/Images/emailIcon.png')}
-                          // placeholder={dataFromOtpScreenOfSignUp.Email}
-                          placeholder={'email@domain.com'}
-                          pass={false}
-                          value={AuthReducer?.userData?.user?.email}
-                          onChangeText={onChangeEmail}
-                          // value={userAuth.userData.user.email}
-                          disabled={true}
-                          dob={false}
-                        />
-                      </View>
-
-                      <View style={{marginVertical: '2%'}}>
-                        <Input
-                          title={'Address'}
-                          urlImg={require('../../Assets/Images/location.png')}
-                          placeholder={
-                            '1901 Thornridge Cir. Shiloh, Hawaii 81063'
-                          }
-                          pass={false}
-                          value={valueAddress}
-                          onChangeText={onChangeAddress}
-                          dob={false}
-                        />
-                        {errors.confirmPassword && touched.confirmPassword && (
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              color: 'red',
-                              marginTop: 5,
-                              marginBottom: 5,
-                              marginLeft: 15,
-                            }}>
-                            {errors.confirmPassword}
-                          </Text>
-                        )}
-                      </View>
-
-                      <View
-                        style={{
-                          justifyContent: 'center',
-                          alignContent: 'center',
-                          flexDirection: 'row',
-                          marginVertical: '4%',
-                        }}>
-                        <ButtonComp
-                          btnwidth={'97%'}
-                          btnHeight={56}
-                          btnText={'Save'}
-                          justify={'center'}
-                          align={'center'}
-                          fontSize={16}
-                          radius={15}
-                          txtwidth={'100%'}
-                          // bgcolor={'#BA7607'}
-                          press={() => {
-                            EditProfile();
-                            // Navigation.navigate('SimpleBottomTab');
-                            // setModalVisible(true);
-                          }}
-                        />
-                      </View>
-                      <View>
-                        {error && (
-                          <>
-                            <InteractParagraph
-                              txtAlign={'center'}
-                              p={error}
-                              mv={4}
-                              color={'red'}
-                            />
-                          </>
-                        )}
-                      </View>
-                    </View>
-                  </ScrollView>
+                    </ScrollView>
+                  </KeyboardAvoidingView>
                 )}
               </>
             )}

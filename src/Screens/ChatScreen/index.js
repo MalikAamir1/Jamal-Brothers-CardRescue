@@ -290,7 +290,7 @@ export const ChatScreen = ({route}) => {
               />
             </View>
             <KeyboardAvoidingView
-              style={{flex: 1}}
+              style={{flex: 1, marginBottom: 45}}
               behavior={Platform.OS === 'ios' ? 'padding' : null}
               // keyboardVerticalOffset={65}
             >
@@ -318,7 +318,7 @@ export const ChatScreen = ({route}) => {
                   shadowRadius: 4,
                   elevation: 5,
                   marginLeft: 18,
-                  marginBottom: 20,
+                  // marginBottom: 45,
                 }}>
                 <TextInput
                   value={messageText}

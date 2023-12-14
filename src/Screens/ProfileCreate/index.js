@@ -43,6 +43,7 @@ import {removeDataToAsync} from '../../Utils/getAndSetAsyncStorage';
 import {removeUserDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
 import InputWithCalenderWithDropdownList from '../../Components/ReusableComponent/DropdownCalender';
 import app from '../../Firebase/firebaseConfig';
+import { signupScreen } from '../../Store/Reducers/SignupReducer';
 
 export const ProfileCreate = ({route}) => {
   const Navigation = useNavigation();
@@ -151,7 +152,7 @@ export const ProfileCreate = ({route}) => {
     // Validation for Full Name
     if (!valueFullName.trim()) {
       // onChangeError('Full Name Should not be empty.');
-      setErrorFullName('Full Name should not be empty.');
+      setErrorFullName('Full name should not be empty.');
       isValid = false;
       // return false;
     } else {
@@ -162,13 +163,13 @@ export const ProfileCreate = ({route}) => {
     // const phoneNumberPattern = /^\(\d{3}\) \d{3}-\d{4}$/;
     if (!valuePhoneNumber.trim()) {
       // onChangeError('Phone Number Should not be empty.');
-      setErrorPhoneNumber('Phone Number should not be empty.');
+      setErrorPhoneNumber('Phone number should not be empty.');
       isValid = false;
       // setErrorFullName('')
       // return false;
     } else if (valuePhoneNumber.length != 10) {
       // onChangeError('Invalid Phone Number.');
-      setErrorPhoneNumber('Invalid Phone Number.');
+      setErrorPhoneNumber('Invalid phone number.');
       isValid = false;
       // return false;
     } else {
@@ -188,7 +189,7 @@ export const ProfileCreate = ({route}) => {
     // Validation for Profile Image
     if (!profileImage) {
       // onChangeError('Please upload a profile picture.');
-      onChangeError('Profile Image should be uploaded.');
+      onChangeError('Profile image should be uploaded.');
       // return false;
       isValid = false;
     }
@@ -402,6 +403,7 @@ export const ProfileCreate = ({route}) => {
                       <Pressable
                         onPress={() => {
                           dispatch(removeOtpScreen());
+                          dispatch(signupScreen(true));
                           removeDataToAsync('token');
                           removeDataToAsync('user');
                           dispatch(removeUserDataFromAsyncStorage());
@@ -418,23 +420,6 @@ export const ProfileCreate = ({route}) => {
                           }}
                         />
                       </Pressable>
-                      <View
-                        style={{
-                          width: '80%',
-                          // alignItemss: 'center',
-                          marginLeft: 20,
-                          textAlign: 'center',
-                        }}>
-                        {error && (
-                          <>
-                            <InteractParagraph
-                              p={error}
-                              color={'red'}
-                              txtAlign={'center'}
-                            />
-                          </>
-                        )}
-                      </View>
                     </View>
                     <View style={{alignItems: 'center', marginTop: 20}}>
                       <Heading
@@ -522,6 +507,25 @@ export const ProfileCreate = ({route}) => {
                       </View>
                     </View>
 
+                    <View
+                      style={{
+                        width: '100%',
+                        // alignItemss: 'center',
+                        // marginLeft: 20,
+                        marginTop: 20,
+                        textAlign: 'center',
+                      }}>
+                      {error && (
+                        <>
+                          <InteractParagraph
+                            p={error}
+                            color={'red'}
+                            txtAlign={'center'}
+                          />
+                        </>
+                      )}
+                    </View>
+
                     <View style={{marginVertical: '2%', marginTop: '10%'}}>
                       <Input
                         title={'Full Name'}
@@ -537,10 +541,10 @@ export const ProfileCreate = ({route}) => {
                             fontSize: 12,
                             color: 'red',
                             marginTop: 5,
-                            marginBottom: 15,
+                            // marginBottom: 15,
                             marginLeft: 41,
                           }}>
-                          {'*' + errorFullName}
+                          {errorFullName}
                         </Text>
                       )}
                       {/* {errors.fullName && touched.fullName && (
@@ -586,10 +590,10 @@ export const ProfileCreate = ({route}) => {
                             fontSize: 12,
                             color: 'red',
                             marginTop: 5,
-                            marginBottom: 15,
+                            // marginBottom: 15,
                             marginLeft: 41,
                           }}>
-                          {'*' + errorPhoneNumber}
+                          {errorPhoneNumber}
                         </Text>
                       )}
                     </View>
@@ -649,10 +653,10 @@ export const ProfileCreate = ({route}) => {
                             fontSize: 12,
                             color: 'red',
                             marginTop: 5,
-                            marginBottom: 15,
+                            // marginBottom: 15,
                             marginLeft: 41,
                           }}>
-                          {'*' + errorAddress}
+                          {errorAddress}
                         </Text>
                       )}
                     </View>

@@ -45,6 +45,7 @@ import {
 } from '../../Utils/getAndSetAsyncStorage';
 import {userDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
 import InputWithCalender from '../../Components/ReusableComponent/InputWithCalender';
+import { removeSignupScreen } from '../../Store/Reducers/SignupReducer';
 
 export const AddCard = ({route}) => {
   const Navigation = useNavigation();
@@ -388,6 +389,7 @@ export const AddCard = ({route}) => {
                   setLoading(false);
 
                   setDataToAsync('user', JSON.stringify(result));
+                  dispatch(removeSignupScreen());
 
                   getDataFromAsync('user')
                     .then(res => {
