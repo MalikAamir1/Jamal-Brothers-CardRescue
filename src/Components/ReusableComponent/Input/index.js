@@ -139,7 +139,7 @@ export default function Input(props) {
               fontFamily: 'FONT.redhat',
               fontSize: 16,
               lineHeight: 21.17,
-              fontWeight: 400,
+              // fontWeight: 400,
             }}
             placeholder={props.placeholder}
             placeholderTextColor={'#A8A8A8'}
