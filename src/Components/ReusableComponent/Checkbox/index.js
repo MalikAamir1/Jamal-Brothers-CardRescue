@@ -9,7 +9,10 @@ const CheckBox = props => {
 
   const handleCheckBoxClick = () => {
     setIsChecked(!isChecked);
-  };
+    // Call the onPress function if it exists
+    if (props.onPress) {
+      props.onPress(!isChecked);
+    }  };
 
   return (
     <TouchableOpacity
@@ -22,8 +25,8 @@ const CheckBox = props => {
           borderColor: 'rgba(11, 16, 92, 0.3)',
           borderWidth: 1,
           borderRadius: 7,
-          marginTop: 15,
-          marginLeft: 24,
+          // marginTop: 15,
+          // marginLeft: 24,
           backgroundColor: isChecked ? 'rgba(51, 190, 2, 1)' : 'white',
         }}>
         <AntDesign

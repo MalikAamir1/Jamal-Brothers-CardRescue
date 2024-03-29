@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  KeyboardAvoidingView,
   LogBox,
   SafeAreaView,
   ScrollView,
@@ -7,13 +8,14 @@ import {
   Text,
   View,
 } from 'react-native';
-import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import StackNavigator from './src/Navigators/Stack';
-import {Provider, useDispatch, useSelector} from 'react-redux';
-import {Store} from './src/Store';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { Store } from './src/Store';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DrawerNavigator from './src/Navigators/Drawer/drawer';
+import { getFcmToken, registerListenerWithFCM } from './src/Utils/PushNotifications';
 
 const App = () => {
   LogBox.ignoreLogs([
@@ -24,12 +26,25 @@ const App = () => {
   ]);
 
   LogBox.ignoreAllLogs();
+
+  useEffect(() => {
+    getFcmToken();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = registerListenerWithFCM();
+    return unsubscribe;
+  }, []);
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <Provider store={Store}>
         <PaperProvider>
-          {/* <DrawerNavigator /> */}
-          <StackNavigator />
+          <KeyboardAvoidingView
+            style={{ flex: 1,  }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <StackNavigator />
+          </KeyboardAvoidingView>
         </PaperProvider>
       </Provider>
     </GestureHandlerRootView>

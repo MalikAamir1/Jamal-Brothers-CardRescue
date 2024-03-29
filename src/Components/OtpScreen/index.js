@@ -39,6 +39,10 @@ export const OtpScreen = ({route}) => {
 
   const otpValue = useRef('');
 
+  const resetOtpValue = () => {
+    otpValue.current = ''; // Reset the OTP value
+  };
+
   const ResendOtp = () => {
     var formdata = new FormData();
     formdata.append('email', route.params.valueEmail);
@@ -49,6 +53,7 @@ export const OtpScreen = ({route}) => {
         console.log(result);
         if (result.success) {
           Alert.alert('Successfull', result.message);
+          resetOtpValue(); // Reset the OTP value
         } else {
           Alert.alert('Error', 'Something went wrong please try again');
         }

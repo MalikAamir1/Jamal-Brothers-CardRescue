@@ -24,6 +24,7 @@ export const postRequestWithToken = async (api, body, token) => {
   });
   return await res.json();
 };
+
 export const postRequestWithTokenAndCookie = async (api, body, token) => {
   var myHeaders = new Headers();
   myHeaders.append('Authorization', `Token ${token}`);
@@ -69,7 +70,21 @@ export const deleteRequest = async (api, token) => {
     method: 'DELETE',
     headers: myHeaders,
   });
-  return await res.json();
+  // return await res.json();
+  // return res.json();
+  if (!res.ok) {
+    // Handle non-successful response (status other than 2xx)
+    throw new Error(`HTTP error! Status: ${res.status}`);
+  }
+
+  // Check if the response body is not empty before trying to parse JSON
+  const contentType = res.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    return await res.json();
+  } else {
+    // If the response is not in JSON format, return an empty object or handle accordingly
+    return {};
+  }
 };
 
 export const putRequestWithToken = async (api, body, token) => {

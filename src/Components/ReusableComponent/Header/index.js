@@ -40,7 +40,7 @@ export const Header = props => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalButton, setModalButton] = useState(false);
 
-  console.log('modalVisible:', modalVisible);
+  console.log('AuthReducer:', AuthReducer?.userData?.user?.profile?.profile_pic);
   console.log('modalButton:', modalButton);
 
   const callLogoutFunctionPopUP = () => {
@@ -157,7 +157,7 @@ export const Header = props => {
                   <Image
                     // source={require('../../../Assets/Images/profileImage.png')}
                     source={{
-                      uri: `https://nextgenbulliontool.com${AuthReducer?.userData?.user?.profile?.profile_pic}`,
+                      uri: `http://23.26.137.178:8000//${AuthReducer?.userData?.user?.profile?.profile_pic}`,
                     }}
                     style={{
                       alignSelf: 'center',
@@ -185,6 +185,7 @@ export const Header = props => {
                   //   mb={20}
                   //   width={170}
                   mt={10}
+                  mx={20}
                 />
                 <Heading
                   Stylefont={'normal'}
@@ -198,7 +199,7 @@ export const Header = props => {
                   mt={3}
                   // ml={-10}
                   mb={20}
-                  //   width={170}
+                  mx={25}
                 />
               </View>
               <View style={{flex: 1, paddingTop: 10}}>

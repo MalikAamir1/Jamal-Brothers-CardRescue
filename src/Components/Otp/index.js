@@ -79,12 +79,12 @@ export const OtpInput = props => {
                     dispatch(otpScreen(true));
                     setDataToAsync('token', JSON.stringify(result.token));
                     setDataToAsync('user', JSON.stringify(result));
-                    app
-                      .database()
-                      .ref(`users/${extractedData.token}`)
-                      .set(extractedData)
-                      .then(() => console.log('User Data saved.'))
-                      .catch(() => console.log('User Data not saved.'));
+                    // app
+                    //   .database()
+                    //   .ref(`users/${extractedData.token}`)
+                    //   .set(extractedData)
+                    //   .then(() => console.log('User Data saved.'))
+                    //   .catch(() => console.log('User Data not saved.'));
 
                     // Navigation.navigate('ProfileCreateStart');
                     getDataFromAsync('user')
@@ -109,7 +109,7 @@ export const OtpInput = props => {
             }
           } else {
             setIsAllFieldsFilled(false);
-            Alert.alert('Error', result.message);
+            Alert.alert('Error', 'Invalid OTP.');
           }
           setLoading(false);
         })

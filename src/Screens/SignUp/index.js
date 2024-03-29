@@ -102,7 +102,7 @@ export const SignUp = () => {
     let isValid = true;
 
     if (!valueEmail) {
-      setErrorEmail('Email cannot be empty.');
+      setErrorEmail('Please enter email.');
       isValid = false;
     } else if (!isValidEmail(valueEmail)) {
       setErrorEmail('Enter valid email');
@@ -112,7 +112,7 @@ export const SignUp = () => {
     }
 
     if (!valuePass) {
-      setErrorPass('Password cannot be empty');
+      setErrorPass('Please enter password.');
       isValid = false;
     } else if (!hasValidPassword(valuePass)) {
       setErrorPass(
@@ -124,10 +124,10 @@ export const SignUp = () => {
     }
 
     if (!valueConfirmPass) {
-      setErrorConfirmPass('Confirm password should not be empty');
+      setErrorConfirmPass('Please enter confirm password.');
       isValid = false;
     } else if (valuePass !== valueConfirmPass) {
-      setErrorConfirmPass('Password and confirm password do not match');
+      setErrorConfirmPass('Password does not match.');
       isValid = false;
     } else {
       setErrorConfirmPass('');
@@ -344,6 +344,7 @@ export const SignUp = () => {
                         pass={'true'}
                         value={valuePass}
                         onChangeText={onChangeTextPass}
+                        th={true}
                       />
                       {!!errorPass && (
                         <Text
@@ -366,6 +367,7 @@ export const SignUp = () => {
                         pass={'true'}
                         value={valueConfirmPass}
                         onChangeText={onChangeTextConfirmPass}
+                        th={true}
                       />
                       {!!errorConfirmPass && (
                         <Text

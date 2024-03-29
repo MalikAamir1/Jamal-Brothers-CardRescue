@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -14,50 +14,63 @@ import {
 import Heading from '../../Components/ReusableComponent/Heading';
 import SafeArea from '../../Components/ReusableComponent/Safearea';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {ScrollView} from 'react-native-gesture-handler';
-import {ActivityIndicator, Button, Text, TextInput} from 'react-native-paper';
+import { ScrollView } from 'react-native-gesture-handler';
+import { ActivityIndicator, Button, Text, TextInput } from 'react-native-paper';
 import Input from '../../Components/ReusableComponent/Input';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import * as yup from 'yup';
 import ButtonComp from '../../Components/ReusableComponent/Button';
 import LinearGradient from 'react-native-linear-gradient';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import InteractParagraph from '../../Components/ReusableComponent/Paragraph';
-import {removeOtpScreen} from '../../Store/Reducers/ScreenReducer';
-import {Loader} from '../../Components/ReusableComponent/Loader';
+import { removeOtpScreen } from '../../Store/Reducers/ScreenReducer';
+import { Loader } from '../../Components/ReusableComponent/Loader';
 import {
   getRequestWithCookie,
+  getRequestWithOutBody,
+  postRequestWithToken,
   postRequestWithTokenAndCookie,
 } from '../../App/fetch';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import DropdownComponent from '../../Components/ReusableComponent/DropDown';
-import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
+import { SuccessModal } from '../../Components/ReusableComponent/SuccessModal';
 import Head from '../../Components/ReusableComponent/Head';
 import InputWithCalender from '../../Components/ReusableComponent/InputWithCalender';
+import { BASE_URL } from '../../App/api';
 
-export const LostNewCard = ({route}) => {
+export const LostNewCard = ({ route }) => {
   const Navigation = useNavigation();
   const dispatch = useDispatch();
-  const userAuth = useSelector(state => state.AuthReducer);
+  const AuthReducer = useSelector(state => state.AuthReducer.userData);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [secondModal, setSecondModal] = useState(false);
 
   const [userData, setUserData] = useState({});
-  const [cardType, setCardtype] = useState({});
-  const [bank, setBank] = useState({});
+  const [cardType, setCardtype] = useState([]);
+  const [bank, setBank] = useState([]);
   const [error, onChangeError] = useState('');
   const [loading, setLoading] = useState(false);
   const [cardHolder, setCardHolder] = useState('');
   const [cardNo, setCardNo] = useState('');
   const [purchaseDate, setPurchaseDate] = useState('');
-  const [Address, onChangeAddress] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [selectedCardtype, setSelectedCardtype] = useState('');
+  const [selectedIssuer, setSelectedIssuer] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [errorCardType, setErrorCardType] = useState(null);
+  const [errorIssuer, setErrorIssuer] = useState(null);
+  const [errorCardHolder, setErrorcardHolder] = useState(null);
+  const [errorCardNo, setErrorCardNo] = useState(null);
+  const [errorExpiryDate, setErrorExpiryDate] = useState(null);
+  const [errorCvv, setErrorCvv] = useState(null);
 
   let data = [
     {
@@ -80,13 +93,192 @@ export const LostNewCard = ({route}) => {
     },
   ];
 
-  const submitbtn = () => {
-    setModalVisible(true);
+  useEffect(() => {
+    getRequestWithOutBody(
+      `${BASE_URL}/cards/active-card-types/`,
+      AuthReducer.token,
+    )
+      .then(result => {
+        // console.log('result', result)
+        const cardType = result.results.map(item => ({
+          label: item.card_type,
+          value: item.card_type,
+          id: item.id
+        }));
+        // console.log('cardType', cardType);
+
+        setCardtype(cardType);
+        getRequestWithOutBody(
+          `${BASE_URL}/cards/active-issuers/`,
+          AuthReducer.token,
+        )
+          .then(result2 => {
+            console.log('result', result2)
+            const issuers = result2.results.map(item => ({
+              label: item.issuer_name,
+              value: item.issuer_name,
+              id: item.id
+            }));
+            setBank(issuers)
+          })
+          .catch(error => {
+            console.log('error', error);
+          });
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  }, []);
+
+  const validateFields = (
+    selectedCardtype,
+    selectedIssuer,
+    cardHolder,
+    cardNo,
+    selectedMonth,
+    selectedYear,
+    cvv,
+  ) => {
+    let isValid = true;
+
+    // Validation for Card Type
+    if (!selectedCardtype) {
+      // onChangeError('Full Name Should not be empty.');
+      setErrorCardType('Card Type should be selected.');
+      isValid = false;
+      // return false;
+    } else {
+      setErrorCardType(''); // Clear error if the field is not empty
+    }
+
+    // Validation for Issuer
+    if (!selectedIssuer) {
+      // onChangeError('Full Name Should not be empty.');
+      setErrorIssuer('Issuer should be selected.');
+      isValid = false;
+      // return false;
+    } else {
+      setErrorIssuer(''); // Clear error if the field is not empty
+    }
+
+    // Validation for NameOnCard
+    const nameOnCardPattern = /^[A-Za-z\s]+$/;
+    if (!cardHolder.trim()) {
+      // onChangeError('Address Should not be empty.');
+      setErrorcardHolder('Card Holder should not be empty.');
+      isValid = false;
+      // return false;
+    } else if (!nameOnCardPattern.test(cardHolder)) {
+      setErrorcardHolder('Name On Card should only contain alphabets and spaces.');
+      isValid = false;
+    } else {
+      setErrorcardHolder(''); // Clear error if the field is not empty
+    }
+
+    // Validation for Card Number
+    if (!cardNo.trim()) {
+      // onChangeError('Address Should not be empty.');
+      setErrorCardNo('Card Number Should not be empty.');
+      isValid = false;
+      // return false;
+    } else if (cardNo.length <= 12) {
+      setErrorCardNo('Card Number should be more then 12 digits');
+      isValid = false;
+    } else {
+      setErrorCardNo(''); // Clear error if the field is not empty
+    }
+
+    // Validation for Expiry Date
+    if (!selectedMonth) {
+      // onChangeError('Full Name Should not be empty.');
+      setErrorExpiryDate('Expiry Date should be selected.');
+      isValid = false;
+      // return false;
+    } else if (!selectedYear) {
+      setErrorExpiryDate('Expiry Date should be selected.');
+      isValid = false;
+    } else {
+      setErrorExpiryDate(''); // Clear error if the field is not empty
+    }
+
+    // Validation for cvv
+    if (!cvv.trim()) {
+      // onChangeError('Address Should not be empty.');
+      setErrorCvv('CVV Should not be empty.');
+      isValid = false;
+      // return false;
+    } else if (cvv.length < 3) {
+      setErrorCvv('Invalid CVV length.');
+      isValid = false;
+    } else {
+      setErrorCvv(''); // Clear error if the field is not empty
+    }
+
+    // All fields are valid
+    return isValid;
   };
 
-  const AuthReducer = useSelector(state => state.AuthReducer);
+  const submitbtn = () => {
+    const isValid = validateFields(
+      selectedCardtype,
+      selectedIssuer,
+      cardHolder,
+      cardNo,
+      selectedMonth,
+      selectedYear,
+      cvv,
+    );
+    console.log('isValid: ', isValid);
+    if (isValid) {
+      var formdata = new FormData();
 
-  console.log('AuthReducer.userData: ', AuthReducer.userData);
+      formdata.append('expiration_month', selectedMonth);
+      formdata.append('expiration_year', selectedYear);
+      formdata.append('issuer_id', selectedIssuer.id);
+      formdata.append('card_type_id', selectedCardtype.id);
+      formdata.append('card_number', cardNo);
+      formdata.append('cvv', cvv);
+      formdata.append('card_holder', cardHolder);
+      formdata.append('comments', '-');
+      formdata.append('is_active', 'True');
+      formdata.append('card_holding_days', 0);
+      formdata.append('card_status', 'lost');
+
+      setLoading(true);
+      postRequestWithToken(
+        `${BASE_URL}/cards/add-card/`,
+        formdata,
+        AuthReducer.token,
+      )
+        .then(result => {
+          console.log('result of Add my card', result);
+          if (result.error == 'Card with this number already exists.') {
+            setLoading(false);
+            setSelectedMonth(null);
+            setSelectedYear(null);
+            Alert.alert('Error', 'Card with this number already exists.');
+          }
+          else {
+            // Alert.alert('Error', result.Error);
+            setModalVisible(true);
+            setLoading(false);
+          }
+        })
+        .catch(error => {
+          console.log('error', error);
+          Alert.alert('Error', error);
+          setLoading(false);
+        });
+    } else {
+      // Handle the case when some fields are empty or invalid
+      // onChangeError('Invalid fields')
+    }
+  }
+
+  const handleDateChange = (month, year) => {
+    setSelectedMonth(month);
+    setSelectedYear(year);
+  };
 
   let loginValidationScheme = yup.object().shape({
     email: yup
@@ -95,7 +287,7 @@ export const LostNewCard = ({route}) => {
       .required('Email address is required '),
     password: yup
       .string()
-      .min(8, ({min}) => `Password must be at least ${min} characters`)
+      .min(8, ({ min }) => `Password must be at least ${min} characters`)
       .required('Password is required '),
   });
 
@@ -118,7 +310,7 @@ export const LostNewCard = ({route}) => {
         }
       />
       <Formik
-        initialValues={{email: '', password: ''}}
+        initialValues={{ email: '', password: '' }}
         validateOnMount={true}
         onSubmit={values => {
           simpleLogin(values);
@@ -154,26 +346,50 @@ export const LostNewCard = ({route}) => {
 
                   <View>
                     <DropdownComponent
-                      data={data}
+                      data={cardType}
                       defaultValue={'Credit Card'}
                       urlImg={require('../../Assets/Images/cardType.png')}
-                      value={cardType}
-                      setValue={setCardtype}
+                      value={selectedCardtype}
+                      setValue={setSelectedCardtype}
                       title={'Card Type'}
                     />
+                    {!!errorCardType && (
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          color: 'red',
+                          marginTop: 5,
+                          // marginBottom: 15,
+                          marginLeft: 39,
+                        }}>
+                        {errorCardType}
+                      </Text>
+                    )}
                   </View>
-                  <View style={{marginVertical: '2%', marginTop: '8%'}}>
+                  <View style={{ marginVertical: '2%', marginTop: '8%' }}>
                     <DropdownComponent
-                      data={dataOfBank}
+                      data={bank}
                       defaultValue={'Bank Of America'}
                       urlImg={require('../../Assets/Images/bank.png')}
-                      value={bank}
-                      setValue={setBank}
+                      value={selectedIssuer}
+                      setValue={setSelectedIssuer}
                       title={'Issuer'}
                     />
+                    {!!errorIssuer && (
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          color: 'red',
+                          marginTop: 5,
+                          // marginBottom: 15,
+                          marginLeft: 39,
+                        }}>
+                        {errorIssuer}
+                      </Text>
+                    )}
                   </View>
 
-                  <View style={{marginVertical: '2%', marginTop: '5%'}}>
+                  <View style={{ marginVertical: '2%', marginTop: '5%' }}>
                     <Input
                       title={'Card Holder'}
                       urlImg={require('../../Assets/Images/frame.png')}
@@ -182,11 +398,22 @@ export const LostNewCard = ({route}) => {
                       // value={dataFromOtpScreenOfSignUp.email}
                       onChangeText={setCardHolder}
                       dob={false}
+                      th={true}
                     />
-
-                    {/* </View> */}
+                    {!!errorCardHolder && (
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          color: 'red',
+                          marginTop: 5,
+                          // marginBottom: 15,
+                          marginLeft: 39,
+                        }}>
+                        {errorCardHolder}
+                      </Text>
+                    )}
                   </View>
-                  <View style={{marginVertical: '1%', marginTop: '5%'}}>
+                  <View style={{ marginVertical: '1%', marginTop: '5%' }}>
                     <Input
                       title={'Card Number'}
                       urlImg={require('../../Assets/Images/cardNo.png')}
@@ -195,9 +422,21 @@ export const LostNewCard = ({route}) => {
                       // value={dataFromOtpScreenOfSignUp.email}
                       onChangeText={setCardNo}
                       dob={false}
+                      maxLength={16}
+                      keyboardType={'numeric'}
                     />
-
-                    {/* </View> */}
+                    {!!errorCardNo && (
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          color: 'red',
+                          marginTop: 5,
+                          // marginBottom: 15,
+                          marginLeft: 39,
+                        }}>
+                        {errorCardNo}
+                      </Text>
+                    )}
                   </View>
 
                   <View
@@ -206,30 +445,57 @@ export const LostNewCard = ({route}) => {
                       flexDirection: 'row',
                       marginTop: 1,
                     }}>
-                    <View style={{marginVertical: '5%', width: '47%'}}>
+                    <View style={{ marginVertical: '5%', width: '47%' }}>
                       <InputWithCalender
                         title={'Expiry Date'}
                         urlImg={require('../../Assets/Images/calender.png')}
                         placeholder={'10 / 25'}
-                        value={purchaseDate}
-                        onChangeText={setPurchaseDate}
+                        // value={purchaseDate}
+                        // onChangeText={setPurchaseDate}
                         ml={'24%'}
                         disabled={true}
-                        // mleft={0}as
+                        onDateChange={handleDateChange}
+                      // mleft={0}as
                       />
+                      {!!errorExpiryDate && (
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: 'red',
+                            marginTop: 5,
+                            // marginBottom: 15,
+                            marginLeft: 39,
+                          }}>
+                          {errorExpiryDate}
+                        </Text>
+                      )}
                     </View>
-                    <View style={{marginVertical: '5%', width: '47%'}}>
+                    <View style={{ marginVertical: '5%', width: '47%' }}>
                       <Input
                         title={'CVV'}
                         urlImg={require('../../Assets/Images/calender.png')}
                         placeholder={'9879700'}
                         pass={false}
-                        onChangeText={onChangeAddress}
+                        value={cvv}
+                        onChangeText={setCvv}
                         dob={false}
                         ml={'24%'}
                         mleft={Platform.OS === 'ios' ? '12%' : '9%'}
                         keyboardType="numeric"
+                        maxLength={4}
                       />
+                      {!!errorCvv && (
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: 'red',
+                            marginTop: 5,
+                            // marginBottom: 15,
+                            marginLeft: 39,
+                          }}>
+                          {errorCvv}
+                        </Text>
+                      )}
                     </View>
                   </View>
 

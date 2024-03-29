@@ -1,5 +1,5 @@
-import {Formik} from 'formik';
-import React, {useState} from 'react';
+import { Formik } from 'formik';
+import React, { useState } from 'react';
 import {
   Alert,
   Image,
@@ -11,24 +11,24 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {ActivityIndicator, Button, Switch, Text} from 'react-native-paper';
+import { ActivityIndicator, Button, Switch, Text } from 'react-native-paper';
 // import COLORS from '../../Assets/Style/Color';
 import ButtonComp from '../../Components/ReusableComponent/Button';
 import Heading from '../../Components/ReusableComponent/Heading';
 import Input from '../../Components/ReusableComponent/Input';
 import * as yup from 'yup';
 
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import InteractParagraph from '../../Components/ReusableComponent/Paragraph';
 import {
   getDataFromAsync,
   setDataToAsync,
 } from '../../Utils/getAndSetAsyncStorage';
-import {userDataFromAsyncStorage} from '../../Store/Reducers/AuthReducer';
-import {useDispatch, useSelector} from 'react-redux';
-import {Loader} from '../../Components/ReusableComponent/Loader';
-import {BASE_URL} from '../../App/api';
-import {postRequest} from '../../App/fetch';
+import { userDataFromAsyncStorage } from '../../Store/Reducers/AuthReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { Loader } from '../../Components/ReusableComponent/Loader';
+import { BASE_URL } from '../../App/api';
+import { postRequest } from '../../App/fetch';
 import { removeSignupScreen } from '../../Store/Reducers/SignupReducer';
 
 export const Login = () => {
@@ -51,7 +51,7 @@ export const Login = () => {
       .required('Email address is required '),
     password: yup
       .string()
-      .min(8, ({min}) => `Password must be at least ${min} characters`)
+      .min(8, ({ min }) => `Password must be at least ${min} characters`)
       .required('Password is required '),
   });
 
@@ -149,7 +149,7 @@ export const Login = () => {
                   getDataFromAsync('user')
                     .then(res => {
                       dispatch(userDataFromAsyncStorage(JSON.parse(res)));
-                      // console.log('res: ', res);
+                      console.log('res: ', res);
                     })
                     .catch(err => {
                       console.log(
@@ -175,7 +175,7 @@ export const Login = () => {
         })
         .catch(error => {
           setLoading(false);
-          console.log('error', error);
+          console.log('errorkkkk', error);
           // onChangeTextEmail('');
         });
       // onChangeError('');
@@ -188,7 +188,7 @@ export const Login = () => {
     <>
       {/* <SafeArea> */}
       <Formik
-        initialValues={{email: '', password: ''}}
+        initialValues={{ email: '', password: '' }}
         validateOnMount={true}
         onSubmit={values => {
           simpleLogin(values);
@@ -207,7 +207,7 @@ export const Login = () => {
             {loading ? (
               <Loader />
             ) : (
-              <ScrollView contentContainerStyle={{flexGrow: 1}}>
+              <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 {/* Add this line */}
                 <View
                   style={{
@@ -216,7 +216,7 @@ export const Login = () => {
                   }}>
                   <Image
                     source={require('../../Assets/Images/logicon.png')}
-                    style={{width: 170, height: 150}}
+                    style={{ width: 170, height: 150 }}
                     resizeMode={'contain'}
                   />
                 </View>
@@ -228,7 +228,7 @@ export const Login = () => {
                     borderRadius: 15,
                   }}>
                   <View>
-                    <View style={{marginBottom: '5%', marginTop: '10%'}}>
+                    <View style={{ marginBottom: '5%', marginTop: '10%' }}>
                       <Input
                         title={'Email / Phone'}
                         urlImg={require('../../Assets/Images/emailIcon.png')}
@@ -252,7 +252,7 @@ export const Login = () => {
                         </Text>
                       )}
                     </View>
-                    <View style={{marginVertical: '3%'}}>
+                    <View style={{ marginVertical: '3%' }}>
                       <Input
                         title={'Password'}
                         urlImg={require('../../Assets/Images/passIcon.png')}
@@ -260,6 +260,7 @@ export const Login = () => {
                         pass={'true'}
                         value={valuePass}
                         onChangeText={onChangeTextPass}
+                        th={true}
                       />
                       {!!errorPass && (
                         <Text
@@ -343,7 +344,7 @@ export const Login = () => {
                       }}>
                       <Image
                         source={require('../../Assets/Images/googleicon.png')}
-                        style={{width: 30, height: 34, marginRight: '10%'}}
+                        style={{ width: 30, height: 34, marginRight: '10%' }}
                       />
                     </Pressable>
                     <Pressable
@@ -352,7 +353,7 @@ export const Login = () => {
                       }}>
                       <Image
                         source={require('../../Assets/Images/facebookicon.png')}
-                        style={{width: 30, height: 35, marginRight: '12%'}}
+                        style={{ width: 30, height: 35, marginRight: '12%' }}
                       />
                     </Pressable>
                     <Pressable
@@ -361,7 +362,7 @@ export const Login = () => {
                       }}>
                       <Image
                         source={require('../../Assets/Images/appleicon.png')}
-                        style={{width: 28, height: 30}}
+                        style={{ width: 28, height: 30 }}
                       />
                     </Pressable>
                   </View>
@@ -379,7 +380,7 @@ export const Login = () => {
                     />
                     <Pressable
                       onPress={() => Navigation.navigate('SignUp')}
-                      style={{marginLeft: 3}}>
+                      style={{ marginLeft: 3 }}>
                       <Heading
                         Fontsize={16}
                         // as={'center'}

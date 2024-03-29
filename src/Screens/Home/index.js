@@ -11,14 +11,17 @@ import {
 } from 'react-native';
 import SafeArea from '../../Components/ReusableComponent/Safearea';
 import Heading from '../../Components/ReusableComponent/Heading';
-import {Header} from '../../Components/ReusableComponent/Header';
+import { Header } from '../../Components/ReusableComponent/Header';
 import LinearGradient from 'react-native-linear-gradient';
-import {Text} from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
-import {useSelector} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { SuccessModal } from '../../Components/ReusableComponent/SuccessModal';
+import { useSelector } from 'react-redux';
+import { getRequestWithOutBody } from '../../App/fetch';
+import { BASE_URL } from '../../App/api';
+import { Loader } from '../../Components/ReusableComponent/Loader';
 
 export const Home = () => {
   const data = [
@@ -43,6 +46,88 @@ export const Home = () => {
   const Navigation = useNavigation();
   const [secondModal, setSecondModal] = useState(false);
   const AuthReducer = useSelector(state => state.AuthReducer);
+  const [foundCards, setFoundCards] = useState([]);
+  const [lostCardsData, setLostCardsData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [cardTypeData, setCardTypeData] = useState([]);
+  console.log('Authreducer', AuthReducer)
+
+  useEffect(() => {
+    setLoading(true);
+    getRequestWithOutBody(
+      `${BASE_URL}/cards/active-card-types/`,
+      AuthReducer.userData.token,
+    )
+      .then(result => {
+        // console.log('result.results of card type', result.results)
+        setCardTypeData(result.results); // Store issuer data
+        getRequestWithOutBody(
+          `${BASE_URL}/cards/found-cards/`,
+          AuthReducer.userData.token,
+        )
+          .then(result => {
+            // console.log('result on lost cards', result.results)
+
+            setFoundCards(result.results);
+            getRequestWithOutBody(
+              `${BASE_URL}/cards/lost-cards/`,
+              AuthReducer.userData.token,
+            )
+              .then(result => {
+                // console.log('result on lost cards', result.results)
+
+                setLostCardsData(result.results);
+                setLoading(false);
+                // setCardTypeData(result.results); // Store issuer data
+              })
+              .catch(error => {
+                console.log('error', error);
+                setLoading(false);
+              });
+          })
+          .catch(error => {
+            console.log('error', error);
+            setLoading(false);
+          });
+      })
+      .catch(error => {
+        console.log('error', error);
+        setLoading(false);
+      });
+  }, []);
+
+  // Function to fetch updated data from both found cards and lost cards
+  const fetchUpdatedData = async () => {
+    try {
+      // setLoading(true);
+
+      // Fetch found cards data
+      const foundCardsResult = await getRequestWithOutBody(
+        `${BASE_URL}/cards/found-cards/`,
+        AuthReducer.userData.token
+      );
+      setFoundCards(foundCardsResult.results);
+
+      // Fetch lost cards data
+      const lostCardsResult = await getRequestWithOutBody(
+        `${BASE_URL}/cards/lost-cards/`,
+        AuthReducer.userData.token
+      );
+      setLostCardsData(lostCardsResult.results);
+
+      // setLoading(false);
+    } catch (error) {
+      console.log('Error fetching updated data:', error);
+      // setLoading(false);
+    }
+  };
+
+  // useFocusEffect to fetch updated data when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUpdatedData();
+    }, [])
+  );
 
   const FoundCards = () => {
     setLostCard(false);
@@ -51,7 +136,26 @@ export const Home = () => {
     setLostCard(true);
   };
 
-  const renderItem = ({item, index}) => {
+  const formatCardNumber = (cardNumber) => {
+    const visibleDigits = 4;
+    const maskedDigits = cardNumber.length - visibleDigits;
+    const maskedPart = '*'.repeat(maskedDigits);
+    const visiblePart = cardNumber.slice(-visibleDigits);
+    return `${maskedPart}${visiblePart}`;
+  };
+
+  const ListEmptyComponent = () => {
+    return (
+      <>
+        {loading ? <Loader /> : null}
+      </>
+    );
+  };
+
+  const renderItem = ({ item, index }) => {
+    const cardType = cardTypeData.find((cardType) => cardType?.id === item?.card_type);
+    const formattedCardNumber = formatCardNumber(item?.card_number);
+
     return (
       <>
         <View
@@ -66,11 +170,13 @@ export const Home = () => {
           }}>
           <Pressable
             onPress={() => {
-              item.match
-                ? Navigation.navigate('ChatScreenDemo', {
-                    backName: 'Home',
-                  })
-                : setSecondModal(true);
+              if ((item.found_by && item.found_by_user_profile) || (item.lost_by && item.lost_by_user_profile)) {
+                Navigation.navigate('ChatScreen', {
+                  userInfo: item,
+                });
+              } else {
+                setSecondModal(true);
+              }
             }}>
             <View
               style={{
@@ -94,12 +200,12 @@ export const Home = () => {
                     Stylefont={'normal'}
                     // Fontweight={'bold'}
                     Fontsize={14}
-                    txtAlign={'center'}
+                    txtAlign={'left'}
                     // p={10}
                     lh={18}
-                    Heading={item.type}
+                    Heading={cardType?.card_type || 'N/A'}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={Platform.OS === 'ios' ? -77 : -73}
+                    ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
                   />
                 </View>
@@ -121,7 +227,7 @@ export const Home = () => {
                     txtAlign={'center'}
                     // p={10}
                     lh={18}
-                    Heading={item.cardNo}
+                    Heading={formattedCardNumber}
                     color={'rgba(102, 112, 128, 1)'}
                     ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
@@ -143,7 +249,7 @@ export const Home = () => {
                     txtAlign={'right'}
                     Heading={'Card Holder'}
                     color={'rgba(16, 35, 78, 1)'}
-                    // ml={-20}
+                  // ml={-20}
                   />
                   <Heading
                     Stylefont={'normal'}
@@ -152,7 +258,7 @@ export const Home = () => {
                     // txtAlign={'center'}
                     // p={10}
                     lh={18}
-                    Heading={item.holder}
+                    Heading={item.card_holder.substring(0, 15)}
                     color={'rgba(102, 112, 128, 1)'}
                     // ml={16}
                     txtAlign={'right'}
@@ -169,7 +275,7 @@ export const Home = () => {
                     Heading={'Day'}
                     color={'rgba(16, 35, 78, 1)'}
                     txtAlign={'right'}
-                    // ml={20}
+                  // ml={20}
                   />
                   <Heading
                     Stylefont={'normal'}
@@ -178,7 +284,7 @@ export const Home = () => {
                     txtAlign={'right'}
                     // p={10}
                     lh={18}
-                    Heading={item.day}
+                    Heading={item.card_holding_days}
                     color={'rgba(102, 112, 128, 1)'}
                     // ml={20}
                     mt={5}
@@ -201,13 +307,13 @@ export const Home = () => {
             // marginVertical: '5%',
             marginBottom: 20,
           }}>
-          <Header header={'Home'} />
+          {/* <Header header={'Home'} /> */}
 
           <View
             style={{
               justifyContent: 'space-between',
               flexDirection: 'row',
-              marginTop: 40,
+              marginTop: 25,
             }}>
             <View
               style={{
@@ -229,7 +335,8 @@ export const Home = () => {
                 Stylefont={'normal'}
                 Fontweight={'bold'}
                 Fontsize={23}
-                txtAlign={'center'}
+                // txtAlign={'center'}
+                width={220}
                 p={10}
                 lh={31}
                 Heading={AuthReducer?.userData?.user?.profile?.display_name}
@@ -297,7 +404,7 @@ export const Home = () => {
                   <Entypo name="cross" size={26} color={'white'} />
                 </View>
               </View>
-              <View style={{alignSelf: 'center'}}>
+              <View style={{ alignSelf: 'center' }}>
                 <Heading
                   Stylefont={'normal'}
                   // Fontweight={'bold'}
@@ -324,7 +431,7 @@ export const Home = () => {
                 color={'rgba(102, 112, 128, 1)'}
                 ml={-3}
                 mb={20}
-                // width={170}
+              // width={170}
               />
               {/* <View style={{alignSelf: 'center'}} */}
               <Pressable
@@ -333,8 +440,8 @@ export const Home = () => {
                 }}>
                 <LinearGradient
                   colors={['#FCDD8E', '#F9B401']}
-                  start={{x: 0.5, y: -5}}
-                  end={{x: 0.4, y: 4}}
+                  start={{ x: 0.5, y: -5 }}
+                  end={{ x: 0.4, y: 4 }}
                   style={{
                     // flex: 1,
                     height: 30,
@@ -363,7 +470,7 @@ export const Home = () => {
                 width: 171,
                 flex: 1,
               }}>
-              <View style={{alignSelf: 'center', marginTop: 15}}>
+              <View style={{ alignSelf: 'center', marginTop: 15 }}>
                 <Image
                   source={require('../../Assets/Images/atmcard2.png')}
                   style={{
@@ -375,7 +482,7 @@ export const Home = () => {
                   }}
                 />
               </View>
-              <View style={{alignSelf: 'center'}}>
+              <View style={{ alignSelf: 'center' }}>
                 <Heading
                   Stylefont={'normal'}
                   // Fontweight={'bold'}
@@ -402,7 +509,7 @@ export const Home = () => {
                 color={'rgba(102, 112, 128, 1)'}
                 ml={-3}
                 mb={20}
-                // width={170}
+              // width={170}
               />
               {/* <View style={{alignSelf: 'center'}} */}
               <Pressable
@@ -411,8 +518,8 @@ export const Home = () => {
                 }}>
                 <LinearGradient
                   colors={['#FCDD8E', '#F9B401']}
-                  start={{x: 0.5, y: -5}}
-                  end={{x: 0.4, y: 4}}
+                  start={{ x: 0.5, y: -5 }}
+                  end={{ x: 0.4, y: 4 }}
                   style={{
                     // flex: 1,
                     height: 30,
@@ -470,8 +577,8 @@ export const Home = () => {
               </TouchableOpacity>
               <LinearGradient
                 colors={['#0B105C', '#407BFF']}
-                start={{x: 2, y: 0}}
-                end={{x: 0, y: 1}}
+                start={{ x: 2, y: 0 }}
+                end={{ x: 0, y: 1 }}
                 style={{
                   flex: 1,
                   // marginLeft: 40,
@@ -491,7 +598,7 @@ export const Home = () => {
                     //   width: 190,
                     alignItems: 'center',
                   }}
-                  // onPress={setLostCard(false)}
+                // onPress={setLostCard(false)}
                 >
                   <Text
                     style={{
@@ -518,8 +625,8 @@ export const Home = () => {
               }}>
               <LinearGradient
                 colors={['#0B105C', '#407BFF']}
-                start={{x: 2, y: 0}}
-                end={{x: 0, y: 1}}
+                start={{ x: 2, y: 0 }}
+                end={{ x: 0, y: 1 }}
                 style={{
                   flex: 1,
                   // marginLeft: 40,
@@ -535,7 +642,7 @@ export const Home = () => {
                     //   width: 190,
                     alignItems: 'center',
                   }}
-                  //   onPress={yes}
+                //   onPress={yes}
                 >
                   <Text
                     style={{
@@ -590,18 +697,27 @@ export const Home = () => {
       <SafeArea>
         <View
           style={{
+            marginHorizontal: '6%',
+            marginVertical: '5%',            // marginVertical: '5%',
+            // marginBottom: 20,
+          }}>
+          <Header header={'Home'} />
+        </View>
+        <View
+          style={{
             marginHorizontal: '5%',
-            marginVertical: '5%',
-            marginBottom: Platform.OS === 'ios' ? '13.5%' : '22%',
+            // marginVertical: '5%',
+            marginBottom: Platform.OS === 'ios' ? '30%' : '32%',
             // borderBottomColor: 'rgba(0, 0, 0, 0.1)',
             // borderBottomWidth: 1,
           }}>
           <FlatList
-            data={data}
+            data={lostCard ? lostCardsData : foundCards}
             renderItem={renderItem}
             keyExtractor={item => item.id}
-            contentContainerStyle={{flexDirection: 'column'}}
+            contentContainerStyle={{ flexDirection: 'column' }}
             ListHeaderComponent={ListHeaderComponent}
+            ListEmptyComponent={ListEmptyComponent} // Rendered when the list is empty
             showsVerticalScrollIndicator={false}
           />
         </View>

@@ -48,7 +48,7 @@ export default function StackNavigator({route, navigation}) {
   const userAuth = useSelector(state => state.AuthReducer);
   const [userData, setUserData] = useState({});
   const [loader, setLoader] = useState(true);
-  console.log('signupBool', signupBool);
+  // console.log('signupBool', signupBool);
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -71,10 +71,10 @@ export default function StackNavigator({route, navigation}) {
     (async () => {
       let value = getData().then(res => {
         // console.log('this is res in APp');
-        console.log(res);
+        // console.log(res);
         let v = JSON.parse(res);
 
-        console.log('v:', v);
+        // console.log('v:', v);
 
         if (v?.user.id) {
           dispatch(userDataFromAsyncStorage(v));
@@ -96,13 +96,13 @@ export default function StackNavigator({route, navigation}) {
     }
   }, [userAuth.userData]);
 
-  useEffect(() => {
-    console.log('userData:', userData);
-    console.log('userAuth:', userAuth.userData.user);
-  }, [userData]);
-  useEffect(() => {
-    console.log('otpScreenBool:', otpScreenBool);
-  }, [otpScreenBool]);
+  // useEffect(() => {
+  //   console.log('userData:', userData);
+  //   console.log('userAuth:', userAuth.userData.user);
+  // }, [userData]);
+  // useEffect(() => {
+  //   console.log('otpScreenBool:', otpScreenBool);
+  // }, [otpScreenBool]);
 
   if (loader) return <SplashScreenPage />;
 

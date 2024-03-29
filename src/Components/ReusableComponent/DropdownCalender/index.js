@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,25 +14,41 @@ import Heading from '../Heading';
 import FONT from '../../../Assets/Style/Font';
 
 const InputWithCalenderWithDropdownList = props => {
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  console.log(selectedDate);
-  const formattedDate = selectedDate
-    ? selectedDate.toLocaleDateString('en-US', {
+  const initialDate = props.initialDate ? new Date(props.initialDate) : null;
+  const [selectedDate, setSelectedDate] = useState(initialDate);
+    const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  console.log('selectedDate', selectedDate);
+  // Use the initialDate to set the formattedDate
+  const formattedDate = initialDate
+    ? initialDate.toLocaleDateString('en-US', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
       })
     : '';
-  console.log(formattedDate);
+  console.log(initialDate);
 
   const toggleDatePicker = () => {
     setDatePickerVisible(!isDatePickerVisible);
   };
 
-  const handleConfirm = date => {
-    setSelectedDate(date);
+  const handleConfirm = (date) => {
+    // Check if the selected date is in the past
+    const isPastDate = date < new Date();
+
+    if (isPastDate) {
+      setSelectedDate(date);
+    } else {
+      // Handle the case where the selected date is not in the past (optional)
+      alert('Invalid Date of Birth.');
+      return
+      // You can show an error message or perform any other action.
+    }
+
     toggleDatePicker();
+
+    // Pass the selected date to the parent screen using the callback
+    props.onDateSelect && props.onDateSelect(isPastDate ? date.toISOString().split('T')[0] : null);
   };
 
   return (
@@ -56,19 +72,21 @@ const InputWithCalenderWithDropdownList = props => {
           style={styles.inputWrapper}
           onPress={toggleDatePicker}
           disabled={props.disabled}>
-          <TextInput
-            editable={false}
-            value={formattedDate}
-            style={styles.input}
-            placeholder={props.placeholder}
-            placeholderTextColor="#A8A8A8"
-          />
-          <Icon
-            name={'keyboard-arrow-down'}
-            style={styles.arrowIcon}
-            color={'rgba(123, 134, 158, 1)'}
-            size={30}
-          />
+          <View pointerEvents="none">
+            <TextInput
+              editable={false}
+              value={formattedDate}
+              style={styles.input}
+              placeholder={props.placeholder}
+              placeholderTextColor="#A8A8A8"
+            />
+              </View>
+            <Icon
+              name={'keyboard-arrow-down'}
+              style={styles.arrowIcon}
+              color={'rgba(123, 134, 158, 1)'}
+              size={30}
+            />
         </Pressable>
       </View>
 
@@ -98,6 +116,7 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     flex: 1,
   },
@@ -110,7 +129,7 @@ const styles = StyleSheet.create({
     width: '85%',
     color: '#1C1C1C',
     marginBottom: -1,
-    marginLeft: Platform.OS === 'ios' ? 19 : 14,
+    marginLeft: Platform.OS === 'ios' ? 20 : 14,
     fontFamily: FONT.redhat,
     fontSize: 16,
   },

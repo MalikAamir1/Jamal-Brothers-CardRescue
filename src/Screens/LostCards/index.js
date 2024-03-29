@@ -11,42 +11,114 @@ import {
 } from 'react-native';
 import SafeArea from '../../Components/ReusableComponent/Safearea';
 import Heading from '../../Components/ReusableComponent/Heading';
-import {Header} from '../../Components/ReusableComponent/Header';
+import { Header } from '../../Components/ReusableComponent/Header';
 import LinearGradient from 'react-native-linear-gradient';
-import {Text} from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from '../../Components/ReusableComponent/Head';
 import ButtonComp from '../../Components/ReusableComponent/Button';
-import {useNavigation} from '@react-navigation/native';
-import {ModalView} from '../../Components/ReusableComponent/Modal';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { ModalView } from '../../Components/ReusableComponent/Modal';
 import CheckBox from '../../Components/ReusableComponent/Checkbox';
-import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
+import { SuccessModal } from '../../Components/ReusableComponent/SuccessModal';
+import { getRequestWithOutBody } from '../../App/fetch';
+import { BASE_URL } from '../../App/api';
+import { useSelector } from 'react-redux';
+import { Loader } from '../../Components/ReusableComponent/Loader';
 
-export const LostCards = ({route}) => {
+export const LostCards = ({ route }) => {
   const Navigation = useNavigation();
+  const AuthReducer = useSelector(state => state.AuthReducer.userData);
+
   const [secondModal, setSecondModal] = useState(false);
+  const [lostCards, setLostCards] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [cardTypeData, setCardTypeData] = useState([]);
 
-  const data = [
-    {
-      id: 1,
-      type: 'Credit Card',
-      cardNo: '****** ****** ****** 23456',
-      holder: 'Billy Kane',
-      day: '25',
-      match: true,
-    },
-    {
-      id: 2,
-      type: 'Credit Card',
-      cardNo: '****** ****** ****** 23456',
-      holder: 'Billy Kane',
-      day: '25',
-      match: false,
-    },
-  ];
+  // const data = [
+  //   {
+  //     id: 1,
+  //     type: 'Credit Card',
+  //     cardNo: '****** ****** ****** 23456',
+  //     holder: 'Billy Kane',
+  //     day: '25',
+  //     match: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     type: 'Credit Card',
+  //     cardNo: '****** ****** ****** 23456',
+  //     holder: 'Billy Kane',
+  //     day: '25',
+  //     match: false,
+  //   },
+  // ];
 
-  const renderItem = ({item}) => {
+  useEffect(() => {
+    setLoading(true);
+    getRequestWithOutBody(
+      `${BASE_URL}/cards/active-card-types/`,
+      AuthReducer.token,
+    )
+      .then(result => {
+        console.log('result.results of card type', result.results)
+        setCardTypeData(result.results); // Store issuer data
+        getRequestWithOutBody(
+          `${BASE_URL}/cards/lost-cards/`,
+          AuthReducer.token,
+        )
+          .then(result => {
+            console.log('result on lost cards', result.results)
+
+            setLostCards(result.results);
+            setLoading(false);
+            // setCardTypeData(result.results); // Store issuer data
+          })
+          .catch(error => {
+            console.log('error', error);
+            setLoading(false);
+          });
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  }, []);
+
+  // Function to fetch updated data from the server
+  const fetchUpdatedData = async () => {
+    try {
+      // setLoading(true);
+      const result = await getRequestWithOutBody(
+        `${BASE_URL}/cards/lost-cards/`,
+        AuthReducer.token
+      );
+      setLostCards(result.results);
+      // setLoading(false);
+    } catch (error) {
+      console.log('Error fetching updated data:', error);
+      // setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUpdatedData();
+    }, [])
+  );
+
+  const formatCardNumber = (cardNumber) => {
+    const visibleDigits = 4;
+    const maskedDigits = cardNumber.length - visibleDigits;
+    const maskedPart = '*'.repeat(maskedDigits);
+    const visiblePart = cardNumber.slice(-visibleDigits);
+    return `${maskedPart}${visiblePart}`;
+  };
+
+  const renderItem = ({ item }) => {
+    const cardType = cardTypeData.find((cardType) => cardType?.id === item?.card_type);
+    const formattedCardNumber = formatCardNumber(item?.card_number);
+
     return (
       <>
         <View
@@ -61,12 +133,16 @@ export const LostCards = ({route}) => {
           }}>
           <Pressable
             onPress={() => {
-              item.match
-                ? Navigation.navigate('ChatScreenDemo', {
-                    //     backName: false,
-                  })
-                : setSecondModal(true);
-            }}>
+              if (item.found_by && item.found_by_user_profile) {
+                Navigation.navigate('ChatScreen', {
+                  // Additional parameters if needed
+                  userInfo: item
+                });
+              } else {
+                setSecondModal(true);
+              }
+            }}
+          >
             <View
               style={{
                 justifyContent: 'space-between',
@@ -89,12 +165,12 @@ export const LostCards = ({route}) => {
                     Stylefont={'normal'}
                     // Fontweight={'bold'}
                     Fontsize={14}
-                    txtAlign={'center'}
+                    txtAlign={'left'}
                     // p={10}
                     lh={18}
-                    Heading={item.type}
+                    Heading={cardType?.card_type || 'N/A'}
                     color={'rgba(102, 112, 128, 1)'}
-                    ml={Platform.OS === 'ios' ? -77 : -73}
+                    ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
                   />
                 </View>
@@ -116,7 +192,7 @@ export const LostCards = ({route}) => {
                     txtAlign={'center'}
                     // p={10}
                     lh={18}
-                    Heading={item.cardNo}
+                    Heading={formattedCardNumber}
                     color={'rgba(102, 112, 128, 1)'}
                     ml={Platform.OS === 'ios' ? 21 : 21}
                     mt={5}
@@ -138,7 +214,7 @@ export const LostCards = ({route}) => {
                     txtAlign={'right'}
                     Heading={'Card Holder'}
                     color={'rgba(16, 35, 78, 1)'}
-                    // ml={-20}
+                  // ml={-20}
                   />
                   <Heading
                     Stylefont={'normal'}
@@ -147,7 +223,7 @@ export const LostCards = ({route}) => {
                     // txtAlign={'center'}
                     // p={10}
                     lh={18}
-                    Heading={item.holder}
+                    Heading={item.card_holder.substring(0, 15)}
                     color={'rgba(102, 112, 128, 1)'}
                     // ml={16}
                     txtAlign={'right'}
@@ -164,7 +240,7 @@ export const LostCards = ({route}) => {
                     Heading={'Day'}
                     color={'rgba(16, 35, 78, 1)'}
                     txtAlign={'right'}
-                    // ml={20}
+                  // ml={20}
                   />
                   <Heading
                     Stylefont={'normal'}
@@ -173,7 +249,7 @@ export const LostCards = ({route}) => {
                     txtAlign={'right'}
                     // p={10}
                     lh={18}
-                    Heading={item.day}
+                    Heading={item.card_holding_days}
                     color={'rgba(102, 112, 128, 1)'}
                     // ml={20}
                     mt={5}
@@ -202,85 +278,90 @@ export const LostCards = ({route}) => {
     );
   };
 
-  const ListFooterComponent = () => {
-    return (
-      <>
-        <View
-          style={{
-            marginTop: 80,
-            // marginBottom: -20,
-            margin: '5%',
-          }}>
-          <View style={{flexDirection: 'row'}}>
-            <LinearGradient
-              colors={['#FCDD8E', '#F9B401']}
-              start={{x: 0.5, y: -5}}
-              end={{x: 0.4, y: 4}}
-              style={{
-                flex: 1,
-                marginLeft: 5,
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginRight: 5,
-                // width: 181,
-                width: 160,
-                height: 56,
-                borderRadius: 7,
-              }}>
-              <TouchableOpacity
-                style={{
-                  width: 190,
-                  alignItems: 'center',
-                }}
-                onPress={() => {
-                  Navigation.navigate('LostExistingCard');
-                }}>
-                <Text
-                  style={{
-                    color: '#0B105C',
-                    fontSize: 16,
-                    // fontWeight: 'bold',
-                  }}>
-                  Lost existing card?
-                </Text>
-              </TouchableOpacity>
-            </LinearGradient>
-            <LinearGradient
-              colors={['#FCDD8E', '#F9B401']}
-              start={{x: 0.5, y: -5}}
-              end={{x: 0.4, y: 4}}
-              style={{
-                flex: 1,
-                marginLeft: 5,
-                justifyContent: 'center',
-                alignItems: 'center',
-                // width: 181,
-                width: 160,
-                borderRadius: 7,
-              }}>
-              <TouchableOpacity
-                style={{
-                  width: 190,
-                  alignItems: 'center',
-                }}
-                onPress={() => {
-                  Navigation.navigate('LostNewCard');
-                }}>
-                <Text
-                  style={{
-                    color: '#0B105C',
-                    fontSize: 16,
-                    // fontWeight: 'bold',
-                  }}>
-                  Lost New Card
-                </Text>
-              </TouchableOpacity>
-            </LinearGradient>
-          </View>
-        </View>
-      </>
-    );
-  };
+  // const ListFooterComponent = () => {
+  //   return (
+  //     <>
+  //       <View
+  //         style={{
+  //           marginTop: 50,
+  //           // marginBottom: 35,
+  //           marginBottom: Platform.OS === 'ios' ? '18%' : '28%',
+
+  //           // marginBottom: 50,
+  //           margin: '5%',
+  //           // position: 'absolute',
+  //           // bottom: Platform.OS === 'ios' ? 0 : 55,
+  //         }}>
+  //         <View style={{ flexDirection: 'row' }}>
+  //           <LinearGradient
+  //             colors={['#FCDD8E', '#F9B401']}
+  //             start={{ x: 0.5, y: -5 }}
+  //             end={{ x: 0.4, y: 4 }}
+  //             style={{
+  //               flex: 1,
+  //               marginLeft: 5,
+  //               justifyContent: 'center',
+  //               alignItems: 'center',
+  //               marginRight: 5,
+  //               // width: 181,
+  //               width: 160,
+  //               height: 56,
+  //               borderRadius: 7,
+  //             }}>
+  //             <TouchableOpacity
+  //               style={{
+  //                 width: 190,
+  //                 alignItems: 'center',
+  //               }}
+  //               onPress={() => {
+  //                 Navigation.navigate('LostExistingCard');
+  //               }}>
+  //               <Text
+  //                 style={{
+  //                   color: '#0B105C',
+  //                   fontSize: 16,
+  //                   // fontWeight: 'bold',
+  //                 }}>
+  //                 Lost Existing Card?
+  //               </Text>
+  //             </TouchableOpacity>
+  //           </LinearGradient>
+  //           <LinearGradient
+  //             colors={['#FCDD8E', '#F9B401']}
+  //             start={{ x: 0.5, y: -5 }}
+  //             end={{ x: 0.4, y: 4 }}
+  //             style={{
+  //               flex: 1,
+  //               marginLeft: 5,
+  //               justifyContent: 'center',
+  //               alignItems: 'center',
+  //               // width: 181,
+  //               width: 160,
+  //               borderRadius: 7,
+  //             }}>
+  //             <TouchableOpacity
+  //               style={{
+  //                 width: 190,
+  //                 alignItems: 'center',
+  //               }}
+  //               onPress={() => {
+  //                 Navigation.navigate('LostNewCard');
+  //               }}>
+  //               <Text
+  //                 style={{
+  //                   color: '#0B105C',
+  //                   fontSize: 16,
+  //                   // fontWeight: 'bold',
+  //                 }}>
+  //                 Lost New Card
+  //               </Text>
+  //             </TouchableOpacity>
+  //           </LinearGradient>
+  //         </View>
+  //       </View>
+  //     </>
+  //   );
+  // };
 
   return (
     <>
@@ -296,101 +377,117 @@ export const LostCards = ({route}) => {
       />
 
       <SafeArea>
-        <View
-          style={{
-            //   marginVertical: '5%',
-            marginBottom: Platform.OS === 'ios' ? 60 : '6%',
-            flex: 1,
-            justifyContent: 'space-between',
-          }}>
-          <View>
-            <FlatList
-              data={data}
-              renderItem={renderItem}
-              keyExtractor={item => item.metal_id}
-              contentContainerStyle={{flexDirection: 'column'}}
-              ListHeaderComponent={ListHeaderComponent}
-              // ListFooterComponent={ListFooterComponent}
-              showsVerticalScrollIndicator={false}
-            />
-          </View>
+        {loading ? (
+          <Loader />
+        ) : (
           <View
             style={{
-              // marginTop: 80,
-              marginBottom: 35,
-              // marginBottom: 50,
-              margin: '5%',
-              // position: 'absolute',
-              bottom: Platform.OS === 'ios' ? 0 : 55,
+              flex: 1,
             }}>
-            <View style={{flexDirection: 'row'}}>
-              <LinearGradient
-                colors={['#FCDD8E', '#F9B401']}
-                start={{x: 0.5, y: -5}}
-                end={{x: 0.4, y: 4}}
+            <View style={{ flex: 1, marginBottom: Platform.OS === 'ios' ? '43%' : '43%' }}>
+              <View
                 style={{
-                  flex: 1,
-                  marginLeft: 5,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginRight: 5,
-                  // width: 181,
-                  width: 160,
-                  height: 56,
-                  borderRadius: 7,
+                  marginHorizontal: '5%',
+                  marginTop: '5%',
+                  // marginBottom: Platform.OS === 'ios' ? '18%' : '28%',
+                  marginBottom: 15,
                 }}>
-                <TouchableOpacity
-                  style={{
-                    width: 190,
-                    alignItems: 'center',
-                  }}
-                  onPress={() => {
-                    Navigation.navigate('LostExistingCard');
-                  }}>
-                  <Text
-                    style={{
-                      color: '#0B105C',
-                      fontSize: 16,
-                      // fontWeight: 'bold',
-                    }}>
-                    Lost Existing Card?
-                  </Text>
-                </TouchableOpacity>
-              </LinearGradient>
-              <LinearGradient
-                colors={['#FCDD8E', '#F9B401']}
-                start={{x: 0.5, y: -5}}
-                end={{x: 0.4, y: 4}}
-                style={{
-                  flex: 1,
-                  marginLeft: 5,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  // width: 181,
-                  width: 160,
-                  borderRadius: 7,
-                }}>
-                <TouchableOpacity
-                  style={{
-                    width: 190,
-                    alignItems: 'center',
-                  }}
-                  onPress={() => {
-                    Navigation.navigate('LostNewCard');
-                  }}>
-                  <Text
-                    style={{
-                      color: '#0B105C',
-                      fontSize: 16,
-                      // fontWeight: 'bold',
-                    }}>
-                    Lost New Card
-                  </Text>
-                </TouchableOpacity>
-              </LinearGradient>
+                <Header header={'Lost Cards'} screenName={true} />
+              </View>
+              <FlatList
+                data={lostCards}
+                renderItem={renderItem}
+                keyExtractor={item => item.id}
+                contentContainerStyle={{ paddingBottom: 20 }}
+                showsVerticalScrollIndicator={false}
+              />
             </View>
+            <View
+              style={{
+                // marginTop: 50,
+                //   marginBottom: Platform.OS === 'ios' ? '21%' : '38%',
+                // margin: '5%',
+                position: 'absolute',
+                bottom: 90,
+                left: 0,
+                right: 0,
+                // backgroundColor: 'transparent',
+                paddingBottom: Platform.OS === 'ios' ? 20 : 0, // Adjust for iPhone X bottom safe area
+              }}>
+              <View style={{
+                flexDirection: 'row', 
+                justifyContent: 'space-between',
+                marginHorizontal: '5%',
+              }}>
+                <LinearGradient
+                  colors={['#FCDD8E', '#F9B401']}
+                  start={{ x: 0.5, y: -5 }}
+                  end={{ x: 0.4, y: 4 }}
+                  style={{
+                    flex: 1,
+                    marginLeft: 5,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginRight: 5,
+                    // width: 181,
+                    width: 160,
+                    height: 56,
+                    borderRadius: 7,
+                  }}>
+                  <TouchableOpacity
+                    style={{
+                      width: 190,
+                      alignItems: 'center',
+                    }}
+                    onPress={() => {
+                      Navigation.navigate('LostExistingCard');
+                    }}>
+                    <Text
+                      style={{
+                        color: '#0B105C',
+                        fontSize: 16,
+                        // fontWeight: 'bold',
+                      }}>
+                      Lost Existing Card?
+                    </Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+                <LinearGradient
+                  colors={['#FCDD8E', '#F9B401']}
+                  start={{ x: 0.5, y: -5 }}
+                  end={{ x: 0.4, y: 4 }}
+                  style={{
+                    flex: 1,
+                    marginLeft: 5,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    // width: 181,
+                    width: 160,
+                    borderRadius: 7,
+                  }}>
+                  <TouchableOpacity
+                    style={{
+                      width: 190,
+                      alignItems: 'center',
+                    }}
+                    onPress={() => {
+                      Navigation.navigate('LostNewCard');
+                    }}>
+                    <Text
+                      style={{
+                        color: '#0B105C',
+                        fontSize: 16,
+                        // fontWeight: 'bold',
+                      }}>
+                      Lost New Card
+                    </Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </View>
+            </View>
+
           </View>
-        </View>
+        )}
       </SafeArea>
     </>
   );

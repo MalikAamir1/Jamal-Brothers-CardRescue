@@ -2,6 +2,7 @@ import firebase from '@react-native-firebase/app';
 import database from '@react-native-firebase/database';
 import {addUserChats, deleteUserChats, getUserChats} from './userAction';
 import {getUserPushTokens} from './authAction';
+import moment from 'moment';
 
 // const firebaseConfig = {
 //   apiKey: 'AIzaSyBNtN5MtBImlPaMQQy2KoxuweE-Q2k7JJA',
@@ -63,9 +64,25 @@ import {getUserPushTokens} from './authAction';
 //   }
 // };
 
-export const sendTextMessage = async (chatId, senderData, messageText) => {
+export const sendTextMessage = async (chatId, senderData, messageText, card_id) => {
   try {
-    await sendMessage(chatId, senderData.token, messageText);
+    await sendMessage(chatId, senderData, messageText, card_id);
+  } catch (error) {
+    console.log(error);
+  }
+
+  //   const otherUsers = chatUsers.filter(uid => uid !== senderData.userId);
+  //   await sendPushNotificationForUsers(
+  //     otherUsers,
+  //     `${senderData.firstLast}`,
+  //     messageText,
+  //     chatId,
+  //   );
+};
+
+export const sendLocationMessage = async (chatId, senderData, latitude, longitude, card_id) => {
+  try {
+    await sendPositionMessage(chatId, senderData, latitude, longitude, card_id);
   } catch (error) {
     console.log(error);
   }
@@ -109,16 +126,103 @@ export const sendTextMessage = async (chatId, senderData, messageText) => {
 //   });
 // };
 
-const sendMessage = async (chatId, senderId, messageText) => {
+const sendPositionMessage = async (chatId, senderId, latitude, longitude, card_id) => {
   try {
     const messageData = {
       sentBy: senderId,
-      sentAt: new Date().toISOString(),
-      text: messageText,
+      // sentAt: new Date().toISOString(),
+      sentAt: moment().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ'),
+      lat: latitude,
+      long: longitude,
+      text: '',
       timestamp: firebase.database.ServerValue.TIMESTAMP,
+      card_id: card_id,
     };
     const messageRef = database()
-      .ref(`messages/${chatId}/${senderId}`)
+      .ref(`messages/${chatId}/${card_id}/${senderId}`)
+      .push(messageData)
+      .then(res => console.log('userMsgSaved'))
+      .catch(err => console.log('userMsgNotSaved'));
+      
+      const messageRef2 = database()
+      .ref(`messages/${senderId}/${card_id}/${chatId}`)
+      .push(messageData)
+      .then(res => console.log('userMsgSaved'))
+      .catch(err => console.log('userMsgNotSaved'));
+
+    const chatRef = database().ref(`chats/${chatId}`);
+    await chatRef.update({
+      updatedBy: senderId,
+      updatedAt: new Date().toISOString(),
+      latestMessage: 'location',
+      user: {RecieverId: chatId, senderId},
+    });
+
+    const latestRef = database().ref(`latest/${chatId}/${card_id}/${senderId}`);
+    const latestRef2 = database().ref(`latest/${senderId}/${card_id}/${chatId}`);
+
+        // Fetch latestRef current messageCount
+    const currentMessageCountRef = latestRef.child('messageCount');
+    const currentMessageCountSnapshot = await currentMessageCountRef.once('value');
+    const currentMessageCount = currentMessageCountSnapshot.val() || 0;
+
+        // Fetch latestRef2 current messageCount
+    const currentMessageCountRef2 = latestRef2.child('messageCount');
+    const currentMessageCountSnapshot2 = await currentMessageCountRef2.once('value');
+    const currentMessageCount2 = currentMessageCountSnapshot2.val() || 0;
+
+     // Increment messageCount
+     const updatedMessageCount = currentMessageCount + 1;
+     const updatedMessageCount2 = currentMessageCount2 + 1;
+
+    await latestRef.update({
+      text: 'Location',
+      readFlag: false,
+      sentBy: senderId,
+      card_id: card_id,
+      messageCount: updatedMessageCount,
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      sentAt: moment().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ')
+    });
+    await latestRef2.update({
+      text: 'Location',
+      readFlag: true,
+      sentBy: senderId,
+      card_id: card_id,
+      messageCount: 0,
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      sentAt: moment().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ')
+    });
+    
+    const userRef = database().ref(`users/${chatId}`);
+    await userRef.update({
+      latestMessage: 'Location',
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const sendMessage = async (chatId, senderId, messageText, card_id) => {
+  try {
+    const messageData = {
+      sentBy: senderId,
+      // sentAt: new Date().toISOString(),
+      sentAt: moment().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ'),
+      text: messageText,
+      lat: '',
+      long: '',
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      card_id: card_id,
+    };
+    const messageRef = database()
+      .ref(`messages/${chatId}/${card_id}/${senderId}`)
+      .push(messageData)
+      .then(res => console.log('userMsgSaved'))
+      .catch(err => console.log('userMsgNotSaved'));
+      
+      const messageRef2 = database()
+      .ref(`messages/${senderId}/${card_id}/${chatId}`)
       .push(messageData)
       .then(res => console.log('userMsgSaved'))
       .catch(err => console.log('userMsgNotSaved'));
@@ -130,6 +234,43 @@ const sendMessage = async (chatId, senderId, messageText) => {
       latestMessage: messageText,
       user: {RecieverId: chatId, senderId},
     });
+
+    const latestRef = database().ref(`latest/${chatId}/${card_id}/${senderId}`);
+    const latestRef2 = database().ref(`latest/${senderId}/${card_id}/${chatId}`);
+
+        // Fetch latestRef current messageCount
+    const currentMessageCountRef = latestRef.child('messageCount');
+    const currentMessageCountSnapshot = await currentMessageCountRef.once('value');
+    const currentMessageCount = currentMessageCountSnapshot.val() || 0;
+
+        // Fetch latestRef2 current messageCount
+    const currentMessageCountRef2 = latestRef2.child('messageCount');
+    const currentMessageCountSnapshot2 = await currentMessageCountRef2.once('value');
+    const currentMessageCount2 = currentMessageCountSnapshot2.val() || 0;
+
+     // Increment messageCount
+     const updatedMessageCount = currentMessageCount + 1;
+     const updatedMessageCount2 = currentMessageCount2 + 1;
+
+    await latestRef.update({
+      text: messageText,
+      readFlag: false,
+      sentBy: senderId,
+      card_id: card_id,
+      messageCount: updatedMessageCount,
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      sentAt: moment().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ')
+    });
+    await latestRef2.update({
+      text: messageText,
+      readFlag: true,
+      sentBy: senderId,
+      card_id: card_id,
+      messageCount: 0,
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      sentAt: moment().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ')
+    });
+    
     const userRef = database().ref(`users/${chatId}`);
     await userRef.update({
       latestMessage: messageText,

@@ -7,44 +7,24 @@ function ButtonComp(props) {
   let {btnText, press} = props;
 
   return (
-    <LinearGradient
-      colors={['#FCDD8E', '#F9B401']}
-      // colors={['#F9B401', '#FCDD8E']}
-      // colors={['rgba(249, 180, 1, 1)', 'rgba(252, 221, 142, 1)']}
-      // colors={['rgba(252, 221, 142, 1)', 'rgba(249, 180, 1, 1)']}
-      // box-shadow: 0px 18px 40px -12px rgba(249, 180, 1, 0.35);
-
-      start={{x: 0.5, y: -5}}
-      end={{x: 0.4, y: 4}}
-      style={{
-        flex: 1,
-        // padding: 13,
-        // marginLeft: 5,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 7,
-        width: 392,
-        height: 56,
-        // boxShadow: '0px 18px 40px -12px rgba(249, 180, 1, 0.35)',
-      }}>
-      <TouchableOpacity
-        onPress={press}
+    <TouchableOpacity onPress={press} style={{width: '100%'}}>
+      <LinearGradient
+        colors={['#FCDD8E', '#F9B401']}
+        start={{x: 0.5, y: -5}}
+        end={{x: 0.4, y: 4}}
         style={{
-          flex: 1,
-          // width: '100%',
-          // width: 382,
-          padding: 12,
-          // alignItems: 'center',
-          height: '50%',
-          // height: '56',
-          // marginTop: 'auto',
           justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: 7,
+          width: '100%', // Full width of the parent TouchableOpacity
+          height: 56,
+          padding: 12, // Padding added here
         }}>
         <Text style={{color: '#0B105C', fontSize: 16, fontWeight: 'bold'}}>
           {btnText}
         </Text>
-      </TouchableOpacity>
-    </LinearGradient>
+      </LinearGradient>
+    </TouchableOpacity>
     // </View>
   );
 }

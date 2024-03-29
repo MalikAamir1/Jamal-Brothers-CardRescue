@@ -1,5 +1,5 @@
-import {Formik} from 'formik';
-import React, {useState} from 'react';
+import { Formik } from 'formik';
+import React, { useState } from 'react';
 import {
   Alert,
   Image,
@@ -10,19 +10,19 @@ import {
   ScrollView,
   View,
 } from 'react-native';
-import {ActivityIndicator, Text} from 'react-native-paper';
+import { ActivityIndicator, Text } from 'react-native-paper';
 import ButtonComp from '../../Components/ReusableComponent/Button';
 import Heading from '../../Components/ReusableComponent/Heading';
 import Input from '../../Components/ReusableComponent/Input';
 import * as yup from 'yup';
 import SafeArea from '../../Components/ReusableComponent/Safearea';
-import {useNavigation} from '@react-navigation/native';
-import {Loader} from '../../Components/ReusableComponent/Loader';
+import { useNavigation } from '@react-navigation/native';
+import { Loader } from '../../Components/ReusableComponent/Loader';
 import InteractParagraph from '../../Components/ReusableComponent/Paragraph';
-import {postRequestWithToken} from '../../App/fetch';
-import {BASE_URL} from '../../App/api';
+import { postRequestWithToken } from '../../App/fetch';
+import { BASE_URL } from '../../App/api';
 
-export const PasswordChange = ({route}) => {
+export const PasswordChange = ({ route }) => {
   const [passHide, setPassHide] = useState(false);
   const [loading, setLoading] = useState(false);
   const [valuePass, onChangeTextPass] = useState('');
@@ -35,7 +35,7 @@ export const PasswordChange = ({route}) => {
   let loginValidationScheme = yup.object().shape({
     password: yup
       .string()
-      .min(8, ({min}) => `Password must be at least ${min} characters`)
+      .min(8, ({ min }) => `Password must be at least ${min} characters`)
       .required('Password is required '),
   });
 
@@ -77,7 +77,7 @@ export const PasswordChange = ({route}) => {
     let isValid = true;
 
     if (!valuePass) {
-      setErrorPass('Password cannot be empty');
+      setErrorPass('Please enter password.');
       isValid = false;
     } else if (!hasValidPassword(valuePass)) {
       setErrorPass(
@@ -89,10 +89,10 @@ export const PasswordChange = ({route}) => {
     }
 
     if (!valueConfirmPass) {
-      setErrorConfirmPass('Confirm Password should not be Empty');
+      setErrorConfirmPass('Please enter confirm password.');
       isValid = false;
     } else if (valuePass !== valueConfirmPass) {
-      setErrorConfirmPass('Password and Confirm Password do not match');
+      setErrorConfirmPass('Password does not match.');
       isValid = false;
     } else {
       setErrorConfirmPass('');
@@ -145,7 +145,7 @@ export const PasswordChange = ({route}) => {
     <>
       {/* <SafeArea> */}
       <Formik
-        initialValues={{email: '', password: ''}}
+        initialValues={{ email: '', password: '' }}
         validateOnMount={true}
         onSubmit={values => {
           simpleLogin(values);
@@ -164,142 +164,146 @@ export const PasswordChange = ({route}) => {
             {loading ? (
               <Loader />
             ) : (
-              <KeyboardAvoidingView
-                style={{flex: 1}}
-                behavior={Platform.OS === 'ios' ? 'padding' : null}
-                // keyboardVerticalOffset={65}
-              >
-                <ScrollView
-                  contentContainerStyle={{
-                    flexGrow: 1,
-                    marginTop: Platform.OS === 'ios' ? '10%' : 6,
+              // <KeyboardAvoidingView
+              //   style={{flex: 1}}
+              //   behavior={Platform.OS === 'ios' ? 'padding' : null}
+              //   // keyboardVerticalOffset={65}
+              // >
+              <ScrollView
+                contentContainerStyle={{
+                  flexGrow: 1,
+                  marginTop: Platform.OS === 'ios' ? '10%' : 6,
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    margin: '8%',
+                    marginBottom: 0,
                   }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      margin: '8%',
-                      marginBottom: 0,
-                    }}>
-                    <Pressable
-                      onPress={() => {
-                        Navigation.goBack();
-                      }}>
-                      <Image
-                        source={require('../../Assets/Images/back.png')}
-                        style={{
-                          width: 18,
-                          height: 15,
-                          alignContent: 'center',
-                          alignItems: 'center',
-                          alignSelf: 'center',
-                        }}
-                      />
-                    </Pressable>
-                    <View
-                      style={{
-                        width: '80%',
-                        // alignItemss: 'center',
-                        marginLeft: 20,
-                        textAlign: 'center',
-                      }}>
-                      {error && (
-                        <>
-                          <InteractParagraph
-                            p={error}
-                            color={'red'}
-                            txtAlign={'center'}
-                          />
-                        </>
-                      )}
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      alignItems: 'center',
-                      marginTop: 50,
+                  <Pressable
+                    onPress={() => {
+                      Navigation.goBack();
                     }}>
                     <Image
-                      source={require('../../Assets/Images/resetPassword.png')}
-                      style={{width: 100, height: 100}}
-                      resizeMode={'contain'}
+                      source={require('../../Assets/Images/back.png')}
+                      style={{
+                        width: 18,
+                        height: 15,
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                      }}
                     />
-                  </View>
+                  </Pressable>
                   <View
                     style={{
-                      // justifyContent: 'space-between',
-                      flexGrow: 1,
-                      marginHorizontal: '5%',
-                      padding: 15,
-                      borderRadius: 15,
-                      // marginTop: '15%',
+                      width: '80%',
+                      // alignItemss: 'center',
+                      marginLeft: 20,
+                      textAlign: 'center',
                     }}>
-                    <View style={{marginVertical: '4%'}}>
-                      <Heading
-                        Stylefont={'normal'}
-                        Fontweight={'bold'}
-                        Fontsize={24}
-                        txtAlign={'center'}
-                        p={10}
-                        lh={31}
-                        Heading={'Enter New Password'}
-                        color={'rgba(11, 16, 92, 1)'}
-                      />
-                    </View>
-                    <View style={{marginBottom: '11%'}}>
-                      <Heading
-                        Fontsize={15}
-                        txtAlign={'center'}
-                        Heading={'Please enter your new password'}
-                        color={'#7B869E'}
-                        lh={20}
-                      />
-                    </View>
+                    {error && (
+                      <>
+                        <InteractParagraph
+                          p={error}
+                          color={'red'}
+                          txtAlign={'center'}
+                        />
+                      </>
+                    )}
+                  </View>
+                </View>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    marginTop: 50,
+                  }}>
+                  <Image
+                    source={require('../../Assets/Images/resetPassword.png')}
+                    style={{ width: 100, height: 100 }}
+                    resizeMode={'contain'}
+                  />
+                </View>
+                <View
+                  style={{
+                    // justifyContent: 'space-between',
+                    flexGrow: 1,
+                    marginHorizontal: '5%',
+                    padding: 15,
+                    borderRadius: 15,
+                    // marginTop: '15%',
+                  }}>
+                  <View style={{ marginVertical: '4%' }}>
+                    <Heading
+                      Stylefont={'normal'}
+                      Fontweight={'bold'}
+                      Fontsize={24}
+                      txtAlign={'center'}
+                      p={10}
+                      lh={31}
+                      Heading={'Enter New Password'}
+                      color={'rgba(11, 16, 92, 1)'}
+                    />
+                  </View>
+                  <View style={{ marginBottom: '11%' }}>
+                    <Heading
+                      Fontsize={15}
+                      txtAlign={'center'}
+                      Heading={'Please enter your new password'}
+                      color={'#7B869E'}
+                      lh={20}
+                    />
+                  </View>
+                  <View>
                     <View>
-                      <View>
-                        <Input
-                          title={'Password'}
-                          urlImg={require('../../Assets/Images/passIcon.png')}
-                          placeholder={'************0'}
-                          pass={'true'}
-                          value={valuePass}
-                          onChangeText={onChangeTextPass}
-                        />
-                        {!!errorPass && (
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              color: 'red',
-                              marginTop: 5,
-                              marginBottom: 15,
-                              marginLeft: 37,
-                            }}>
-                            {'*' + errorPass}
-                          </Text>
-                        )}
-                      </View>
+                      <Input
+                        title={'Password'}
+                        urlImg={require('../../Assets/Images/passIcon.png')}
+                        placeholder={'************0'}
+                        pass={'true'}
+                        value={valuePass}
+                        onChangeText={onChangeTextPass}
+                        th={true}
 
-                      <View style={{marginTop: '8%', marginBottom: '5%'}}>
-                        <Input
-                          title={'Re-type Password'}
-                          urlImg={require('../../Assets/Images/passIcon.png')}
-                          placeholder={'************0'}
-                          pass={'true'}
-                          value={valueConfirmPass}
-                          onChangeText={onChangeTextConfirmPass}
-                        />
-                        {!!errorConfirmPass && (
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              color: 'red',
-                              marginTop: 5,
-                              marginBottom: 15,
-                              marginLeft: 37,
-                            }}>
-                            {'*' + errorConfirmPass}
-                          </Text>
-                        )}
-                        {/* {errors.confirmPassword && touched.confirmPassword && (
+                      />
+                      {!!errorPass && (
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: 'red',
+                            marginTop: 5,
+                            marginBottom: 15,
+                            marginLeft: 37,
+                          }}>
+                          {errorPass}
+                        </Text>
+                      )}
+                    </View>
+
+                    <View style={{ marginTop: '8%', marginBottom: '5%' }}>
+                      <Input
+                        title={'Re-type Password'}
+                        urlImg={require('../../Assets/Images/passIcon.png')}
+                        placeholder={'************0'}
+                        pass={'true'}
+                        value={valueConfirmPass}
+                        onChangeText={onChangeTextConfirmPass}
+                        th={true}
+
+                      />
+                      {!!errorConfirmPass && (
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: 'red',
+                            marginTop: 5,
+                            marginBottom: 15,
+                            marginLeft: 37,
+                          }}>
+                          {errorConfirmPass}
+                        </Text>
+                      )}
+                      {/* {errors.confirmPassword && touched.confirmPassword && (
                         <Text
                           style={{
                             fontSize: 12,
@@ -311,38 +315,38 @@ export const PasswordChange = ({route}) => {
                           {errors.confirmPassword}
                         </Text>
                       )} */}
-                      </View>
-                    </View>
-
-                    <View
-                      style={{
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        flexDirection: 'row',
-                        marginTop: '4%',
-                      }}>
-                      <ButtonComp
-                        btnwidth={'97%'}
-                        btnHeight={56}
-                        btnText={'Reset'}
-                        justify={'center'}
-                        align={'center'}
-                        fontSize={16}
-                        radius={15}
-                        txtwidth={'100%'}
-                        //   txtColor={COLORS.white}
-                        //   color={isValid ? COLORS.primary : COLORS.border_color}
-                        // enable={!isValid}
-                        press={() => {
-                          // Navigation.navigate('login');
-                          updatePassword();
-                        }}
-                        // bgcolor={'#BA7607'}
-                      />
                     </View>
                   </View>
-                </ScrollView>
-              </KeyboardAvoidingView>
+
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      alignContent: 'center',
+                      flexDirection: 'row',
+                      marginTop: '4%',
+                    }}>
+                    <ButtonComp
+                      btnwidth={'97%'}
+                      btnHeight={56}
+                      btnText={'Reset'}
+                      justify={'center'}
+                      align={'center'}
+                      fontSize={16}
+                      radius={15}
+                      txtwidth={'100%'}
+                      //   txtColor={COLORS.white}
+                      //   color={isValid ? COLORS.primary : COLORS.border_color}
+                      // enable={!isValid}
+                      press={() => {
+                        // Navigation.navigate('login');
+                        updatePassword();
+                      }}
+                    // bgcolor={'#BA7607'}
+                    />
+                  </View>
+                </View>
+              </ScrollView>
+              // </KeyboardAvoidingView>
             )}
           </>
         )}

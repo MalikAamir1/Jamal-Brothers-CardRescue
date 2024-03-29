@@ -102,6 +102,7 @@ export default function Input(props) {
             Heading={props.title}
             color="#7B869E"
             mb={-6}
+            opacity={props.disabled ? 0.7 : 1 }
             // fontFamily={FONT.pop}
           />
         </View>
@@ -117,7 +118,7 @@ export default function Input(props) {
           {props.urlImg && (
             <Image
               source={props.urlImg}
-              style={{width: 20, marginTop: 12, marginBottom: 14}}
+              style={{width: 20, marginTop: 12, marginBottom: 14, opacity: props.disabled ? 0.7 : 1}}
               resizeMethod={'resize'}
               resizeMode={'contain'}
             />
@@ -129,8 +130,10 @@ export default function Input(props) {
             value={purchaseDate ? purchaseDate : props.value}
             style={{
               width: props.pass ? '55%' : '85%',
+              height: props.th ? '82%' : '96%',
               color: '#1C1C1C',
-              marginBottom: 0,
+              marginBottom: 2,
+              marginTop: props.th ? 2 : -1,
               marginLeft: props.mleft
                 ? props.mleft
                 : Platform.OS === 'ios'
@@ -139,6 +142,7 @@ export default function Input(props) {
               fontFamily: 'FONT.redhat',
               fontSize: 16,
               lineHeight: 21.17,
+              opacity: props.disabled ? 0.5 : 1
               // fontWeight: 400,
             }}
             placeholder={props.placeholder}
@@ -146,6 +150,7 @@ export default function Input(props) {
             secureTextEntry={props.pass && !props.dob ? notPressed : false}
             keyboardType={props.keyboardType}
             autoCapitalize={props.autoCapitalize}
+            maxLength={props.maxLength}  // Add this line for maximum length
           />
           {props.dob ? (
             <View

@@ -26,7 +26,14 @@ function Heading(props) {
     mb,
     fontFamily,
     mr,
+    opacity,
+    maxTextLength // New prop to specify the maximum length of the text
   } = props;
+
+   // Limit the text length to the specified maximum length
+   const limitedHeading = maxTextLength
+   ? Heading.slice(0, maxTextLength)
+   : Heading;
 
   return (
     <Headline
@@ -51,9 +58,10 @@ function Heading(props) {
         marginBottom: mb,
         fontFamily: fontFamily,
         marginRight: mr,
+        opacity: opacity
         // fontFamily: 'Poppins',
       }}>
-      {Heading}
+      {limitedHeading}
     </Headline>
   );
 }

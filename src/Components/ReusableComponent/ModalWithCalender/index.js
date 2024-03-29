@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import {Image, ImageBackground, Pressable, View, Modal} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, ImageBackground, Pressable, View, Modal } from 'react-native';
 import Heading from '../Heading';
 // import COLORS from '../../../Assets/Style/Color';
-import {Button, Text} from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import Input from '../Input';
 
@@ -13,11 +13,12 @@ export const ModalWithCalender = props => {
   };
 
   const [inputText, setInputText] = useState('');
+  // const [numberOfDaysError, setNumberOfDaysError] = useState('');
 
   // const [modalVisible, setModalVisible] = useState(true);
 
-  let {set, get, urlImg, txt, done, btntxt, yes, no} = props;
-
+  let { set, get, urlImg, txt, done, btntxt, yes, no, setNumberOfDaysError } = props;
+console.log('setNumberOfDaysError', setNumberOfDaysError)
   return (
     <Modal animationType="none" transparent={true} visible={get}>
       <View
@@ -28,7 +29,7 @@ export const ModalWithCalender = props => {
           backgroundColor: 'rgba(0, 0, 0, 0.75)',
         }}>
         <View style={styles.modalView}>
-          <View style={{margin: 5}}>
+          <View style={{ margin: 5 }}>
             <Heading
               Heading={props.txt}
               Fontsize={18}
@@ -54,9 +55,22 @@ export const ModalWithCalender = props => {
               // value={dataFromOtpScreenOfSignUp.email}
               onChangeText={setInputText}
               dob={false}
+              keyboardType={'numeric'}
             />
+            {!!setNumberOfDaysError && (
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: 'red',
+                  marginTop: 5,
+                  marginLeft: 32,
+                }}>
+                {setNumberOfDaysError}
+              </Text>
+            )}
+
           </View>
-          <View style={{flexDirection: 'row', marginBottom: 20}}>
+          <View style={{ flexDirection: 'row', marginBottom: 20 }}>
             <TouchableOpacity
               style={{
                 flex: 1,
@@ -85,8 +99,8 @@ export const ModalWithCalender = props => {
             </TouchableOpacity>
             <LinearGradient
               colors={['#FCDD8E', '#F9B401']}
-              start={{x: 0.5, y: -5}}
-              end={{x: 0.4, y: 4}}
+              start={{ x: 0.5, y: -5 }}
+              end={{ x: 0.4, y: 4 }}
               style={{
                 flex: 1,
                 marginLeft: 5,
@@ -101,7 +115,11 @@ export const ModalWithCalender = props => {
                   width: 190,
                   alignItems: 'center',
                 }}
-                onPress={yes}>
+                onPress={() => {
+                  console.log('Input Text:', inputText); // Log the value here
+                  props.yes(inputText);
+                }} // Pass inputText to the yes function
+              >
                 <Text
                   style={{
                     color: '#0B105C',
@@ -116,7 +134,7 @@ export const ModalWithCalender = props => {
           {/* </View> */}
         </View>
       </View>
-    </Modal>
+    </Modal >
   );
 };
 
@@ -205,7 +223,7 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 8,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: {width: 0, height: 1},
+    textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
     // backgroundColor: 'red',
     width: '100%',

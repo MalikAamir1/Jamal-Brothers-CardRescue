@@ -190,7 +190,7 @@ export const Notifications = () => {
           <FlatList
             data={data}
             renderItem={renderItem}
-            keyExtractor={item => item.metal_id}
+            keyExtractor={item => item.id}
             contentContainerStyle={{flexDirection: 'column'}}
             ListHeaderComponent={ListHeaderComponent}
             showsVerticalScrollIndicator={false}
