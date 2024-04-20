@@ -404,7 +404,7 @@ export const SignUp = () => {
                     <View
                       style={{
                         flexDirection: 'row',
-                        marginTop: Platform.OS === 'ios' ? 170 : 130,
+                        marginTop: Platform.OS === 'ios' ? 160 : 130,
                         alignSelf: 'center',
                         marginBottom: 10,
                       }}>

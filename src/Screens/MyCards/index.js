@@ -57,25 +57,20 @@ export const MyCards = ({ route }) => {
       console.log('No');
     }
   }, [route.params?.prevName]);
+  useEffect(() => {
+    // Access prevName from route.params and check its value
+    const cardSelect = route.params?.cardSelect;
+    console.log('prevName', cardSelect);
 
-  // const data = [
-  //   {
-  //     id: 1,
-  //     type: 'Credit Card',
-  //     cardNo: '****** ****** ****** 23456',
-  //     holder: 'Billy Kane',
-  //     day: '25',
-  //     match: false,
-  //   },
-  //   {
-  //     id: 2,
-  //     type: 'Credit Card',
-  //     cardNo: '****** ****** ****** 23456',
-  //     holder: 'Billy Kane',
-  //     day: '25',
-  //     match: true,
-  //   },
-  // ];
+    if (cardSelect) {
+      console.log('yes');
+      setCardSelect(true);
+      setScreenName(true);
+    } else {
+      console.log('No');
+    }
+  }, [route.params?.cardSelect]);
+
 
   useEffect(() => {
     setLoading(true);
@@ -653,10 +648,10 @@ export const MyCards = ({ route }) => {
                     }}>
                     <Pressable
                       onPress={() => {
-                        screenName
-                          ? Navigation.navigate('Home')
-                          : cardSelect
-                            ? setCardSelect(false)
+                        cardSelect
+                          ? setCardSelect(false)
+                          : screenName
+                            ? Navigation.navigate('Home')
                             : Navigation.goBack();
                         // setScreenName(false);
                       }}>

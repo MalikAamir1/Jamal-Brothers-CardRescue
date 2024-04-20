@@ -1,5 +1,5 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useEffect, useRef} from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Image,
   ImageBackground,
@@ -14,14 +14,18 @@ import {
 // import ColorScreen from '../screens/ColorScreen';
 import * as Animatable from 'react-native-animatable';
 // import {Home} from '../../Screens/Home';
-import {LostCards} from '../../Screens/LostCards';
-import {FoundCardsList} from '../../Screens/FoundCardsList';
-import {Chats} from '../../Screens/Chats';
-import {Feedback} from '../../Screens/Feedback';
-import {transparent} from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
+import { LostCards } from '../../Screens/LostCards';
+import { FoundCardsList } from '../../Screens/FoundCardsList';
+import { Chats } from '../../Screens/Chats';
+import { Feedback } from '../../Screens/Feedback';
+import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import DrawerNavigator from '../Drawer/drawer';
-import {Home} from '../../Screens/Home';
+import { Home } from '../../Screens/Home';
+import { getRequestWithOutBody } from '../../App/fetch';
+import { useSelector } from 'react-redux';
+import { BASE_URL } from '../../App/api';
+import { useFocusEffect } from '@react-navigation/native';
 
 const TabArr = [
   {
@@ -69,30 +73,32 @@ const TabArr = [
 const Tab = createBottomTabNavigator();
 
 const animate1 = {
-  0: {scale: 0.5, translateY: 7},
+  0: { scale: 0.5, translateY: 7 },
   //   0.92: {translateY: -34},
-  1: {scale: 1.2, translateY: -10},
+  1: { scale: 1.2, translateY: -10 },
 };
 const animate2 = {
-  0: {scale: 1.2, translateY: -10},
-  1: {scale: 1, translateY: 7},
+  0: { scale: 1.2, translateY: -10 },
+  1: { scale: 1, translateY: 7 },
 };
 
 const circle1 = {
-  0: {scale: 0},
-  0.3: {scale: 0.9},
-  0.5: {scale: 0.2},
-  0.8: {scale: 0.7},
-  1: {scale: 1},
+  0: { scale: 0 },
+  0.3: { scale: 0.9 },
+  0.5: { scale: 0.2 },
+  0.8: { scale: 0.7 },
+  1: { scale: 1 },
 };
-const circle2 = {0: {scale: 1}, 1: {scale: 0}};
+const circle2 = { 0: { scale: 1 }, 1: { scale: 0 } };
 
 const TabButton = props => {
-  const {item, onPress, accessibilityState} = props;
+  const { item, onPress, accessibilityState, notificationCount } = props;
   const focused = accessibilityState.selected;
   const viewRef = useRef(null);
   const circleRef = useRef(null);
   const textRef = useRef(null);
+
+
 
   useEffect(() => {
     if (focused) {
@@ -106,7 +112,7 @@ const TabButton = props => {
       //   textRef.current.transitionTo({scale: 0});
     }
   }, [focused]);
-
+  console.log('notification count aaaaaa, ', notificationCount)
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -119,27 +125,85 @@ const TabButton = props => {
             colors={
               focused
                 ? // ? ['rgba(249, 180, 1, 1)', 'rgba(252, 221, 142, 1)']
-                  ['rgba(252, 221, 142, 1)', 'rgba(249, 180, 1, 1)']
+                ['rgba(252, 221, 142, 1)', 'rgba(249, 180, 1, 1)']
                 : ['transparent', 'transparent'] // Set transparent colors when not focused
             }
-            start={{x: 0.5, y: 0}}
-            end={{x: 1, y: 1}}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 1, y: 1 }}
             style={styles.gradient}>
             {/* Your button content goes here */}
             <Image
               source={item.image}
-              style={{width: item.imageWidth, height: item.imageHeight}}
+              style={{ width: item.imageWidth, height: item.imageHeight }}
             />
           </LinearGradient>
         </View>
         {/* <Animatable.Text style={styles.text}>{item.label}</Animatable.Text> */}
       </Animatable.View>
       <Text style={styles.text}>{item.label}</Text>
+      {item.route === 'Chats' && notificationCount > 0 && (
+        <View style={{
+          position: 'absolute',
+          top: 13,
+          right: 5,
+          backgroundColor: 'red',
+          borderRadius: 50,
+          borderWidth: 2,
+          borderColor: 'white',
+          width: 26,
+          height: 26,
+          justifyContent: 'center',
+          alignItems: 'center',
+          alignSelf: 'center',
+          alignContent: 'center',
+        }}>
+          <Text style={{
+            color: 'white',
+            fontSize: 12,
+            fontWeight: 'bold',
+            padding: 0,
+            margin: 0,
+          }}>{notificationCount}</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
 
 export default function SimpleBottomScreen() {
+  const AuthReducer = useSelector(state => state.AuthReducer);
+  const [notificationCount, setNotificationCount] = useState();
+  console.log('totalMessageCount', notificationCount)
+
+  const fetchData2 = () => {
+      getRequestWithOutBody(
+      `${BASE_URL}/cards/match-cards/`,
+      AuthReducer.userData.token,
+      )
+      .then(result => {
+        // console.log('result at notification', result.results)
+        // Calculate the total message count by summing up messageCount from each object
+        const totalMessageCount = result.results.reduce(
+          (total, card) => total + parseInt(card.latest_message.messageCount),
+      0
+      );
+      setNotificationCount(totalMessageCount)
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  }
+
+  useEffect(() => {
+    fetchData2()
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData2();
+    }, []),
+  );
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -148,15 +212,17 @@ export default function SimpleBottomScreen() {
       }}>
       {TabArr.map((item, index) => {
         return (
-          <Tab.Screen
-            key={index}
-            name={item.route}
-            component={item.component}
-            options={{
-              tabBarShowLabel: false,
-              tabBarButton: props => <TabButton {...props} item={item} />,
-            }}
-          />
+          <>
+            <Tab.Screen
+              key={index}
+              name={item.route}
+              component={item.component}
+              options={{
+                tabBarShowLabel: false,
+                tabBarButton: props => <TabButton {...props} item={item} notificationCount={notificationCount} />,
+              }}
+            />
+          </>
         );
       })}
     </Tab.Navigator>

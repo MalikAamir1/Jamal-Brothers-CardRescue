@@ -344,15 +344,32 @@ export const Home = () => {
                 ml={-17}
               />
             </View>
-            <View>
+            <View 
+            // style={{
+            //   width: 46,
+            //   height: 46,
+            //   // alignSelf: 'center',
+            //   // marginTop: -10,
+            //   // marginBottom: '8%',
+            //   // backgroundColor: 'white',
+            //   // borderWidth: 2,
+            //   // borderColor: 'rgba(11, 16, 92, 0.3)',
+            //   borderRadius: 75,
+            // }}
+            >
               <Image
-                source={require('../../Assets/Images/homeImg.png')}
+                // source={require('../../Assets/Images/homeImg.png')}
+                source={{
+                  uri: `http://23.26.137.178:8000//${AuthReducer?.userData?.user?.profile?.profile_pic}`,
+                }}
                 style={{
                   width: 44,
                   height: 44,
                   alignContent: 'center',
                   alignItems: 'center',
                   alignSelf: 'center',
+                  borderRadius: 75,
+
                 }}
               />
             </View>

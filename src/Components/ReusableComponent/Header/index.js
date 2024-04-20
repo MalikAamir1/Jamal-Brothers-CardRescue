@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -13,19 +13,21 @@ import {
 import Heading from '../Heading';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 // import COLORS from '../../../Assets/Style/Color';
-import {DrawerActions, useNavigation} from '@react-navigation/native';
-import {Text} from 'react-native-paper';
+import { DrawerActions, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Text } from 'react-native-paper';
 import Modal from 'react-native-modal';
 import SideMenu from '../SideMenu';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {ModalView} from '../Modal';
-import {removeDataToAsync} from '../../../Utils/getAndSetAsyncStorage';
-import {useDispatch, useSelector} from 'react-redux';
-import {removeUserDataFromAsyncStorage} from '../../../Store/Reducers/AuthReducer';
-import {ScrollView} from 'react-native-gesture-handler';
-import {ModalWithButton} from '../Modalwithbutton';
+import { ModalView } from '../Modal';
+import { removeDataToAsync } from '../../../Utils/getAndSetAsyncStorage';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeUserDataFromAsyncStorage } from '../../../Store/Reducers/AuthReducer';
+import { ScrollView } from 'react-native-gesture-handler';
+import { ModalWithButton } from '../Modalwithbutton';
+import { getRequestWithOutBody } from '../../../App/fetch';
+import { BASE_URL } from '../../../App/api';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export const Header = props => {
   const Navigation = useNavigation();
@@ -35,10 +37,37 @@ export const Header = props => {
   );
   const AuthReducer = useSelector(state => state.AuthReducer);
 
-  const [notificationCount, setNotificationCount] = useState(2);
+  const [notificationCount, setNotificationCount] = useState();
   const [isSideMenuVisible, setIsSideMenuVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalButton, setModalButton] = useState(false);
+  console.log('Authreducer on header', notificationCount)
+
+  const fetchData2 = () => {
+    getRequestWithOutBody(
+      `${BASE_URL}/notifications/`,
+      AuthReducer.userData.token,
+    )
+      .then(result => {
+        // console.log('result at notification', result)
+        const unreadNotifications = result.results.filter(notification => !notification.is_read);
+        setNotificationCount(unreadNotifications.length);
+        console.log('unreadNotifications', unreadNotifications.length)
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  }
+
+  useEffect(() => {
+    fetchData2()
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData2();
+    }, []),
+  );
 
   console.log('AuthReducer:', AuthReducer?.userData?.user?.profile?.profile_pic);
   console.log('modalButton:', modalButton);
@@ -85,7 +114,7 @@ export const Header = props => {
           onBackdropPress={() => setIsSideMenuVisible(false)}
         /> */}
         {/* start */}
-        <View style={{flex: 1, zIndex: 2}}>
+        <View style={{ flex: 1, zIndex: 2 }}>
           {Platform.OS === 'ios' ? (
             <StatusBar hidden={true} />
           ) : (
@@ -94,8 +123,8 @@ export const Header = props => {
 
           <ImageBackground
             source={require('../../../Assets/Images/drawerback.png')}
-            style={{flex: 1, resizeMode: 'cover'}}>
-            <ScrollView style={{flex: 1}}>
+            style={{ flex: 1, resizeMode: 'cover' }}>
+            <ScrollView style={{ flex: 1 }}>
               <Pressable
                 onPress={() => {
                   console.log('prtffrtfty');
@@ -117,7 +146,7 @@ export const Header = props => {
                     name="cross"
                     size={35}
                     color="rgba(16, 35, 78, 1)"
-                    style={{paddingLeft: 5}}
+                    style={{ paddingLeft: 5 }}
                   />
                 </View>
               </Pressable>
@@ -202,15 +231,15 @@ export const Header = props => {
                   mx={25}
                 />
               </View>
-              <View style={{flex: 1, paddingTop: 10}}>
-                <View style={{marginTop: '5%', marginLeft: '10%'}}>
+              <View style={{ flex: 1, paddingTop: 10 }}>
+                <View style={{ marginTop: '5%', marginLeft: '10%' }}>
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
                       Navigation.navigate('Home');
                       // console.log('dsfdsfaf')
                     }}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Image
                         source={require('../../../Assets/Images/home.png')}
                         style={{
@@ -229,21 +258,21 @@ export const Header = props => {
                         height={20}
                         color={'rgba(16, 35, 78, 1)'}
                         ml={20}
-                        // color={COLORS.dark}
-                        // Fontweight={'bold'}
-                        // txtAlign={'center'}
+                      // color={COLORS.dark}
+                      // Fontweight={'bold'}
+                      // txtAlign={'center'}
                       />
                     </View>
                   </Pressable>
                 </View>
-                <View style={{marginTop: '6%', marginLeft: '10%'}}>
+                <View style={{ marginTop: '6%', marginLeft: '10%' }}>
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
                       Navigation.navigate('LostCards');
                       // console.log('dsfdsfaf')
                     }}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Image
                         source={require('../../../Assets/Images/lostcards.png')}
                         style={{
@@ -262,19 +291,19 @@ export const Header = props => {
                         height={20}
                         color={'rgba(16, 35, 78, 1)'}
                         ml={20}
-                        // txtAlign={'center'}
+                      // txtAlign={'center'}
                       />
                     </View>
                   </Pressable>
                 </View>
-                <View style={{marginTop: '6%', marginLeft: '10%'}}>
+                <View style={{ marginTop: '6%', marginLeft: '10%' }}>
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
                       Navigation.navigate('FoundCardsList');
                       // console.log('dsfdsfaf')
                     }}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Image
                         source={require('../../../Assets/Images/foundcards.png')}
                         style={{
@@ -293,19 +322,19 @@ export const Header = props => {
                         height={20}
                         color={'rgba(16, 35, 78, 1)'}
                         ml={20}
-                        // txtAlign={'center'}
+                      // txtAlign={'center'}
                       />
                     </View>
                   </Pressable>
                 </View>
-                <View style={{marginTop: '6%', marginLeft: '10%'}}>
+                <View style={{ marginTop: '6%', marginLeft: '10%' }}>
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
                       Navigation.navigate('Chats');
                       // console.log('dsfdsfaf')
                     }}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Image
                         source={require('../../../Assets/Images/chats.png')}
                         style={{
@@ -324,19 +353,19 @@ export const Header = props => {
                         height={20}
                         color={'rgba(16, 35, 78, 1)'}
                         ml={20}
-                        // txtAlign={'center'}
+                      // txtAlign={'center'}
                       />
                     </View>
                   </Pressable>
                 </View>
-                <View style={{marginTop: '6%', marginLeft: '10%'}}>
+                <View style={{ marginTop: '6%', marginLeft: '10%' }}>
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
                       Navigation.navigate('ReturnedCards');
                       // console.log('dsfdsfaf')
                     }}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Image
                         source={require('../../../Assets/Images/returnedchats.png')}
                         style={{
@@ -355,12 +384,12 @@ export const Header = props => {
                         height={20}
                         color={'rgba(16, 35, 78, 1)'}
                         ml={20}
-                        // txtAlign={'center'}
+                      // txtAlign={'center'}
                       />
                     </View>
                   </Pressable>
                 </View>
-                <View style={{marginTop: '6%', marginLeft: '10%'}}>
+                <View style={{ marginTop: '6%', marginLeft: '10%' }}>
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
@@ -370,7 +399,7 @@ export const Header = props => {
                       });
                       // console.log('dsfdsfaf')
                     }}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Image
                         source={require('../../../Assets/Images/mycards.png')}
                         style={{
@@ -389,19 +418,19 @@ export const Header = props => {
                         height={20}
                         color={'rgba(16, 35, 78, 1)'}
                         ml={20}
-                        // txtAlign={'center'}
+                      // txtAlign={'center'}
                       />
                     </View>
                   </Pressable>
                 </View>
-                <View style={{marginTop: '6%', marginLeft: '10%'}}>
+                <View style={{ marginTop: '6%', marginLeft: '10%' }}>
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
                       Navigation.navigate('Profile');
                       // console.log('dsfdsfaf')
                     }}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Image
                         source={require('../../../Assets/Images/myprofile.png')}
                         style={{
@@ -420,12 +449,12 @@ export const Header = props => {
                         height={20}
                         color={'rgba(16, 35, 78, 1)'}
                         ml={20}
-                        // txtAlign={'center'}
+                      // txtAlign={'center'}
                       />
                     </View>
                   </Pressable>
                 </View>
-                <View style={{marginTop: '6%', marginLeft: '10%'}}>
+                <View style={{ marginTop: '6%', marginLeft: '10%' }}>
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
@@ -433,7 +462,7 @@ export const Header = props => {
                       Navigation.navigate('Feedback');
                       // console.log('dsfdsfaf')
                     }}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Image
                         source={require('../../../Assets/Images/feedback.png')}
                         style={{
@@ -452,12 +481,12 @@ export const Header = props => {
                         height={20}
                         color={'rgba(16, 35, 78, 1)'}
                         ml={20}
-                        // txtAlign={'center'}
+                      // txtAlign={'center'}
                       />
                     </View>
                   </Pressable>
                 </View>
-                <View style={{marginTop: '6%', marginLeft: '10%'}}>
+                <View style={{ marginTop: '6%', marginLeft: '10%' }}>
                   <Pressable
                     onPress={() => {
                       setIsSideMenuVisible(false);
@@ -465,7 +494,7 @@ export const Header = props => {
                       Navigation.navigate('Settings');
                       // console.log('dsfdsfaf')
                     }}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Image
                         source={require('../../../Assets/Images/setting.png')}
                         style={{
@@ -484,7 +513,7 @@ export const Header = props => {
                         height={20}
                         color={'rgba(16, 35, 78, 1)'}
                         ml={20}
-                        // txtAlign={'center'}
+                      // txtAlign={'center'}
                       />
                     </View>
                   </Pressable>
@@ -509,7 +538,7 @@ export const Header = props => {
                   }}>
                   <Image
                     source={require('../../../Assets/Images/logout.png')}
-                    style={{marginLeft: -50}}
+                    style={{ marginLeft: -50 }}
                     resizeMode={'contain'}
                   />
                   <Heading
@@ -523,8 +552,8 @@ export const Header = props => {
                     color={'rgba(16, 35, 78, 1)'}
                     // mt={3}
                     ml={30}
-                    // mb={20}
-                    //   width={170}
+                  // mb={20}
+                  //   width={170}
                   />
                 </View>
               </Pressable>
@@ -539,7 +568,7 @@ export const Header = props => {
           justifyContent: 'space-between',
           flexDirection: 'row',
         }}>
-        <View style={{alignSelf: 'center'}}>
+        <View style={{ alignSelf: 'center' }}>
           <Pressable
             onPress={() => {
               // Navigation.dispatch(DrawerActions.openDrawer());
@@ -560,7 +589,7 @@ export const Header = props => {
             {/* <MaterialIcons name="menu-open" size={30} color={'black'} /> */}
           </Pressable>
         </View>
-        <View style={{alignSelf: 'center', width: 200, marginLeft: 20}}>
+        <View style={{ alignSelf: 'center', width: 200, marginLeft: 20 }}>
           <Heading
             Heading={props.header}
             Fontsize={18}
@@ -570,7 +599,7 @@ export const Header = props => {
             color={'rgba(11, 16, 92, 1)'}
           />
         </View>
-        <View style={{alignSelf: 'center'}}>
+        <View style={{ alignSelf: 'center' }}>
           <Pressable
             onPress={() => {
               Navigation.navigate('MyCards', {
@@ -578,7 +607,7 @@ export const Header = props => {
                 screenName: screenName,
               });
             }}
-            style={{position: 'relative'}}>
+            style={{ position: 'relative' }}>
             <Image
               source={require('../../../Assets/Images/allCards.png')}
               style={{
@@ -591,12 +620,12 @@ export const Header = props => {
             />
           </Pressable>
         </View>
-        <View style={{alignSelf: 'center'}}>
+        <View style={{ alignSelf: 'center' }}>
           <Pressable
             onPress={() => {
               Navigation.navigate('Notifications');
             }}
-            style={{position: 'relative'}}>
+            style={{ position: 'relative' }}>
             <Image
               source={require('../../../Assets/Images/notification.png')}
               style={{

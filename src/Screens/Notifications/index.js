@@ -11,155 +11,236 @@ import {
 } from 'react-native';
 import SafeArea from '../../Components/ReusableComponent/Safearea';
 import Heading from '../../Components/ReusableComponent/Heading';
-import {Header} from '../../Components/ReusableComponent/Header';
+import { Header } from '../../Components/ReusableComponent/Header';
 import LinearGradient from 'react-native-linear-gradient';
-import {Text} from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {useState} from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Head from '../../Components/ReusableComponent/Head';
 import ButtonComp from '../../Components/ReusableComponent/Button';
-import {useNavigation} from '@react-navigation/native';
-import {ModalView} from '../../Components/ReusableComponent/Modal';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { ModalView } from '../../Components/ReusableComponent/Modal';
 import CheckBox from '../../Components/ReusableComponent/Checkbox';
-import {SuccessModal} from '../../Components/ReusableComponent/SuccessModal';
+import { SuccessModal } from '../../Components/ReusableComponent/SuccessModal';
+import { useSelector } from 'react-redux';
+import { getRequestWithOutBody } from '../../App/fetch';
+import { BASE_URL } from '../../App/api';
+import moment from 'moment';
+import { Loader } from '../../Components/ReusableComponent/Loader';
 
 export const Notifications = () => {
   const Navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [secondModal, setSecondModal] = useState(false);
-  const [cardSelect, setCardSelect] = useState(false);
-  const [selectedCard, setSelectedCard] = useState();
+  const AuthReducer = useSelector(state => state.AuthReducer?.userData);
+  const [notificationDetails, setNotificationDetails] = useState();
+  const [loader, setloader] = useState(false);
+  console.log('notificationDetails', notificationDetails)
 
   const data = [
     {
       id: 1,
-      head: 'Report Lost Card',
-      description: 'Lorem ipsum dolor sit amet, cons',
+      title: 'Report Lost Card',
+      body: 'Lorem ipsum dolor sit amet, cons',
       time: '02 min ago',
     },
     {
       id: 2,
-      head: 'Report Lost Card',
-      description: 'Lorem ipsum dolor sit amet, cons',
+      title: 'Report Lost Card',
+      body: 'Lorem ipsum dolor sit amet, cons',
       time: '03 min ago',
     },
     {
       id: 3,
-      head: 'Report Lost Card',
-      description: 'Lorem ipsum dolor sit amet, cons',
+      title: 'Report Lost Card',
+      body: 'Lorem ipsum dolor sit amet, cons',
       time: '05 min ago',
     },
     {
       id: 4,
-      head: 'Report Lost Card',
-      description: 'Lorem ipsum dolor sit amet, cons',
+      title: 'Report Lost Card',
+      body: 'Lorem ipsum dolor sit amet, cons',
       time: '05 min ago',
     },
     {
       id: 5,
-      head: 'Report Lost Card',
-      description: 'Lorem ipsum dolor sit amet, cons',
+      title: 'Report Lost Card',
+      body: 'Lorem ipsum dolor sit amet, cons',
       time: '05 min ago',
     },
     {
       id: 6,
-      head: 'Report Lost Card',
-      description: 'Lorem ipsum dolor sit amet, cons',
+      title: 'Report Lost Card',
+      body: 'Lorem ipsum dolor sit amet, cons',
       time: '05 min ago',
     },
     {
       id: 7,
-      head: 'Report Lost Card',
-      description: 'Lorem ipsum dolor sit amet, cons',
+      title: 'Report Lost Card',
+      body: 'Lorem ipsum dolor sit amet, cons',
       time: '05 min ago',
     },
     {
       id: 8,
-      head: 'Report Lost Card',
-      description: 'Lorem ipsum dolor sit amet, cons',
+      title: 'Report Lost Card',
+      body: 'Lorem ipsum dolor sit amet, cons',
       time: '05 min ago',
     },
   ];
 
-  const renderItem = ({item}) => {
+  const fetchData2 = () => {
+    setloader(true)
+    getRequestWithOutBody(
+      `${BASE_URL}/notifications/`,
+      AuthReducer.token,
+    )
+      .then(result => {
+        setloader(false)
+        // console.log('result at notification', result)
+        setNotificationDetails(result.results)
+      })
+      .catch(error => {
+        setloader(false)
+        console.log('error', error);
+      });
+  }
+
+  useEffect(() => {
+    fetchData2()
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData2();
+    }, []),
+  );
+
+
+  const renderItem = ({ item }) => {
+    const maxLength = 14; // Maximum length before truncating and adding "..."
+    const title = item.title.length > maxLength ? `${item.title.substring(0, maxLength)}...` : item.title;
+
+    // Calculate the time difference in seconds
+    const diffInSeconds = moment().diff(moment(item.updated), 'seconds');
+
+    // Function to format the time difference dynamically
+    const formatTimeDifference = (diffInSeconds) => {
+      if (diffInSeconds < 60) {
+        return `${diffInSeconds} sec ago`;
+      } else if (diffInSeconds < 3600) {
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        return `${diffInMinutes} min${diffInMinutes !== 1 ? 's' : ''} ago`;
+      } else if (diffInSeconds < 86400) {
+        const diffInHours = Math.floor(diffInSeconds / 3600);
+        return `${diffInHours} hr${diffInHours !== 1 ? 's' : ''} ago`;
+      } else if (diffInSeconds < 2592000) {
+        const diffInDays = Math.floor(diffInSeconds / 86400);
+        return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
+      } else {
+        const diffInMonths = Math.floor(diffInSeconds / 2592000);
+        return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''} ago`;
+      }
+    };
+
+    console.log(formatTimeDifference(diffInSeconds));
+
+
     return (
       <>
-        <View style={{flexDirection: 'row', marginLeft: 10}}>
-          <View
-            style={{
-              borderBottomColor: 'rgba(156, 156, 156, 0.7)',
-              borderRadius: 7,
-              borderBottomWidth: 0.5,
-              height: 69,
-              //   width: 332,
-              marginTop: 10,
-            }}>
+        <Pressable onPress={() => {
+          Navigation.navigate('NotificationDetails', item);
+          // console.log('dsfdsfaf')
+        }}>
+          <View style={{ flexDirection: 'row', marginLeft: 10 }}>
             <View
               style={{
-                justifyContent: 'space-between',
-                flexDirection: 'row',
-                // marginTop: 40,
+                // borderBottomColor: 'rgba(156, 156, 156, 0.7)',
+                // borderRadius: 7,
+                // borderBottomWidth: 0.5,
+                height: 69,
+                //   width: 332,
+                marginTop: 10,
               }}>
-              <View>
-                <Image
-                  source={require('../../Assets/Images/notificationIcon.png')}
-                  style={{
-                    // width: 25,
-                    // height: 27,
-                    alignContent: 'center',
-                    alignItems: 'center',
-                    alignSelf: 'center',
-                    marginTop: -12,
-                    marginLeft: -5,
-                  }}
-                />
-              </View>
-              <View style={{marginLeft: -10}}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    // marginTop: 40,
-                  }}>
-                  <Heading
-                    Heading={item.head}
-                    Fontsize={16}
-                    //   color={COLORS.dark}
-                    Fontweight={'bold'}
-                    txtAlign={'center'}
-                  />
-                  <Heading
-                    Heading={item.time}
-                    Fontsize={11}
-                    //   color={COLORS.dark}
-                    txtAlign={'center'}
-                    color={'rgba(156, 156, 156, 1)'}
-                    mt={5}
-                    ml={10}
+              <View
+                style={{
+                  justifyContent: 'space-between',
+                  flexDirection: 'row',
+                  // marginTop: 40,
+                }}>
+                <View>
+                  <Image
+                    source={require('../../Assets/Images/notificationIcon.png')}
+                    style={{
+                      // width: 25,
+                      // height: 27,
+                      alignContent: 'center',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      marginTop: -12,
+                      marginLeft: -5,
+                    }}
                   />
                 </View>
-                <Heading
-                  Heading={item.description}
-                  Fontsize={14}
-                  color={'rgba(156, 156, 156, 1)'}
-                  txtAlign={'center'}
-                  mt={5}
-                />
-              </View>
-              <View>
-                <Image
-                  source={require('../../Assets/Images/notificationquantity.png')}
-                  style={{
-                    // width: 25,
-                    // height: 27,
-                    alignContent: 'center',
-                    alignItems: 'center',
-                    alignSelf: 'center',
-                  }}
-                />
+                <View style={{ marginLeft: -10, width: 200 }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      // marginTop: 40,
+                    }}>
+                    <Heading
+                      Heading={title}
+                      Fontsize={16}
+                      //   color={COLORS.dark}
+                      Fontweight={item.is_read ? 'bold' : 800}
+                      txtAlign={'center'}
+                    />
+                    <Heading
+                      Heading={formatTimeDifference(diffInSeconds)}
+                      Fontsize={11}
+                      //   color={COLORS.dark}
+                      txtAlign={'center'}
+                      color={'rgba(156, 156, 156, 1)'}
+                      Fontweight={item.is_read ? 500 : 800}
+                      // Fontweight={500}
+                      mt={5}
+                      ml={10}
+                    />
+                  </View>
+                  <Heading
+                    Heading={`${item.body.substring(0, 25)}...`}
+                    Fontsize={14}
+                    color={'rgba(156, 156, 156, 1)'}
+                    txtAlign={'left'}
+                    Fontweight={item.is_read ? 400 : 800}
+                    mt={5}
+                  />
+                </View>
+                {!item.is_read ?
+                  (<View>
+                    <Image
+                      source={require('../../Assets/Images/notificationquantity.png')}
+                      style={{
+                        // width: 25,
+                        // height: 27,
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                      }}
+                    />
+                  </View>
+                  ) : null}
               </View>
             </View>
           </View>
-        </View>
+          <View
+            style={{
+              borderBottomColor: 'rgba(156, 156, 156, 1)',
+              borderRadius: 7,
+              borderBottomWidth: 0.5,
+              // height: 69,
+              width: '90%',
+              marginHorizontal: '5%',
+              // marginTop: 10,
+            }}></View>
+        </Pressable>
       </>
     );
   };
@@ -182,20 +263,24 @@ export const Notifications = () => {
   return (
     <>
       <SafeArea>
-        <View
-          style={{
-            //   marginVertical: '5%',
-            marginBottom: Platform.OS === 'ios' ? '10%' : '5%',
-          }}>
-          <FlatList
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-            contentContainerStyle={{flexDirection: 'column'}}
-            ListHeaderComponent={ListHeaderComponent}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
+        {loader ? (
+          <Loader />
+        ) : (
+          <View
+            style={{
+              //   marginVertical: '5%',
+              marginBottom: Platform.OS === 'ios' ? '10%' : '5%',
+            }}>
+            <FlatList
+              data={notificationDetails}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+              contentContainerStyle={{ flexDirection: 'column' }}
+              ListHeaderComponent={ListHeaderComponent}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        )}
       </SafeArea>
     </>
   );

@@ -44,7 +44,7 @@ export const Chats = ({ navigation }) => {
   const [combinedDataState, setCombinedDataState] = useState([]); // New state variable
   const [loader, setloader] = useState(false);
   const [latestOne, setLatestOne] = useState([]);
-  console.log('eg', combinedDataState);
+  // console.log('eg', combinedDataState);
 
   const fetchData2 = async () => {
     try {
@@ -109,7 +109,13 @@ export const Chats = ({ navigation }) => {
     };
   }, [AuthReducerID]);
 
-  console.log('userDatauserData', userData)
+  // console.log('userDatauserData', userData)
+
+  const sortChatsByTime = (chats) => {
+    return chats.sort((a, b) => {
+      return new Date(b.sentAt) - new Date(a.sentAt);
+    });
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -169,7 +175,7 @@ export const Chats = ({ navigation }) => {
               flexDirection: 'row',
               marginLeft: 10,
               // marginHorizontal: '%',
-              width: '100%',
+              width: '96%',
               // marginBottom: 10,
             }}>
             <View
@@ -294,7 +300,7 @@ export const Chats = ({ navigation }) => {
     );
   };
 
-  console.log('combinedDataState', combinedDataState)
+  // console.log('combinedDataState', combinedDataState)
 
   const ListHeaderComponent = () => {
     return (
@@ -342,7 +348,7 @@ export const Chats = ({ navigation }) => {
               // borderBottomWidth: 1,
             }}>
             <FlatList
-              data={combinedDataState}
+              data={sortChatsByTime(combinedDataState)}
               keyExtractor={item => item?.card_id}
               renderItem={renderItem}
               // keyExtractor={item => item.metal_id}

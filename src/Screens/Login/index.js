@@ -32,6 +32,7 @@ import { postRequest } from '../../App/fetch';
 import { removeSignupScreen } from '../../Store/Reducers/SignupReducer';
 
 export const Login = () => {
+  const Navigation = useNavigation();
   const [passHide, setPassHide] = useState(false);
   const [loading, setLoading] = useState(false);
   const [valueEmail, onChangeTextEmail] = useState('');
@@ -141,7 +142,17 @@ export const Login = () => {
                 if (result?.non_field_errors) {
                   console.log('Not found');
                   Alert.alert('', 'Invalid Password');
-                } else {
+                } else if (result?.message == "In-Active Account, OTP has been sent to your email, verify your account.") {
+                  console.log('Not found');
+                  Alert.alert('', 'In-Active Account, OTP has been sent to your email, verify your account.');
+                  const data = {
+                    valueEmail: valueEmail,
+                    valuePass: valuePass,
+                    screenName: 'TermofServices',
+                  };
+                  Navigation.navigate('OtpScreen', data);
+                } 
+                else {
                   dispatch(removeSignupScreen());
                   setDataToAsync('token', JSON.stringify(result.token));
                   setDataToAsync('user', JSON.stringify(result));
@@ -182,7 +193,6 @@ export const Login = () => {
     }
   }
 
-  const Navigation = useNavigation();
 
   return (
     <>
@@ -369,7 +379,7 @@ export const Login = () => {
                   <View
                     style={{
                       flexDirection: 'row',
-                      marginTop: Platform.OS === 'ios' ? 150 : 110,
+                      marginTop: Platform.OS === 'ios' ? 130 : 110,
                       alignSelf: 'center',
                     }}>
                     <Heading

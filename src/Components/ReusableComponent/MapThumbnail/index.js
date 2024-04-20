@@ -23,7 +23,7 @@ const MapThumbnail = ({ latitude, longitude, title }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 220,
+    width: 210,
     height: 200,
     borderRadius: 8,
     overflow: 'hidden',

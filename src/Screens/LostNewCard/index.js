@@ -252,12 +252,28 @@ export const LostNewCard = ({ route }) => {
       )
         .then(result => {
           console.log('result of Add my card', result);
-          if (result.error == 'Card with this number already exists.') {
+          // const errorMessage2 = JSON.stringify({"error": "Card with this number already exists in your found cards."});
+          const errorMessage = JSON.stringify({"error": "Card with this number already exists in your found cards."});
+          const errorMessage2 = JSON.stringify({"error": "Card with this number already exists in lost cards."});
+          const errorMessage3 = JSON.stringify({"error": "Card with this number already exists in my-card cards."}
+);
+          if (JSON.stringify(result) === errorMessage2){
+            setLoading(false);
+            setSelectedMonth(null);
+            setSelectedYear(null);
+            Alert.alert('Error', 'Card with this number already exists in lost cards.');
+          }else if (JSON.stringify(result) === errorMessage) {
+            setLoading(false);
+            setSelectedMonth(null);
+            setSelectedYear(null);
+            Alert.alert('Error', 'Card with this number already exists in your found cards.');
+          } 
+          else if (JSON.stringify(result) === errorMessage3) {
             setLoading(false);
             setSelectedMonth(null);
             setSelectedYear(null);
             Alert.alert('Error', 'Card with this number already exists.');
-          }
+          } 
           else {
             // Alert.alert('Error', result.Error);
             setModalVisible(true);

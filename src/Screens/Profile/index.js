@@ -22,6 +22,7 @@ import { useSelector } from 'react-redux';
 import { getRequestWithOutBody } from '../../App/fetch';
 import { BASE_URL } from '../../App/api';
 import { Loader } from '../../Components/ReusableComponent/Loader';
+import { ModalView } from '../../Components/ReusableComponent/Modal';
 
 export const Profile = ({ route }) => {
   const [lostCard, setLostCard] = useState(1);
@@ -33,6 +34,7 @@ export const Profile = ({ route }) => {
   const [myCards, setMyCards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [cardTypeData, setCardTypeData] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -486,9 +488,8 @@ export const Profile = ({ route }) => {
           }}>
           <Pressable
             onPress={() => {
-              Navigation.navigate('MyCards', {
-                prevName: 'Profile',
-              });
+              
+              setModalVisible(true)
             }}>
             <View
               style={{
@@ -1028,6 +1029,22 @@ export const Profile = ({ route }) => {
 
   return (
     <>
+    <ModalView
+        set={setModalVisible}
+        get={modalVisible}
+        cross={() => setModalVisible(false)}
+        txt={'Have you lost this card?'}
+        no={() => {
+          setModalVisible(false);
+        }}
+        yes={() => {
+          setModalVisible(!modalVisible);
+          // setCardSelect(true);
+          Navigation.navigate('MyCards', {
+                cardSelect: true,
+              });
+        }}
+      />
       <SuccessModal
         set={setSecondModal}
         get={secondModal}

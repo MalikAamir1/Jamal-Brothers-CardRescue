@@ -12,6 +12,7 @@ import {
   Pressable,
   PermissionsAndroid,
   Linking,
+  Alert,
 } from 'react-native';
 import Head from '../../Components/ReusableComponent/Head';
 import ButtonComp from '../../Components/ReusableComponent/Button';
@@ -77,11 +78,11 @@ export const ChatScreen = ({ route }) => {
   );
   const flatListRef = useRef();
   // console.log('AuthReducer', AuthReducer)
-  console.log('route.params on chat screen', route.params)
+  // console.log('route.params on chat screen', cardTypeId)
 
   useEffect(() => {
     setExpirationMonth(
-      route.params?.userInfo?.expiration_month
+      route.params?.userInfo?.expiration_month.toString().padStart(2, '0')
     )
     setExpirationYear(
       route.params?.userInfo?.expiration_year
@@ -90,7 +91,8 @@ export const ChatScreen = ({ route }) => {
       route.params?.userInfo?.issuer || route.params?.userInfo?.issuer_id
     )
     setCardTypeId(
-      route.params?.userInfo?.card_type || route.params?.userInfo?.card_type_id
+      !route.params?.screenName ?
+        route.params?.userInfo?.card_type : route.params?.userInfo?.card_type_id
     )
     setCardNumber(
       route.params?.userInfo?.card_number
@@ -115,7 +117,7 @@ export const ChatScreen = ({ route }) => {
       console.log('error in scroll')
     }
   }, [sortedMergedMessages]);
-  // console.log('foundBy', foundBy)
+  // console.log('messageText', messageText)
 
 
   // console.log('cardid', card_id)
@@ -196,17 +198,21 @@ export const ChatScreen = ({ route }) => {
   }, [userToken, AuthReducerId]);
 
   const sendMessage = useCallback(async () => {
-    try {
-      const newMessage = {
-        sentBy: AuthReducerId,
-        sentAt: new Date().toISOString(),
-        message: messageText,
-      };
-      setUserMessages(prevMessages => [...prevMessages, newMessage]);
-      setMessageText('');
-      await sendTextMessage(userToken, AuthReducerId, messageText, card_id);
-    } catch (error) {
-      console.log(error);
+    if (messageText == '') {
+      console.log('empty message')
+    } else {
+      try {
+        const newMessage = {
+          sentBy: AuthReducerId,
+          sentAt: new Date().toISOString(),
+          message: messageText,
+        };
+        setUserMessages(prevMessages => [...prevMessages, newMessage]);
+        setMessageText('');
+        await sendTextMessage(userToken, AuthReducerId, messageText, card_id);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }, [messageText, AuthReducerId, userToken]);
   // console.log('userToken in chatscreen', userToken)
@@ -235,7 +241,7 @@ export const ChatScreen = ({ route }) => {
         AuthReducer,
       )
         .then(async result => {
-          console.log('result of Add my card', result);
+          // console.log('result of Add my card', result);
           setSecondModal(true);
           setloader(false);
           try {
@@ -244,7 +250,7 @@ export const ChatScreen = ({ route }) => {
             await sendTextMessage(userToken, AuthReducerId, 'Card has been returned', card_id);
 
 
-            console.log('Chat deleted successfully');
+            // console.log('Chat deleted successfully');
           } catch (error) {
             console.error('Error deleting chat:', error);
           }
@@ -285,7 +291,7 @@ export const ChatScreen = ({ route }) => {
         AuthReducer,
       )
         .then(async result => {
-          console.log('result of Add my card', result);
+          // console.log('result of Add my card', result);
           setModalVisible(true);
           setloader(false);
           try {
@@ -293,7 +299,7 @@ export const ChatScreen = ({ route }) => {
             await database().ref(`cardInfo/${AuthReducerId}/${userToken}`).remove();
             await sendTextMessage(userToken, AuthReducerId, 'Card has been received', card_id);
 
-            console.log('Chat deleted successfully');
+            // console.log('Chat deleted successfully');
           } catch (error) {
             console.error('Error deleting chat:', error);
           }
@@ -323,13 +329,13 @@ export const ChatScreen = ({ route }) => {
           },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Location permission granted');
+          // console.log('Location permission granted');
           getCurrentLocation();
         } else {
-          console.log('Location permission denied');
+          // console.log('Location permission denied');
         }
       } catch (error) {
-        console.error('Error requesting location permission:', error);
+        // console.error('Error requesting location permission:', error);
       }
     } else {
       getCurrentLocation();
@@ -341,10 +347,10 @@ export const ChatScreen = ({ route }) => {
       async position => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-
+        // Alert.alert('latitude', latitude )
         // Now you have the latitude and longitude
-        console.log('Latitude:', latitude);
-        console.log('Longitude:', longitude);
+        // console.log('Latitude:', latitude);
+        // console.log('Longitude:', longitude);
         setLatitude(latitude)
         setLongitude(longitude)
         const newMessage = {
@@ -363,7 +369,7 @@ export const ChatScreen = ({ route }) => {
       error => {
         console.error('Error getting current location:', error);
       },
-      { enableHighAccuracy: true, timeout: 30000, maximumAge: 1000 },
+      { enableHighAccuracy: false, timeout: 30000, maximumAge: 1000, forceAndroidLocationManager: true },
     );
   };
 
@@ -382,9 +388,9 @@ export const ChatScreen = ({ route }) => {
           component.types.includes('country'),
         ).long_name;
 
-        console.log('Address:', address);
-        console.log('City:', city);
-        console.log('Country:', country);
+        // console.log('Address:', address);
+        // console.log('City:', city);
+        // console.log('Country:', country);
       })
       .catch(error => {
         console.error('Error during reverse geocoding:', error);
@@ -394,10 +400,7 @@ export const ChatScreen = ({ route }) => {
   const renderItem = ({ item }) => {
     // console.log('item in chatscreen', item)
     // console.log('userToken in chatscreen', userToken)
-    const messageTime = new Date(item.sentAt).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const messageTime = new Date(item.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
     const openMapsApp = () => {
       const url = Platform.select({
@@ -430,7 +433,7 @@ export const ChatScreen = ({ route }) => {
                   }}
                   style={{
                     // backgroundColor: 'red',
-                    marginTop: -30,
+                    // marginTop: -30,
                     width: 37,
                     height: 37,
                     borderRadius: 20,
@@ -486,7 +489,7 @@ export const ChatScreen = ({ route }) => {
                     color={'rgba(156, 156, 156, 1)'}
                     Fontsize={12}
                     txtAlign={'right'}
-                    mr={'2%'}
+                    mr={'1%'}
                     mb={5}
                   />
                 </View>
@@ -499,11 +502,11 @@ export const ChatScreen = ({ route }) => {
                   <View
                     style={{
                       flexDirection: 'row',
-                      marginRight: 20,
+                      marginRight: Platform.OS == 'ios' ? 20 : 30,
 
                     }}>
                     <View style={{
-                      width: 230,
+                      width: Platform.OS == 'ios' ? 230 : 220,
                     }}>
                       {item.lat ? (
                         <Pressable onPress={() => openMapsApp()} >
@@ -549,7 +552,7 @@ export const ChatScreen = ({ route }) => {
                         uri: `http://23.26.137.178:8000//${AuthReducerData?.user?.profile?.profile_pic}`,
                       }}
                       style={{
-                        marginTop: -30,
+                        // marginTop: -30,
                         width: 37,
                         height: 37,
                         borderRadius: 20,
@@ -599,7 +602,9 @@ export const ChatScreen = ({ route }) => {
         txt={'Card Add Successfully'}
         done={() => {
           setModalVisible(false);
-          Navigation.navigate('MyCards');
+          Navigation.navigate('MyCards', {
+            screenName: true,
+          });
         }}
         urlImg={require('../../Assets/Images/successIcon.png')}
         btntxt={'Go Back'}

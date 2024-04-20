@@ -35,6 +35,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Splash} from '../../Screens/Splash';
 import {Button, Image} from 'react-native';
 import {ChatScreenDemo} from '../../Screens/ChatScreenDemo';
+import { NotificationDetails } from '../../Screens/NotificationDetails';
 
 export default function StackNavigator({route, navigation}) {
   const Stack = createStackNavigator();
@@ -182,6 +183,7 @@ export default function StackNavigator({route, navigation}) {
             <Stack.Screen name="ChatScreenDemo" component={ChatScreenDemo} />
             <Stack.Screen name="ReturnedCards" component={ReturnedCards} />
             <Stack.Screen name="Notifications" component={Notifications} />
+            <Stack.Screen name="NotificationDetails" component={NotificationDetails} />
             <Stack.Screen name="FoundCard" component={FoundCard} />
             <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name="Settings" component={Settings} />
